@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modules</title>
+
+    <link rel="stylesheet" media="all" href="/resources/tests/mocha.css">
+    <link rel="stylesheet" media="all" href="/resources/css/icons/style.css">
+    <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/resources/font-awesome/css/font-awesome.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="/resources/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/resources/leaflet/leaflet/leaflet.css" />
+<link rel="stylesheet" href="/resources/leaflet/Leaflet.draw/dist/leaflet.draw.css">
+<link rel="stylesheet" href="/resources/leaflet/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="/resources/leaflet/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+
+<script src="/resources/jquery/jquery.min.js"></script>
+<script src="/resources/leaflet/leaflet/leaflet.js"></script>
+<!-- Leaflet Draw -->
+<script src="/resources/leaflet/Leaflet.draw/dist/leaflet.draw-src.js"></script>
+<!-- Leaflet Cluster Marker -->
+<script src="/resources/leaflet/leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+
+<link href='/resources/css/font-noto-sans.css' rel='stylesheet' type='text/css'>
+    <script src="build/vendor.bundle.js"></script>
+    <style>
+      html, body{
+        height: 100%;
+        margin: 0;
+        font-family: 'Noto Sans';
+      }
+      *, *::before, *::after{
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+      }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<script src="/resources/tests/mocha.js"></script>
+<script src="/resources/tests/chai.js"></script>
+<script>mocha.setup('bdd');</script>
+<script src="/resources/libs/tinymce/tinymce.min.js"></script>
+<script src="build/bundle.js"></script>
+</body>
+</html>

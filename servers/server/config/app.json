@@ -1,0 +1,15 @@
+
+{
+  "domain": "http://localhost",
+  "port": 4000,
+  "allowOrigin": ["http://localhost:3000"],
+  "authorize": false,
+  "loggers": {
+    "core": { "console": "info", "file": "info" },
+    "proxy": { "console": "info", "file": "info" }
+  },
+  "language": "en",
+  "loginAfterRegister": false,
+  "editor": "atom",
+  "terminal": "zsh"
+}

@@ -1,0 +1,66 @@
+.optionbox-holder {
+  width: auto;
+  align-items: center;
+  display: flex;
+  color: #5f6b73;
+  justify-content: space-between;
+}
+.optionbox-selectedwarp {
+  position: relative;
+  width: 160px;
+  height: 30px;
+  display: flex;
+  padding: 0 0 0 10px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+
+}
+.option-icon {
+
+  color: #5f6b73;
+  width: 30px;
+  height: 100%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 auto 0;
+  border-left: 1px solid #ddd;
+}
+.option-box {
+  position: absolute;
+  z-index: 1;
+  left: 9px;
+  top: 6px;
+  width: 160px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background: #FFF;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border: 1px solid #ddd;
+  border-top:0;
+  transform: translate(-10px, 23px);
+}
+.option-box.md {
+  width: 90px;
+}
+.optionbox-selected {
+  color: #0099cc !important;
+  font-weight: 700;
+  cursor: pointer;
+}
+.option-item {
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(205, 205, 205, 0.3);
+  }
+
+}
