@@ -46,17 +46,26 @@ function Mixin(name, definition){
 
 var mixin = {
   mixins: [mixins.dispatcher, mixins.hierarchy, mixins.theme, mixins.translate],
+  contextTypes: {
+    app: PropTypes.object
+  },
   getInitialState(){
-    var id = this.props.id;
+    var app, bindings = {}, id = this.props.id;
     if(id){ // this component's id is composed from all of it's parents' ids.
       // console.log('gis id', id);
       var parentId = getParentId(this);
       // console.log('parentId', parentId);
       this.id = parentId ? `${parentId}.${id}` : id;
     }
-    if(this.bindings){
-      this._watcher = this.context.tree.watch(this.bindings);
-      this._watcher.on('update', this._updateBindings);
+    if(this.bindings){  // bind each binding to its branch on the tree.
+      app = this.context.app || this;
+      for(var m in this.bindings){  // use dot notation as a shortcut
+        bindings[m] = typeof this.bindings[m] === 'string' ? this.bindings[m].split('.') : this.bindings[m];
+      }
+      if(app.tree){
+        this._watcher = app.tree.watch(bindings);
+        this._watcher.on('update', this._updateBindings);
+      }
     }
     this.route = this.props.route || (this.context.parent ? this.context.parent.route : {});
     var state = (this._watcher ? this._watcher.get() : null);
@@ -81,13 +90,12 @@ var mixin = {
       this._watcher.off('update', this._updateBindings);
     }
   },
-  to(path, query, scope){
-    console.warn(`${this.constructor.displayName} is using this.to(). use this.route.to() instead.`)
-    if(this.props.to) return this.props.to(path, query, scope);
-    var parent = this.context.parent;
-    if(!parent) return;
-    if(parent.props.to) parent.props.to(path, query, scope);
-    else parent.to(path, query);
+  createElement(type, props, children){
+    var args = [].slice.call(arguments);
+    args.unshift(this);
+    var core = this.context.app && this.context.app.core;
+    if(core) return core.createElement.apply(core, args);
+    // return this.context.app._createElement.apply(this.context.app, args);
   },
   renderTemplate(template, key){
     if(!template) return null;

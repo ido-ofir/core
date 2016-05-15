@@ -11,7 +11,6 @@ core.Component('shell.Module', {
   toggle(){
     var dependents = core.getDependents(this.props.module.name);
     var dependencies = core.getDependencies(this.props.module.name);
-    console.log('t');
     if(!this.state.isOpen){
       this.setState({
         isOpen: true,

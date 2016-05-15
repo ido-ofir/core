@@ -5,20 +5,20 @@ var path = require('path');
 // then find the correct language and attach it to that object.
 // returns the theme and the complete language for the client.
 
-var masterConfigPath = path.resolve(process.cwd(), `./config.json`);
+var configPath = path.resolve(process.cwd(), `./config/client.json`);
 
 
 module.exports = function(action){
 
-  fs.readFile(masterConfigPath, {encoding: 'utf8'}, (err, data)=>{
+  fs.readFile(configPath, {encoding: 'utf8'}, (err, data)=>{
     if(err) return action.error(err);
-    var masterConfig = JSON.parse(data);
-    var language = masterConfig.client.language;
-    var theme = masterConfig.client.theme;
-    fs.readFile(path.resolve(process.cwd(), './servers/server/languages', `./${language}.json`), {encoding: 'utf8'}, (err, data)=>{
+    var config = JSON.parse(data);
+    var language = config.language;
+    var theme = config.theme;
+    fs.readFile(path.resolve(process.cwd(), `./servers/server/languages/${language}.json`), {encoding: 'utf8'}, (err, data)=>{
       if(err) return action.error(err);
-      masterConfig.client.language = JSON.parse(data);
-      action.done(masterConfig.client);
+      config.language = JSON.parse(data);
+      action.done(config);
     });
   });
 

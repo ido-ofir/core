@@ -1,6 +1,4 @@
 
-var root = 'webint';
-
 var webpack = require('webpack');
 var path = require('path');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
@@ -8,10 +6,10 @@ var buildPath = path.resolve(__dirname, 'build');
 var componentPath = path.resolve(__dirname, 'component');
 var entry = path.resolve(__dirname, 'App.jsx');
 
-var array = __dirname.split(`${root}${path.sep}clients`);
+var array = __dirname.split(`${path.sep}clients${path.sep}views`);
 if(!array[1]) return console.error(`cannot find core path from ${__dirname}`);
-var corePath = path.join(array[0], `${root}${path.sep}clients`, 'core');
-var exportsPath = path.join(array[0], `${root}${path.sep}clients`, 'exports');
+var corePath = path.join(array[0], `clients`, 'core');
+var exportsPath = path.join(array[0], `clients`, 'exports');
 
 var config = {
 
@@ -45,7 +43,7 @@ var config = {
         alias: {
           core: corePath  // use require('core') anywhere
         },
-        root: exportsPath   // treat the 'exports' directory like node_modules
+        root: exportsPath   // treat the 'exports' directory like a node_modules directory
     },
     module : {
         loaders : [

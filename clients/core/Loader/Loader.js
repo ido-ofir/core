@@ -2,32 +2,14 @@ var React = require('react');
 var PropTypes = React.PropTypes;
 
 var Injector = require('./Injector.js');
+var Q = require('q');
 
-window.find = function find(name, obj) {
-  if(obj[name]) return obj[name];
-  var array = name.split('.');
-  var target, path = [];
-  if(array.length < 2) return null;
-  while(array.length){
-    path.push(array.pop())
-    name = array.join('.');
-    if(obj[name]){
-      target = obj[name];
-      while(target && path.length){
-        name = path.pop();
-        if(!path.length){
-          return target[name];
-        }
-        target = target[name];
-      }
-    }
-  }
-  return null;
-}
 module.exports = function Loader(constructors){
 
-  var contexts = {};
-  var activeContext;
+  var contexts = {
+    orphand: {}
+  };
+  var activeContext = contexts.orphand;
   var pathToSet = null;
 
   var injector = Injector((module, data, dependencies)=>{
@@ -53,21 +35,14 @@ module.exports = function Loader(constructors){
   }
 
   var components = {};
-  var mixins = {};
   var modules = {};
   var indexes = {};
-  var enhancements = {};
   var actions = {};
+  var directives = {};
 
   function Module(name, module){
     modules[name] = module;
     return module;
-  }
-
-  function Mixin(name, mixin){
-    if(constructors.mixin) mixin = constructors.mixin(name, mixin);
-    mixins[name] = mixin;
-    return mixin;
   }
 
   function Component(name, component){
@@ -87,30 +62,31 @@ module.exports = function Loader(constructors){
     return action;
   }
 
-  function Enhance(definition) {
-
+  function Directive(name, directive){
+    directives[name] = directive;
+    return directive;
   }
 
   function load(name, dependencies, getDefinition, construct){
     if(activeContext && pathToSet){
       activeContext[name] = pathToSet;
     }
-    // if(Array.isArray(dependencies) && getDefinition instanceof Function){ // load async with dependecies
-    //   injector.load(name, dependencies, getDefinition, construct);
+    if(Array.isArray(dependencies) && getDefinition instanceof Function){ // load async with dependecies
+      injector.load(name, dependencies, getDefinition, construct);
+    }
+    else if(!getDefinition){  // no dependecies - load sync.
+      injector.add(name, construct(name, dependencies));  // dependecies is the actual module.
+    }
+    // if(!getDefinition){
+    //   getDefinition = dependencies;
+    //   dependencies = [];
     // }
-    // else if(!getDefinition){  // no dependecies - load sync.
-    //   injector.add(name, construct(name, dependencies));  // dependecies is the actual module.
+    // if(getDefinition instanceof Function){
+    //   injector.load(name, dependencies, getDefinition, construct)
     // }
-    if(!getDefinition){
-      getDefinition = dependencies;
-      dependencies = [];
-    }
-    if(getDefinition instanceof Function){
-      injector.load(name, dependencies, getDefinition, construct)
-    }
-    else if(typeof getDefinition === 'object'){
-      return injector.add(name, construct(name, getDefinition));
-    }
+    // else if(typeof getDefinition === 'object'){
+    //   return injector.add(name, construct(name, getDefinition));
+    // }
     else{
       console.error(`cannot load module definition from ${typeof getDefinition}:`);
       console.debug(getDefinition);
@@ -119,10 +95,10 @@ module.exports = function Loader(constructors){
 
   return {
     components: components,
-    mixins: mixins,
     modules: modules,
     indexes: indexes,
     actions: actions,
+    directives: directives,
     getDependencies(name){
       for (var i = 0; i < injector.resolved.length; i++) {
         if(injector.resolved[i].name === name){
@@ -145,33 +121,44 @@ module.exports = function Loader(constructors){
     Component(name, dependencies, getDefinition){
       load(name, dependencies, getDefinition, Component);
     },
-    Mixin(name, dependencies, getDefinition){
-      load(name, dependencies, getDefinition, Mixin);
-    },
     Module(name, dependencies, getDefinition){
       load(name, dependencies, getDefinition, Module);
+    },
+    Directive(name, dependencies, getDefinition){
+      load(name, dependencies, getDefinition, Directive);
     },
     Action(name, dependencies, getDefinition){
       load(name, dependencies, getDefinition, Action);
     },
     action(name, data){
-      var action = find(name, actions);
-      if(!action || !(action instanceof Function)) return console.error(`cannot find action ${name}`);
+      var action = actions[name];
+      if(!action) return console.error(`cannot find action ${name}`);
       // var deffered = q.defer();
         // console.debug("action", name);
-      return new Promise(function(resolve, reject) {
-        action(data, (err, value)=>{
-          if(err) return reject(err);
-          resolve(value);
+      if(action instanceof Function){
+        return new Promise(function(resolve, reject) {
+          action(data, (err, value)=>{
+            if(err) return reject(err);
+            resolve(value);
+          });
         });
-      });
-    },
-    Enhance(name, definition){  // Enhance('MyConstructors', { Component(){ ... }, Module(){} }
-      if(enhancements[name]) return console.error(`there are two enhancements named ${name}`);
-      enhancements[name] = Enhance(definition);
-    },
-    enhance(){
-
+      }
+      else if(action.schema && action.run){
+        for(var m in action.schema){
+          if((typeof data[m] !== action.schema[m]) && (action.schema[m] !== 'any')){
+            return console.error(`action '${name}' expected '${m}'to be of type '${action.schema[m]}', got '${typeof data[m]}' instead`);
+          }
+        }
+        return new Promise(function(resolve, reject) {
+          action.run(data, (err, value)=>{
+            if(err) return reject(err);
+            resolve(value);
+          });
+        });
+      }
+      else{
+        console.error(`action ${name} is not valid`);
+      }
     },
     Index(name, dependencies){
       load(name, dependencies, ()=>{

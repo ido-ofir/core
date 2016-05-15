@@ -1,5 +1,4 @@
 var React = require('react');
-import { Alert } from 'react-bootstrap';
 // var theme = require('../theme/theme.js').Theme;
 
 var styles = {
@@ -88,10 +87,10 @@ const Notification = React.createClass({
     var bg = types[this.state.alertKind];
     if(bg) transitionAlert.background = bg;
       return (
-        <Alert style= {transitionAlert}  onDismiss={ this.hide }>
+        <div style= {transitionAlert}>
           <h4>{ this.state.title}</h4>
           <p>{this.state.text}</p>
-        </Alert>
+        </div>
       );
   }
 });

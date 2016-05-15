@@ -53,7 +53,7 @@ module.exports = function(socket){
     }
   });
   socket.json = function(obj){
-      socket.send(json(obj));
+    socket.send(json(obj));
   };
   return socket;
 }

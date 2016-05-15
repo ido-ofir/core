@@ -26,20 +26,11 @@ module.exports = core.Component('Parts', [
   'shell.Config',
   'ui',
   'ui.Button',
-  'Breadcrumbs',
   'Parts.Ui',
   'divide.Horizontal',
   'divide.Vertical',
   'shell.Debug'
-], (Config, ui, Button, Breadcrumbs, Ui, Horizontal, Vertical, Debug)=>{
-
-  var parts = {
-    Breadcrumbs: {
-      component: Breadcrumbs,
-      description: '',
-      props: { route: { type: 'loko', parent: { type: 'koko' }} }
-    }
-  }
+], (Config, ui, Button, Ui, Horizontal, Vertical, Debug)=>{
 
   return {
     contextTypes: {
@@ -47,7 +38,7 @@ module.exports = core.Component('Parts', [
     },
     componentDidMount(){
       this.context.app.connection.action('app.config', {}, (config)=>{
-        this.context.app.config.set(config);
+        this.context.app.set('core.app.config', config);
       });
     },
     renderPart(name, part){
@@ -69,7 +60,7 @@ module.exports = core.Component('Parts', [
       return (
         <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'auto', padding: 40}}>
           <div>
-              <Vertical width="320px" from="right">
+              <Vertical width="360px" from="right">
                 <Ui/>
                 <Config/>
               </Vertical>

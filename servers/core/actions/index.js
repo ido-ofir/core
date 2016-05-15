@@ -1,6 +1,5 @@
 var Action = require('./Action.js');
 var url = require('url');
-var request = require('request');
 
 function sequence(action, listeners, cb){  // run all listeners, passing action. call action.next() to continue.
   if(!listeners) return cb();
@@ -99,40 +98,6 @@ module.exports = function(core){
       var serial = serialize(action);
       serial.user = action.user;
       return serial;
-    },
-    redirect(targetUrl){
-      var parsed = url.parse(targetUrl);
-      var protocol = parsed.protocal || 'http';
-      var host = parsed.host;
-      var port = parsed.port || 80;
-      var auth = parsed.auth || '';
-      var pathname = parsed.pathname || '/';
-
-      return function(action){
-        var internalPath = action.internalPath || '';
-        var formated = url.format({
-          protocol: protocol,
-          host: host,
-          port: port,
-          auth: parsed.auth,
-          pathname: `/actions${pathname}${internalPath}`
-        });
-        request.post(formated, {form: action.request.body}, function (error, response, body) {
-          if(error) return action.error(error);
-          // console.dir(body);
-          if (response.statusCode !== 200) {
-            return action.fail(`${formated} responded with status code ${response.statusCode}`);
-          }
-          var json = JSON.parse(body);
-          // console.dir(json);
-          if(json.success){
-            action.done(json.data);
-          }
-          else{
-            action.fail(json.data);
-          }
-        });
-      };
     }
   };
 

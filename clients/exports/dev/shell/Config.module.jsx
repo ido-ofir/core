@@ -2,37 +2,52 @@ var React = require('react');
 var core = require('core');
 var PropTypes = React.PropTypes;
 
-var DragColor = React.createClass({
-  propTypes: {
-    path: PropTypes.string.isRequired,
-    color: PropTypes.string.isRequired,
-  },
-  onDragStart(e){
-    e.stopPropagation();
-    var drag = e.dataTransfer;
-    drag.setData('text', `this.theme('${this.props.path}')`);
-    drag.effectAllowed = 'copy';
-  },
-  render(){
-    var style = {
-      background: this.props.color,
-      width: 30,
-      height: 30,
-      borderRadius: '50%',
-      border: '1px solid #ddd',
-      cursor: '-webkit-grab'
-    }
-    return (
-      <div draggable={ true }
-           onDragStart={ this.onDragStart }
-           style={ style }>
-        { this.props.children }
-      </div>
-    );
-  }
-})
 
-core.Component('shell.Config', ['shell.Btn'], (Btn)=>{
+
+
+
+core.Component('shell.Config.DragColor', ['ui.Color'], (Color)=>{
+  return {
+    propTypes: {
+      path: PropTypes.string.isRequired,
+      color: PropTypes.string.isRequired,
+      onFineChange: PropTypes.func,
+      onChange: PropTypes.func
+    },
+    onDragStart(e){
+      e.stopPropagation();
+      var drag = e.dataTransfer;
+      drag.setData('text', `this.theme('${this.props.path}')`);
+      drag.effectAllowed = 'copy';
+    },
+    onFineChange(val){
+      core.set(`config.theme.${this.props.path}`, val);
+    },
+    onChange(val){},
+    render(){
+      var style = {
+        width: 30,
+        height: 30,
+        borderRadius: '50%',
+        border: '1px solid #ddd',
+        cursor: '-webkit-grab',
+        outline: 0
+      }
+      return (
+        <Color draggable={ true }
+             onDragStart={ this.onDragStart }
+             style={ style }
+             color={ this.props.color }
+             onFineChange={ this.onFineChange }
+             onChange={ this.onChange }>
+          { this.props.children }
+        </Color>
+      );
+    }
+  };
+});
+
+core.Component('shell.Config', ['shell.Btn', 'shell.Config.DragColor'], (Btn, DragColor)=>{
   return {
     contextTypes: {
       app: PropTypes.object
@@ -41,6 +56,9 @@ core.Component('shell.Config', ['shell.Btn'], (Btn)=>{
       return {
         isOpen: (false)
       };
+    },
+    bindings: {
+      theme: 'core.config.theme'
     },
     renderColor(path, color){
       return (
@@ -66,9 +84,8 @@ core.Component('shell.Config', ['shell.Btn'], (Btn)=>{
       );
     },
     render: function() {
-      var config = this.context.app.config.get();
-      if(!config) return null;
-      var theme = config.theme;
+      var theme = this.state.theme;
+      if(!theme) return null;
 
       return (
         <div style={{ ...this.props.style }}>

@@ -2,7 +2,6 @@ var React = require('react');
 var PropTypes = React.PropTypes;
 var core = require('core');
 var Baobab = require('baobab');
-var baobabReact = require('baobab-react');
 
 var Notification = require('./Notification.jsx');
 var Overlay = require('./Overlay.jsx');

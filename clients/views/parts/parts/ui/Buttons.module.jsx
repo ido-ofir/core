@@ -17,6 +17,9 @@ var styles = {
 core.Component('Parts.Buttons', ['ui.Button'], (Button)=>{
 
   return {
+    bindings: {
+      theme: 'core.config.theme'
+    },
     render(){
       return (<div>
         <h2>UI</h2>

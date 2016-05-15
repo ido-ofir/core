@@ -17,12 +17,12 @@ myList.loko;      // 8
 
 module.exports = function Injector(constructed){
 
-  var modules = window.modules = {};
+  var modules = {};
   var dependencies = {};
   var paths = {};
   var pathToSet = null;
 
-  var lists = window.lists = {
+  var lists = {
     delayed: [],
     requires: [],
     resolved: [],
@@ -132,7 +132,8 @@ module.exports = function Injector(constructed){
       var missing = findMissingDependencies();
       console.error(`core cannot find modules:`);
       for(var m in missing){
-        console.debug(m, 'required by', missing[m])
+        console.debug('%o', m)
+        console.debug('required by', missing[m])
       }
 
     }

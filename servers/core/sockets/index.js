@@ -18,31 +18,17 @@ module.exports = function(app){
     });
     server.emit('authorize', socket);
   };
+  
   server.broadcast = function(any){
     sockets.map(function(socket){
       socket.json(any);
     });
   };
+
   server.fire = function(type, data){
     server.broadcast({
       type: type,
       data: data
-    });
-  };
-  server.toUser = function(id, any){
-    id = id.toString();
-    sockets.map(function(socket){
-      if(socket.user.id.toString() === id) socket.json(any);
-    });
-  };
-  server.toUsers = function(ids, any){
-    sockets.map(function(socket){
-      if(ids.indexOf(socket.user.id)) socket.json(any);
-    });
-  };
-  server.toGroup = function(group, any){   // pass an array of user Ids
-    sockets.map(function(socket){
-      if(group.indexOf(socket.user.id)) socket.json(any);
     });
   };
 

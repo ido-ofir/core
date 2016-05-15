@@ -23,9 +23,9 @@ core.Component('ui.Icon', {
   },
   render: function() {
 
-    var onColor = this.props.onColor || this.theme('colors.primary');
-    var offColor = this.props.offColor || this.theme('inactive.primary');
-    var activeColor = this.props.activeColor || this.theme('colors.secondary');
+    var onColor = this.props.onColor || this.theme('hovers.text');
+    var offColor = this.props.offColor || this.theme('colors.text');
+    var activeColor = this.props.activeColor || this.theme('active.text');
     var style = [
         iconStyle,
         this.props.style,

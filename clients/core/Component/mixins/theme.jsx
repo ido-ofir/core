@@ -6,8 +6,11 @@ var themeMixin = {
     app: PropTypes.object
   },
   theme(path){
-    return this.context.app.theme.get(path);
-  },
+    var app = this.context.app;
+    if(app){
+        return app.get(`core.config.theme.${path}`)
+    }
+  }
 };
 
 module.exports = themeMixin;

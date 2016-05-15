@@ -12,6 +12,9 @@ core.Component('Parts.Icon', ['ui.Icon'], (Icon)=>{
       match: PropTypes.string,
       include: PropTypes.string
     },
+    bindings: {
+      theme: 'core.config.theme'
+    },
     getClassName(selectorText){
       var cls = selectorText.slice(1).split(':')[0]
       return this.props.include ? `${this.props.include} ${cls}` : cls;

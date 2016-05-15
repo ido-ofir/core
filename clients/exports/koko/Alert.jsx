@@ -1,6 +1,5 @@
 var React = require('react');
 var PropTypes = React.PropTypes;
-import { Button } from 'react-bootstrap';
 
 var styles = {
   wrapper:{
@@ -87,9 +86,9 @@ var Alert = React.createClass({
       <div style={ wrapper } onKeyUp={ this.onKeyUp }>
         <div style={ styles.box }>
           <div style={ styles.content }>{ this.state.msg }</div>
-          <Button style={ styles.btn } bsStyle="info" onClick={ this.close }>
+          <button style={ styles.btn } bsStyle="info" onClick={ this.close }>
                 Ok
-          </Button>
+          </button>
         </div>
       </div>
     );
