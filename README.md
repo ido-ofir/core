@@ -1,3 +1,3 @@
 # core
 
-core module
+boilerplate repo for react client-core
