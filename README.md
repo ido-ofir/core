@@ -15,4 +15,16 @@ cd servers && npm install
 cd ../clients && npm install
 ```
 
-installation of client side dependencies may take a while because it includes tools for compiling your code.
+installation of client side dependencies may take a while because it includes some tools for compiling your code.
+
+### usage
+
+from the root of this repo run this command to start the default server
+
+```
+node run
+```
+
+then point your browser to `localhost:4000`.
+
+
