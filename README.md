@@ -19,12 +19,20 @@ installation of client side dependencies may take a while because it includes so
 
 ### usage
 
-from the root of this repo run this command to start the default server
+you can start the default server by running this command from the root of this repo:
 
 ```
 node run
 ```
 
-then point your browser to `localhost:4000`.
+the server would serve all the apps at 'clients/views/' through port 4000.
 
+open your browser at 'localhost:4000' and click on the app that you want to see.
+
+to start developing your client side code:
+
+```
+cd clients/views/app
+webpack -w
+```
 
