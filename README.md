@@ -8,14 +8,21 @@ this repo is meant to be cloned as the basis for a webapp or a group of webapps.
 
 so just clone the repo and rename it, or copy the files to your own repo.
 
-once you did that you need to install dependencies for both the client core and the core of the node servers.
+once you did that you can first install dependencies for the node servers:
 
 ```
-cd servers && npm install
-cd ../clients && npm install
+cd servers
+npm install
 ```
 
-installation of client side dependencies may take a while because it includes some tools for compiling your code.
+and then for the clients:
+
+```
+cd ../clients
+npm install
+```
+
+installation of client side dependencies may take a while because it includes some compiling tools.
 
 ### usage
 
@@ -27,9 +34,15 @@ node run
 
 the server would serve all the apps at 'clients/views/' through port 4000.
 
-open your browser at 'localhost:4000' and click on the app that you want to see.
+in 'http://localhost:4000' you should see an index page, which basically displays the contents of `clients/views/`.
 
-to start developing your client side code:
+the `clients/views/` folder is meant to keep the compiled code of all the seperate client-side apps in the repo, and the server serves this folder as (mostly) static files. 
+
+each link in the index page represents an app in that location, so clicking on a link in this page will open that app in your browser. for example if you click on `app` you we be redirected to `http://localhost:4000/app` so your looking at the app in `clients/views/app/`.
+
+each app is basically a folder with an html page and a webpack configuration in it.
+
+to start developing a client-side app go to its view and run webpack:
 
 ```
 cd clients/views/app
