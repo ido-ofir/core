@@ -2,8 +2,8 @@
 var React = require('react');
 var path = require('path');
 
-// var viewsRoot = path.resolve(__dirname, '../../../views');
-// require.context(viewsRoot, true, /\.koko\.jsx$/);
+// var appsRoot = path.resolve(__dirname, '../../../apps');
+// require.context(appsRoot, true, /\.koko\.jsx$/);
 
 var components = {};
 var delayed = [];

@@ -18,6 +18,11 @@ var Router = React.createClass({
       route: null
     };
   },
+  getDefaultProps(){
+    return {
+      defaultRoute: '/'
+    };
+  },
   onHashChange(){
     var hash = location.hash.substr(1);
     var queryStart = hash.indexOf('{');

@@ -5,7 +5,7 @@ var url = require('url');
 
 function getViewPath(viewPath){
   viewPath = url.parse(viewPath);
-  return path.resolve(process.cwd(), './clients/views' + viewPath.pathname);
+  return path.resolve(process.cwd(), './clients/apps' + viewPath.pathname);
 }
 
 module.exports = {

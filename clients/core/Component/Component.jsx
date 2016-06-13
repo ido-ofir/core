@@ -62,10 +62,10 @@ var mixin = {
       for(var m in this.bindings){  // use dot notation as a shortcut
         bindings[m] = typeof this.bindings[m] === 'string' ? this.bindings[m].split('.') : this.bindings[m];
       }
-      if(app.tree){
-        this._watcher = app.tree.watch(bindings);
-        this._watcher.on('update', this._updateBindings);
-      }
+      this.watch(bindings);
+    }
+    if(this.forms){
+
     }
     this.route = this.props.route || (this.context.parent ? this.context.parent.route : {});
     var state = (this._watcher ? this._watcher.get() : null);
@@ -74,28 +74,20 @@ var mixin = {
   componentWillReceiveProps(props){
     this.route = props.route || (this.context.parent ? this.context.parent.route : {});
   },
+  watch(bindings){
+    this._watcher = core.tree.watch(bindings);
+    this._watcher.on('update', this._updateBindings);
+  },
   _updateBindings(){
     if(this._watcher){
       var state = this._watcher.get();
       this.setState(state);
     }
   },
-  componentWillMount(){
-    if(this._watcher){
-      // this._watcher.on('update', this._updateBindings);
-    }
-  },
   componentWillUnmount(){
     if(this._watcher){
       this._watcher.off('update', this._updateBindings);
     }
-  },
-  createElement(type, props, children){
-    var args = [].slice.call(arguments);
-    args.unshift(this);
-    var core = this.context.app && this.context.app.core;
-    if(core) return core.createElement.apply(core, args);
-    // return this.context.app._createElement.apply(this.context.app, args);
   },
   renderTemplate(template, key){
     if(!template) return null;

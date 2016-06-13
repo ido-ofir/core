@@ -1,4 +1,6 @@
 var Emitter = require('./Emitter.js');
+var Promise = require('./Promise.js');
+var debounce = require('./debounce.js');
 
 function parse(data){
   try {
@@ -29,9 +31,20 @@ function merge(){
   return result;
 }
 
+function except(source, ...args) {
+  var target = {};
+  for(var m in source){
+    if(args.indexOf(m) === -1) target[m] = source[m];
+  }
+  return target;
+}
+
 module.exports = {
   parse: parse,
   find: find,
   merge: merge,
-  Emitter: Emitter
+  except: except,
+  debounce: debounce,
+  Emitter: Emitter,
+  Promise: Promise
 };

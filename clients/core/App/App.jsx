@@ -44,7 +44,7 @@ var App = function (core) {
     },
     render() {
       return (
-        <div style={ style } role="app">
+        <div style={{ ...style, ...this.props.style }} role="app">
           { this.props.children }
         </div>
       );

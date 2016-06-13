@@ -40,7 +40,7 @@ module.exports = function(config, middlewares){
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
-  app.use('/', express.static(path.resolve(process.cwd(), 'clients/views')), function(req, res, next){
+  app.use('/', express.static(path.resolve(process.cwd(), 'clients/apps')), function(req, res, next){
     if(req.url === '/') return res.redirect('/index');
     next();
   });

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "language": "en",
   "offline": false,
-  "port": 4000,
+  "port": 8000,
   "log": "info",
   "logLevels": ["error", "warn", "info", "verbose", "debug", "silly"],
   "editor": "atom",

@@ -2,7 +2,6 @@ var React = require('react');
 var PropTypes = React.PropTypes;
 
 var Injector = require('./Injector.js');
-var Q = require('q');
 
 module.exports = function Loader(constructors){
 
@@ -18,7 +17,7 @@ module.exports = function Loader(constructors){
   });
 
   function loadContext(name, contextRequire){
-    // console.dir(contextRequire);
+
     if(!contextRequire){
       contextRequire = name;
       name = 'orphand';
@@ -26,7 +25,6 @@ module.exports = function Loader(constructors){
     if(!contexts[name]) contexts[name] = {};
     activeContext = contexts[name];
     contextRequire.keys().map((path)=>{
-      // console.log('loading',  name);
       if(path.indexOf('@') > -1) return;
       pathToSet = path;
       injector.setPath(path);
@@ -37,8 +35,7 @@ module.exports = function Loader(constructors){
   var components = {};
   var modules = {};
   var indexes = {};
-  var actions = {};
-  var directives = {};
+  var props = {};
 
   function Module(name, module){
     modules[name] = module;
@@ -56,15 +53,9 @@ module.exports = function Loader(constructors){
     return index;
   }
 
-  function Action(name, action){
-    if(constructors.action) action = constructors.action(name, action);
-    actions[name] = action;
-    return action;
-  }
-
-  function Directive(name, directive){
-    directives[name] = directive;
-    return directive;
+  function Prop(name, prop){
+    props[name] = prop;
+    return prop;
   }
 
   function load(name, dependencies, getDefinition, construct){
@@ -77,16 +68,6 @@ module.exports = function Loader(constructors){
     else if(!getDefinition){  // no dependecies - load sync.
       injector.add(name, construct(name, dependencies));  // dependecies is the actual module.
     }
-    // if(!getDefinition){
-    //   getDefinition = dependencies;
-    //   dependencies = [];
-    // }
-    // if(getDefinition instanceof Function){
-    //   injector.load(name, dependencies, getDefinition, construct)
-    // }
-    // else if(typeof getDefinition === 'object'){
-    //   return injector.add(name, construct(name, getDefinition));
-    // }
     else{
       console.error(`cannot load module definition from ${typeof getDefinition}:`);
       console.debug(getDefinition);
@@ -97,68 +78,19 @@ module.exports = function Loader(constructors){
     components: components,
     modules: modules,
     indexes: indexes,
-    actions: actions,
-    directives: directives,
-    getDependencies(name){
-      for (var i = 0; i < injector.resolved.length; i++) {
-        if(injector.resolved[i].name === name){
-          return injector.resolved[i].dependencies;
-        }
-      }
-      return [];
-    },
-    getDependents(name){
-      var item, dependency;
-      var dependents = [];
-      for (var i = 0; i < injector.resolved.length; i++) {
-        item = injector.resolved[i];
-        if((item.dependencies.indexOf(name) > -1) && (dependents.indexOf(item.name) === -1)){
-          dependents.push(item.name);
-        }
-      }
-      return dependents;
-    },
+    // actions: actions,
+    props: props,
+    lists: injector.lists,
+    getDependencies: injector.getDependencies,
+    getDependents: injector.getDependents,
     Component(name, dependencies, getDefinition){
       load(name, dependencies, getDefinition, Component);
     },
     Module(name, dependencies, getDefinition){
       load(name, dependencies, getDefinition, Module);
     },
-    Directive(name, dependencies, getDefinition){
-      load(name, dependencies, getDefinition, Directive);
-    },
-    Action(name, dependencies, getDefinition){
-      load(name, dependencies, getDefinition, Action);
-    },
-    action(name, data){
-      var action = actions[name];
-      if(!action) return console.error(`cannot find action ${name}`);
-      // var deffered = q.defer();
-        // console.debug("action", name);
-      if(action instanceof Function){
-        return new Promise(function(resolve, reject) {
-          action(data, (err, value)=>{
-            if(err) return reject(err);
-            resolve(value);
-          });
-        });
-      }
-      else if(action.schema && action.run){
-        for(var m in action.schema){
-          if((typeof data[m] !== action.schema[m]) && (action.schema[m] !== 'any')){
-            return console.error(`action '${name}' expected '${m}'to be of type '${action.schema[m]}', got '${typeof data[m]}' instead`);
-          }
-        }
-        return new Promise(function(resolve, reject) {
-          action.run(data, (err, value)=>{
-            if(err) return reject(err);
-            resolve(value);
-          });
-        });
-      }
-      else{
-        console.error(`action ${name} is not valid`);
-      }
+    Prop(name, dependencies, getDefinition){
+      load(name, dependencies, getDefinition, Prop);
     },
     Index(name, dependencies){
       load(name, dependencies, ()=>{

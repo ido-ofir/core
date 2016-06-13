@@ -110,6 +110,18 @@ module.exports = function Injector(constructed){
       }
 
     });
+    lists.requires.forEach((item)=>{
+      for (var i = 0; i < item.dependencies.length; i++) {
+        dependency = item.dependencies[i];
+        // console.log(dependency, existing.indexOf(dependency));
+        if(existing.indexOf(dependency) === -1){
+          if(missing[dependency]){
+            missing[dependency].push('a require call');
+          }
+          else missing[dependency] = ['a require call'];
+        }
+      }
+    });
     return missing;
   }
 
@@ -128,7 +140,7 @@ module.exports = function Injector(constructed){
   }
 
   setTimeout(function(){
-    if(lists.delayed.length) {
+    if(lists.delayed.length || lists.requires.length) {
       var missing = findMissingDependencies();
       console.error(`core cannot find modules:`);
       for(var m in missing){
@@ -140,6 +152,7 @@ module.exports = function Injector(constructed){
   }, 20);
 
   return {
+    lists: lists,
     resolved: lists.resolved,
     modules: modules,
     load(name, dependencies, method, onLoad){
@@ -168,6 +181,25 @@ module.exports = function Injector(constructed){
         cb: cb
       });
       test();
+    },
+    getDependencies(name){
+      for (var i = 0; i < lists.resolved.length; i++) {
+        if(lists.resolved[i].name === name){
+          return lists.resolved[i].dependencies;
+        }
+      }
+      return [];
+    },
+    getDependents(name){
+      var item, dependency;
+      var dependents = [];
+      for (var i = 0; i < lists.resolved.length; i++) {
+        item = lists.resolved[i];
+        if((item.dependencies.indexOf(name) > -1) && (dependents.indexOf(item.name) === -1)){
+          dependents.push(item.name);
+        }
+      }
+      return dependents;
     },
     setPath(path){
       pathToSet = path;
