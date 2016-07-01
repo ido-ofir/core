@@ -2,8 +2,8 @@ var React = require('react');
 var ReactDom = require('react-dom');
 var core = require('core');
 var Baobab = require('baobab');
-require('contexts/basic');
 
+core.loadContext('modules', require.context('modules', true, /.*\.module\.js/));
 core.loadContext(require.context('./parts', true, /.*\.module\.js/));
 
 var element = document.getElementById('app');

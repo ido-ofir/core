@@ -1,15 +1,14 @@
 
 var webpack = require('webpack');
 var path = require('path');
-var nodeModulesPath = path.resolve(__dirname, 'node_modules');
-var buildPath = path.resolve(__dirname, 'build');
-var componentPath = path.resolve(__dirname, 'component');
+
 var entry = path.resolve(__dirname, 'App.jsx');
 
 var array = __dirname.split(`${path.sep}clients${path.sep}apps`);
 if(!array[1]) return console.error(`cannot find core path from ${__dirname}`);
-var corePath = path.join(array[0], `clients`, 'core');
-var modulesPath = path.join(array[0], `clients`, 'modules');
+// var corePath = path.join(array[0], `clients`, 'core');
+var clientsPath = path.join(array[0], `clients`);
+var modulesPath = path.join(clientsPath , 'modules');
 
 var config = {
 
@@ -30,7 +29,7 @@ var config = {
             "vendor",   // chunkName
             "vendor.bundle.js",  // filename
             function (module, count) {    // include all modules not in 'appPath' folder in the vendor bundle
-                return (module.resource && module.resource.indexOf(__dirname) === -1);;
+                return (module.resource && (module.resource.indexOf(__dirname) === -1 || module.resource.indexOf(modulesPath) === -1));
             }
         ),
         // new webpack.HotModuleReplacementPlugin(),
@@ -40,10 +39,7 @@ var config = {
         // })
     ],
     resolve: {
-        alias: {
-          core: corePath  // use require('core') anywhere
-        },
-        root: modulesPath   // treat the 'modules' directory like a node_modules directory
+        root: clientsPath   // treat the 'clients' directory like a node_modules directory
     },
     module : {
         loaders : [
@@ -56,12 +52,21 @@ var config = {
                 loader : 'style-loader!css-loader!sass-loader'
             },
             {
-                test: /\.jsx?$/,
+                test: /^(?:(?!module\.jsx$).)*\.jsx?$/,  // .jsx but not .module.jsx
                 exclude: /node_modules/,
                 loader: 'babel',
                 query:
                 {
                   presets:['react','es2015', 'stage-0']
+                }
+            },
+            {
+                test: /\.module.jsx?$/,  // just module.jsx
+                exclude: /node_modules/,
+                loader: 'babel',
+                query:
+                {
+                  presets:['client-core','es2015', 'stage-0']
                 }
             },
             { test: /.png$/, loader: "url?mimetype=image/png" },

@@ -8,21 +8,13 @@ this repo is meant to be cloned as the basis for a webapp or a group of webapps.
 
 so just clone the repo and rename it, or copy the files to your own repo.
 
-once you did that you can install dependencies for the node servers:
+once you did that, step into the root of the repo and install it's dependencies:
 
 ```
-cd servers
 npm install
 ```
 
-and then for the clients:
-
-```
-cd ../clients
-npm install
-```
-
-installation of client side dependencies may take a while because it includes some compiling tools.
+installation may take a while because it includes some compiling tools.
 
 make sure webpack is installed globally:
 
@@ -46,6 +38,3 @@ go to some app's folder and run webpack:
 cd clients/views/app
 webpack -w
 ```
-
-
-

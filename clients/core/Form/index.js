@@ -36,7 +36,7 @@ module.exports = function(core){  // generates the 'Form' function
     }
   };
 
-  function validateInput(value, input, form) {
+  function getInputError(value, input, form) {
 
     var validation, array, error;
     var required = input.required;
@@ -80,15 +80,99 @@ module.exports = function(core){  // generates the 'Form' function
     }
   }
 
-  return function Form(formName, definition){  // defines a form on the tree and sets up appropriate actions
+  // gets the cursor for a form by name.
+  function getFormCursor(form) {
 
-    var path = ['core', 'forms', formName];
-    var namespace = path.join('.');
+    var formMatch = core.isString(form) ? { name: form } : form;
+    var path = ['core', 'forms', formMatch];
     var formCursor = core.tree.select(path);
-    var inputsCursor = formCursor.select('inputs');
+
+    if(!formCursor.exists()) throw new Error(`cannot find form ${form}`);
+
+    return formCursor;
+  }
+
+  // takes a form name and an input name, finds and returns their cursors.
+  function getCursors(form, input) {
+
+    var formCursor = getFormCursor(form);
+
+    var inputCursor = formCursor.select('inputs').select(input.split('.'));
+    if(!inputCursor.exists()) throw new Error(`cannot find input ${input}`);
+
+    return {
+      input: inputCursor,
+      form: formCursor
+    };
+  }
+
+  // runs validations for the input, sets 'error', 'isValid', and 'isPrestine' on the input.
+  function validateInput(cursors, value) {
+
+    var form = cursors.form.get();
+    var input = cursors.input.get();
+    var error = getInputError(input.value, input, form) || null;
+    var isValid = !error;
+
+    cursors.input.set('error', error);
+    cursors.input.set('isValid', isValid);
+    cursors.input.set('isPristine', false);
+
+    return error;
+  }
+
+  // validates the form by checking if there are any errors left. sets 'isValid' and 'isPristine' on the form.
+  function validateForm(cursors) {
+
+    var errors = cursors.form.get('errors');
+    var formIsValid = Object.keys(errors).length === 0;
+
+    cursors.form.set('isValid', formIsValid);
+    cursors.form.set('isPristine', false);
+
+    return formIsValid;
+  }
+
+  function setInput(formName, inputName, eventOrValue) {
+    console.log('setting');
+    var target, value = null;
+    if(eventOrValue && eventOrValue.target){
+      target = eventOrValue.target;
+      if('value' in target){ value = target.value; }
+      else if('checked' in target){ value = target.checked; }
+      else if('selected' in target){ value = target.selected; }
+    }
+    else{
+      value = eventOrValue;
+    }
+    core.run(`core.forms.set`, {
+      form: formName,
+      input: inputName,
+      value: value
+    });
+  }
+
+  function pushToInput(formName, inputName, value) {
+    core.run(`core.forms.push`, {
+      form: formName,
+      input: inputName,
+      value: value
+    });
+  }
+
+  function deleteFromInput(formName, inputName, value) {
+    core.run(`core.forms.delete`, {
+      form: formName,
+      input: inputName,
+      value: value
+    });
+  }
+
+  // sets default values for the form and it's inputs, sets initial form data and stores the definition for a reset.
+  function initializeForm(formName, definition) {
 
     // clone the original definition and set defaults
-    var form = { ...definition };
+    var form = { ...definition, name: formName };
     if(!form.errors) form.errors = {};
     if(!form.inputs) form.inputs = {};
     if(!('isValid' in form)) form.isValid = true;
@@ -98,6 +182,7 @@ module.exports = function(core){  // generates the 'Form' function
 
     // clone each original input and add defaults to it
     var input, inputs = { ...form.inputs };
+    var namespace;
     for(var inputName in inputs){
       input = { ...inputs[inputName] };
       input.name = inputName;
@@ -105,69 +190,146 @@ module.exports = function(core){  // generates the 'Form' function
       if(!('error' in input)) input.error = null;
       if(!('isPristine' in input)) input.isPristine = true;
       if(!('isValid' in input)) input.isValid = true;
+      input.set = setInput.bind(input, formName, inputName);
+      input.push = pushToInput.bind(input, formName, inputName);
+      input.delete = deleteFromInput.bind(input, formName, inputName);
       inputs[inputName] = input;
     }
     form.inputs = inputs;
+    form.definition = definition;
+    form.data = getFormData(form);
 
+    return form;
+  }
 
-    // defining an action to set a value on the form.
-    core.Action(`${namespace}.set`, {
-      name: 'string!',
-      value: 'any!'
-    }, function(data, promise){
+  function getFormData(form) {
+    var data = {};
+    for(var name in form.inputs){
+      data = core.utils.set(data, name, form.inputs[name].value);
+    }
+    return data;
+  }
 
-      var form = formCursor.get();
-      var name = data.name;
-      var value = data.value;
-      var path = name.split('.');
-      var inputCursor = inputsCursor.select(path);
-      if(!inputCursor.exists()) throw new Error(`cannot find input ${name}`);
+  function setFormData(formCursor, inputName, value) {
+    var path = inputName.split('.');
+    formCursor.select('data').select(path).set(value);
+  }
+  // defining an action to set a value on the form.
+  core.Action(`core.forms.set`, {
+    form: 'string ~ object!',
+    input: 'string!',
+    value: 'any!'
+  }, ({ form, input, value }, promise) => {
 
-      var input = inputCursor.get();
-      var error = validateInput(value, input, form) || null;
-      var isValid = !error;
+    var cursors = getCursors(form, input);
+    cursors.input.set('value', value);
 
-      // set values for the input
-      inputCursor.set('value', value);
-      inputCursor.set('error', error);
-      inputCursor.set('isValid', isValid);
-      inputCursor.set('isPristine', false);
+    setFormData(cursors.form, input, value);
+    var error = validateInput(cursors);
 
-      // set or unset this input's error in the form's errors object
-      var formError = formCursor.select('errors', name);
-      if(error) formError.set(error);
-      else formError.unset();
+    // set or unset this input's error in the form's errors object
+    var formError = cursors.form.select('errors', input);
+    if(error) formError.set(error);
+    else formError.unset();
 
-      // see if the form is now valid by checking if there are any errors left
-      var errors = formCursor.get('errors');
-      var formIsValid = Object.keys(errors).length === 0;
+    var formIsValid = validateForm(cursors);
 
-      formCursor.set('isValid', formIsValid);
-      formCursor.set('isPristine', false);
+    // commit the tree and return the value
+    core.tree.commit();
+    promise.resolve(formIsValid);
 
-      // commit the tree and return the value
-      core.tree.commit();
-      promise.resolve(value);
+  });
 
-    });
+  // push an item to an array
+  core.Action(`core.forms.push`, {
+    form: 'string ~ object!',
+    input: 'string!',
+    value: 'any!'
+  }, ({ form, input, value }, promise)=>{
 
-    // reset the form to the original definition
-    core.Action(`${namespace}.reset`, function(data){
+    var cursors = getCursors(form, input);
+    var array = cursors.input.get('value');
+    if(!core.isArray(array)){
+      throw new Error(`cannot push to input ${input}. it is of type '${core.typeOf(array)}'`);
+    }
+    cursors.input.push('value', value);
+    setFormData(cursors.form, input, cursors.input.get('value'));
+    var error = validateInput(cursors);
 
-    });
+    // set or unset this input's error in the form's errors object
+    var formError = cursors.form.select('errors', input);
+    if(error) formError.set(error);
+    else if(formError.exists()) formError.unset();
 
-    // submit the form
-    core.Action(`${namespace}.submit`, function(data, promise){
+    var formIsValid = validateForm(cursors);
 
-      var form = formCursor.get();
-      if(!form.isValid){
-        return promise.reject();
-      }
-      formCursor.set('isSubmitted', true);
+    // commit the tree and return the value
+    core.tree.commit();
+    promise.resolve(formIsValid);
 
-    });
+  });
 
-    core.tree.set(path, form);
+  // delete an item from an array
+  core.Action(`core.forms.delete`, {
+    form: 'string ~ object!',
+    input: 'string!',
+    value: 'any!'
+  }, ({ form, input, value }, promise)=>{
 
+    var cursors = getCursors(form, input);
+    var array = cursors.input.get('value');
+    var itemCursor, formError, formIsValid, error;
+
+    if(!core.isArray(array)){
+      throw new Error(`cannot push to input ${input}. it is of type '${core.typeOf(array)}'`);
+    }
+    itemCursor = cursors.input.select(['value', value]);
+    if(itemCursor.exists()) itemCursor.unset();
+    setFormData(cursors.form, input, cursors.input.get('value'));
+    error = validateInput(cursors);
+
+    // set or unset this input's error in the form's errors object
+    formError = cursors.form.select('errors', input);
+    if(error) formError.set(error);
+    else if(formError.exists()) formError.unset();
+
+    formIsValid = validateForm(cursors);
+
+    // commit the tree and return the value
+    core.tree.commit();
+    promise.resolve(formIsValid);
+
+  });
+
+  // reset the form to the original definition
+  core.Action(`core.forms.reset`, {
+    form: 'string ~ object!'
+  }, ({ form })=>{
+    var formCursor = getFormCursor(form);
+  });
+
+  // submit the form
+  core.Action(`core.forms.submit`, function(data, promise){
+
+    var form = formCursor.get();
+    if(!form.isValid){
+      return promise.reject();
+    }
+    formCursor.set('isSubmitted', true);
+
+  });
+
+  return function Form(formName, definition){  // defines a form on the tree and sets up default values.
+
+    var formsCursor = core.tree.select(['core', 'forms']);
+    var form = initializeForm(formName, definition);
+
+    var existing = formsCursor.select({ name: formName });
+    if(existing.exists()){
+      existing.set(form);
+    }
+    else{
+      formsCursor.push(form);
+    }
   };
 };

@@ -33,7 +33,7 @@ var config = {
             }
         ),
         // new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
+        // new webpack.NoErrorsPlugin(),
         // new webpack.ProvidePlugin({   // the 'core' module is global
         //     core: corePath
         // })
@@ -61,7 +61,7 @@ var config = {
                 }
             },
             {
-                test: /\.module.jsx?$/,  // just module.jsx
+                test: /\.module.jsx?$/,  // just module.js
                 exclude: /node_modules/,
                 loader: 'babel',
                 query:

@@ -33,14 +33,14 @@ module.exports = core.Component('Parts', [
 ], (Config, ui, Button, Ui, Horizontal, Vertical, Debug)=>{
 
   return {
-    contextTypes: {
-      app: React.PropTypes.object
+    bindings: {
+      theme: ['core', 'theme']
     },
-    componentDidMount(){
-      this.context.app.connection.action('app.config', {}, (config)=>{
-        this.context.app.set('core.app.config', config);
-      });
-    },
+    // componentDidMount(){
+    //   core.connection.action('app.config', {}, (config)=>{
+    //     this.context.app.set('core.app.config', config);
+    //   });
+    // },
     renderPart(name, part){
       return (
         <div key={ name }>

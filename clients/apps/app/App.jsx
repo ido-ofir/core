@@ -8,19 +8,16 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 core.loadContext('modules', require.context('modules', true, /.*\.module\.js/));
-
-core.Style('box', {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0
-});
+core.loadContext('dev-client', require.context('./dev-client', true, /.*\.module\.js/));
 
 
 
 core.Action('test', {
-  one: 'string',
+  one: {
+    type: 'string',
+    required: true,
+    description: 'the one argument'
+  },
   two: 'number!'
 }, (data, promise)=>{
   promise.resolve('yey!');
@@ -30,92 +27,112 @@ core.on('error', (err)=>{
   console.error(err && (err.error || err));
 });
 
-core.Form('myForm', {
+// core.on('click', ()=>{ console.log('click'); })
+// core.on('mouseUp', ()=>{ console.log('mouseUp'); })
+// core.on('esc', ()=>{ console.log('esc'); })
+
+core.Form('form', {
   inputs: {
     name: {
       type: "string",
-      value: "@@@",
-      required: true,
-      validations: [
-        (value, input, form)=>{
-          if(value !== 'asd') return 'idiot';
-        }
-      ]
+      required: true
     },
     lastName: {
       type: "string",
-      validations: [
-        'max:8',
-        'phone'
-      ]
+      required: true
+    },
+    validations: {
+      type: "array",
+      value: []
     }
   }
 });
 
-core.Component('TextField', [], ()=>{
-  return {
-    propTypes: {
-      form: pt.string,
-      name: pt.string
-    },
-    contextTypes: {
-      form: pt.string
-    },
-    getInitialState(){
-      var formName = this.props.form || this.context.form;
-      var inputName = this.props.name;
-      var path = ['core', 'forms', formName, 'inputs', inputName];
-      this.watch({
-        input: path
-      });
+core.Input('TextField', ({ input, ...props })=> {
+  return (
+    <TextField
+      value={ input.value }
+      onChange={ input.set }
+      hintText={ input.placeholder }
+      errorText={ input.error }
+      { ...props }
+    />
+  );
+});
+
+core.Input('MultiSelect',['ui.Select', 'ui.Input', 'ui.Icon'],  (Select, Input, Icon)=>{
+
+
       return {
-        input: core.tree.get(path)
-      };
-    },
-    onChange(e){
-      var formName = this.props.form || this.context.form;
-      var inputName = this.props.name;
-      core.run(`core.forms.${formName}.set`, {
-        name: inputName,
-        value: e.target.value
-      });
-    },
-    shouldComponentUpdate(nextProps, nextState){
-      return (nextState.input !== this.state.input);
-    },
-    render(){
-      var input = this.state.input;
-      return (
-        <TextField
-          { ...this.props }
-          name={ this.props.name }
-          value={ input.value }
-          onChange={ this.onChange }
-          hintText={ input.placeholder }
-          errorText={ input.error }
-        />
-      );
-    }
-  }
+        propTypes: {
+          input: pt.object
+        },
+        onSelect(value){
+          var input = this.props.input.push(value);
+        },
+        render(){
+          var input = this.props.input;
+          return (
+            <div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 10, position: 'relative' }}>
+                  <TextField form="otherForm" name="name" style={{ flex: 1, width: '100%'}}/>
+                    <Select options={['four', 'two', 'three']} onSelect={ this.onSelect }>
+                      {
+                        (select) => {
+                          return (<Icon className="fa fa-plus" active={ select.state.isOpen }/>);
+                        }
+                      }
+                    </Select>
+
+                </div>
+              </div>
+            </div>
+          );
+        }
+    };
 });
 
-core.Component('Test', ['TextField'], (TextField)=> {
+core.Component('a', ({ children }) => <div>AAA { children }</div>);
+core.Component('b', ({ children }) => <div>BBB { children }</div>);
+core.Component('c', ({ children }) => <div>CCC { children }</div>);
+core.Component('DevTools', (props) => <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom:0 }}>{ core.router.render() }</div>);
+
+core.Component('Test', ['TextField', 'MultiSelect', 'ui.Select', 'core.Bindings', ], (TextField, MultiSelect, Select, Bindings)=> {
   return {
-    bindings: {
-      form: 'core.forms.myForm'
-    },
     render(){
-      var form = this.state.form;
       console.log('render');
+      // console.debug("form", form);
       return (
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: '100%' }}>
           <div style={{ flex: 1}}>
-            <TextField form="myForm" name="name"/>
-            <TextField form="myForm" name="lastName"/>
+            <TextField form="otherForm" name="name"/>
+            <MultiSelect form="otherForm" name="lastName"/>
+            {
+              core.bind('stuff', stuff => <div>{ stuff }</div>)
+            }
+            {
+              core.input('lastName', 'otherForm', input =>
+                <div>
+                  { input.value.map((item, index) => <div key={ index } onClick={ e => input.delete(index) }>{ item }</div>) }
+                </div>
+              )
+            }
+            <Bindings bindings="stuff">
+              { stuff => <div>{ stuff }</div> }
+            </Bindings>
+            { core.router.render() }
           </div>
-          <pre style={{ flex: 1}}>
-            { JSON.stringify(this.state.form, null, 4) }
-          </pre>
+          {
+            core.bind(['core','router'], router =>
+
+              <pre style={{ flex: 1, overflow: 'auto' }}>
+                { JSON.stringify(router, null, 4) }
+              </pre>
+
+            )
+          }
+
         </div>
       );
     }
@@ -127,18 +144,17 @@ core.loadContext(require.context('./', true, /.*\.module\.js/));
 
 var element = document.getElementById('app');
 core.require([
-  'core.App', 'Test'], (App, Test)=>{
+  'core.App', 'DevTools'], (App, DevTools)=>{
 
     core.connection.action('language.get', {}, (lang)=>{
       core.set('config.language', JSON.parse(lang));
       core.tree.commit();
-      console.debug("getMuiTheme()", getMuiTheme());
+      // console.debug("getMuiTheme()", getMuiTheme());
       ReactDom.render(
         <App>
           <MuiThemeProvider muiTheme={getMuiTheme()}>
-              <Test/>
+              <DevTools/>
           </MuiThemeProvider>
-
         </App>, element);
 
     }, core.error);

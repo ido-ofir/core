@@ -67,7 +67,7 @@ function getChildMap(name, map){  // find 'name' in 'routes', if not found retur
     if(children[i].name === name) return children[i];
     if(children[i].name === map.defaultChild) defaultive = children[i];
   }
-  console.warn('invalid route ', name)
+  console.warn(`invalid route ${name}, defaulting to ${defaultive}`)
   return defaultive;
 }
 

@@ -19,20 +19,27 @@ core.Component('ui.Icon', {
     offColor: PropTypes.string,
     activeColor: PropTypes.string,
     size: PropTypes.string,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    title: PropTypes.string,
+    active: PropTypes.bool
+  },
+  getDefaultProps(){
+    return {
+      active: false
+    };
   },
   render: function() {
 
-    var onColor = this.props.onColor || this.theme('hovers.text');
-    var offColor = this.props.offColor || this.theme('colors.text');
-    var activeColor = this.props.activeColor || this.theme('active.text');
+    var onColor = this.props.onColor || core.theme('colors.primary');
+    var offColor = this.props.offColor || core.theme('inactive.primary');
+    var activeColor = this.props.activeColor || core.theme('colors.secondary');
     var style = [
         iconStyle,
         this.props.style,
         {
-          color: offColor,
+          color: this.props.active ? activeColor: offColor,
           ':hover': {
-            color: onColor
+            color: this.props.active ? activeColor: onColor
           },
           ':active': {
             color: activeColor
@@ -41,7 +48,7 @@ core.Component('ui.Icon', {
       ];
       if(this.props.size) style.push({ fontSize: this.props.size });
     return (
-      <div { ...this.props } style={ style }>
+      <div { ...this.props } style={ style } title={ this.props.title || '' }>
       { this.props.children }
       </div>
     );

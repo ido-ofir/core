@@ -4,8 +4,5 @@
   "language": "en",
   "offline": false,
   "port": 8000,
-  "log": "info",
-  "logLevels": ["error", "warn", "info", "verbose", "debug", "silly"],
-  "editor": "atom",
-  "terminal": "zsh"
+  "log": "info"
 }

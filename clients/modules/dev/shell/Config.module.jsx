@@ -17,7 +17,7 @@ core.Component('shell.Config.DragColor', ['ui.Color'], (Color)=>{
     onDragStart(e){
       e.stopPropagation();
       var drag = e.dataTransfer;
-      drag.setData('text', `this.theme('${this.props.path}')`);
+      drag.setData('text', `core.theme('${this.props.path}')`);
       drag.effectAllowed = 'copy';
     },
     onFineChange(val){
@@ -58,7 +58,7 @@ core.Component('shell.Config', ['shell.Btn', 'shell.Config.DragColor'], (Btn, Dr
       };
     },
     bindings: {
-      theme: 'core.config.theme'
+      theme: ['core', 'theme']
     },
     renderColor(path, color){
       return (

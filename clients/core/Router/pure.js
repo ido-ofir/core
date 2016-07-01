@@ -1,6 +1,6 @@
 
 
-function lookup(object, name, caseSensitive){
+function lookup(object, name){
   if(!object || !name) return null;
   var defaultive = object['*'];
   name = name.toLowerCase();
@@ -16,23 +16,28 @@ function lookup(object, name, caseSensitive){
 function parseObjectToUrl(object) {
   if(typeof object === 'string') return object;
   if(!object) return '';
-  return JSON.stringify(object);
+  try {
+    return JSON.stringify(object);
+  } catch (e) {
+      console.error(e);
+      return '';
+  }
 }
 
 function routeToString(route){
-  if(!route || !route.component) return '';
+  if(!route || !route.name) return '';
   var string = [route.name];
   var child = routeToString(route.children[0]);
   if(child) string.push('/', child);
   return string.join('');
 }
 
-function routeToUrl(route){
+function routeToUrl(route, query){
   var url = routeToString(route);
   var path = ['/', url];
-  if(route.query){
-    if(Object.keys(route.query).length){
-      path.push('/', JSON.stringify(route.query));
+  if(query){
+    if(Object.keys(query).length){
+      path.push('/', parseObjectToUrl(query));
     }
   }
   return path.join('');

@@ -46,9 +46,9 @@ core.Component('ui.Button', {
     var hollow = this.props.hollow;
     var disabled = this.props.disabled;
     var size = this.props.size;
-    var color = this.props.color || this.theme(`colors.${this.props.type}`);
-    var inactiveColor = this.props.inactiveColor || this.theme(`inactive.${this.props.type}`);
-    var hoverColor = this.props.hoverColor || this.theme(`hovers.${this.props.type}`);
+    var color = this.props.color || core.theme(`colors.${this.props.type}`);
+    var inactiveColor = this.props.inactiveColor || core.theme(`inactive.${this.props.type}`);
+    var hoverColor = this.props.hoverColor || core.theme(`hovers.${this.props.type}`);
 
     var textColor = hollow ? (disabled ? inactiveColor : color) : '#fff';
     var background = hollow ? this.props.background : (disabled ? inactiveColor : color);

@@ -1,48 +1,50 @@
 
 var React = require('react');
 
-module.exports = function(components){
+module.exports = function(core){
+
+  var symbol = '<>';
 
   function render(object, key){
     if(!object) return null;
-    if(typeof object === 'string') {
+    if(core.isString(object)) {
       // return render({type: object}, key);
       return object;
     }
-    if(!(object instanceof Object)) return null;
-    var type, keys, props, children;
+    if(!core.isObject(object)) return null;
+    var type, value, keys, props, children, renderedChildren;
     if(!object.type){
       keys = Object.keys(object);
       if(keys.length !== 1) return null;
       type = keys[0];
-      object = object[type];
-      if(object instanceof Array){
+      value = object[type];
+      if(core.isArray(value)){
         return render({
           type: type,
-          children: object
+          children: value
         }, key);
       }
-      if(!(object instanceof Object)) return null;
-      return render({ ...object, type: type}, key);
+      if(!core.isObject(value)) return null;
+      return render({ type: type, props: value }, key);
     }
     type = object.type;
     props = object.props || {};
-    if(!props.key) props.key = key;
-    var children = object.children || object[core.symbols.children] || null;
+    if((arguments.length > 1) && !props.key) props.key = key;
+    var children = object.children || object[symbol] || null;
     if(children){
-      if(!Array.isArray(children)){
-        children = [render(children, 0)];
+      if(!core.isArray(children)){
+        renderedChildren = [render(children, 0)];
       }
       else{
-        children = children.map(render);
+        renderedChildren = children.map(render);
       }
     }
-    var component = components[type];
+    var component = core.components[type];
     if(!component) {
       console.error(`cannot find component ${type}`);
       component = 'div';
     }
-    return React.createElement(component, props, children);
+    return core.createElement(component, props, renderedChildren);
   }
 
   return {
