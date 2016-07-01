@@ -30,11 +30,11 @@ start the default server by running this command from the root of this repo:
 node run
 ```
 
-the server should serve all the apps at 'clients/views/' through port 4000.
+the server should serve all the apps at 'clients/apps/' through port 4000.
 
 go to some app's folder and run webpack:
 
 ```
-cd clients/views/app
+cd clients/apps/app
 webpack -w
 ```
