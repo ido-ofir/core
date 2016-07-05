@@ -45,7 +45,9 @@ webpack -w
 
 #### defining core modules
 the core contains a module dependency management system that runs on the client.
+
 a module can be anything and the only requirement is that you give it a unique name.
+
 a module with no dependencies can be defined like this:
 ```js
 var core = require('core');
@@ -59,7 +61,8 @@ modules can get a reference to other modules as dependencies using their unique 
 ```js
 var core = require('core');
 
-// here the second argument is an array of dependencies and the third
+// here the second argument is an array of dependency names.
+// the third argument is a callback that will get the actual dependencies and is expected to return your module.
 core.Module('engine', ['utils'], (utils) => {
 
   // return your module.
