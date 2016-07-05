@@ -1,10 +1,10 @@
 # core
 
-a boilerplate repo for react and node applications.
+A boilerplate repo for react and node applications.
 
-### installation
+### Installation
 
-this repo is meant to be cloned as the basis for a webapp or a group of webapps.
+This repo is meant to be cloned as the basis for a webapp or a group of webapps.
 
 so just clone the repo and rename it, or copy the files to your own repo.
 
@@ -24,9 +24,9 @@ make sure webpack is installed globally:
 npm install -g webpack
 ```
 
-### startup
+### Startup
 
-start the default server by running this command from the root of this repo:
+Start the default server by running this command from the root of this repo:
 
 ```
 node run
@@ -41,14 +41,14 @@ cd clients/apps/app
 webpack -w
 ```
 
-### usage
+### Usage
 
-#### defining core modules
-the core contains a module dependency management system that runs on the client.
+#### Defining core modules
+The core contains a module dependency management system that runs on the client.
 
-a module can be anything and the only requirement is that you give it a unique name.
+A module can be anything and the only requirement is that you give it a unique name.
 
-a module with no dependencies can be defined like this:
+A module with no dependencies can be defined like this:
 ```js
 var core = require('core');
 
@@ -57,7 +57,7 @@ var core = require('core');
 core.Module('utils', { ... });
 
 ```
-modules can get a reference to other modules as dependencies using their unique name.
+Modules can get a reference to other modules as dependencies using their unique name.
 ```js
 var core = require('core');
 
