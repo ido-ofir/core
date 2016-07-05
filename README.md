@@ -57,7 +57,7 @@ var core = require('core');
 core.Module('utils', { ... });
 
 ```
-Modules can get a reference to other modules as dependencies using their unique name.
+A module can get a reference to other modules using their unique names.
 ```js
 var core = require('core');
 
