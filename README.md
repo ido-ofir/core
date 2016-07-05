@@ -61,14 +61,66 @@ Modules can get a reference to other modules as dependencies using their unique 
 ```js
 var core = require('core');
 
-// here the second argument is an array of dependency names.
-// the third argument is a callback that will get the actual dependencies and is expected to return your module.
 core.Module('engine', ['utils'], (utils) => {
 
   // return your module.
   return {
     ...
   }
+});
+
+```
+#### Requiring modules
+
+```js
+core.require([
+  'engine',
+  'utils'
+  ], (engine, utils) => {
+  ...
+});
+```
+
+#### Defining core components
+
+Components can be defined similar to normal modules, using a unique name.
+
+very simple components can be just a function:
+```jsx
+var core = require('core');
+
+core.Component('Cell', props => <div>{ props.text }</div>);
+
+```
+more complext components can be defined with an object:
+```jsx
+var core = require('core');
+
+core.Component('Cell', {
+  render(){
+    return (
+      <div>{ props.text }</div>
+    );
+  }
+});
+
+```
+or using an array and a function to get dependecies:
+```jsx
+var core = require('core');
+
+core.Component('Table', ['Cell'], (Cell)=>{
+  return {
+    render(){
+      return (
+        <div>
+          <Cell text="one"/>
+          <Cell text="two"/>
+          <Cell text="three"/>
+        </div>
+      );
+    }
+  };
 });
 
 ```
