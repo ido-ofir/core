@@ -41,9 +41,9 @@ cd clients/apps/app
 webpack -w
 ```
 
- ### usage
+### usage
 
- #### defining core modules
+#### defining core modules
 the core contains a module dependency management system that runs on the client.
 a module can be anything and the only requirement is that you give it a unique name.
 a module with no dependencies can be defined like this:
