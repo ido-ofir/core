@@ -6,6 +6,7 @@ window.__coreObject = {
         },
         "templates": [],
         "views": [],
+        "collections": [],
         "forms": [
             {
                 "name": "otherForm",
@@ -51,6 +52,44 @@ window.__coreObject = {
         },
         "theme": {
             "font": "Noto Sans",
+            "palletes": [
+                {
+                    "name": "primary",
+                    "pallete": {
+                        "normal": "#a5d6a7",
+                        "hover": "#37474f",
+                        "active": "#607d8b",
+                        "disabled": "#c3c7ca"
+                    }
+                },
+                {
+                    "name": "secondary",
+                    "pallete": {
+                        "normal": "#0099cc",
+                        "hover": "#03a9f4",
+                        "active": "#42a5f5",
+                        "disabled": "#b2e0f0"
+                    }
+                },
+                {
+                    "name": "success",
+                    "pallete": {
+                        "normal": "#68bd49",
+                        "hover": "#49a42f",
+                        "active": "#8bc34a",
+                        "disabled": "#d1ebc8"
+                    }
+                },
+                {
+                    "name": "error",
+                    "pallete": {
+                        "normal": "#82b1ff",
+                        "hover": "#c63836",
+                        "active": "#f06292",
+                        "disabled": "#f3cbcb"
+                    }
+                }
+            ],
             "colors": {
                 "primary": "#374650",
                 "secondary": "#0099cc",

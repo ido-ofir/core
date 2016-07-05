@@ -10,6 +10,7 @@ var closeStyle = {
   fontSize: 20,
   cursor: 'pointer'
 };
+
 core.Component('ui.Button', {
   enhancers: [Radium],
   propTypes: {
@@ -22,7 +23,7 @@ core.Component('ui.Button', {
     style : PropTypes.object,
     background : PropTypes.string,
     color : PropTypes.string,
-    inactiveColor : PropTypes.string,
+    disabledColor : PropTypes.string,
     hoverColor : PropTypes.string
   },
 
@@ -46,12 +47,15 @@ core.Component('ui.Button', {
     var hollow = this.props.hollow;
     var disabled = this.props.disabled;
     var size = this.props.size;
-    var color = this.props.color || core.theme(`colors.${this.props.type}`);
-    var inactiveColor = this.props.inactiveColor || core.theme(`inactive.${this.props.type}`);
-    var hoverColor = this.props.hoverColor || core.theme(`hovers.${this.props.type}`);
+    var isSmall = size === 'small';
+    var pallete = core.pallete(this.props.type || 'primary');
+    var color = this.props.color || pallete.normal;
+    var disabledColor = this.props.disabledColor || pallete.disabled;
+    var hoverColor = this.props.hoverColor || pallete.hover;
+    var activeColor = this.props.activeColor || pallete.active;
 
-    var textColor = hollow ? (disabled ? inactiveColor : color) : '#fff';
-    var background = hollow ? this.props.background : (disabled ? inactiveColor : color);
+    var textColor = hollow ? (disabled ? disabledColor : color) : '#fff';
+    var background = hollow ? this.props.background : (disabled ? disabledColor : color);
     var cursor = disabled ? 'not-allowed' : 'pointer';
 
     var button = {
@@ -60,9 +64,9 @@ core.Component('ui.Button', {
       justifyContent: 'center',
       cursor: cursor,
       textTransform:'uppercase',
-      minWidth: (size === 'small' ? '106px' : '140px'),
-      height: (size === 'small' ? '31px' : '40px'),
-      fontSize: (size === 'small' ? '12px' : '14px'),
+      minWidth: (isSmall ? '106px' : '140px'),
+      height: (isSmall ? '31px' : '40px'),
+      fontSize: (isSmall ? '12px' : '14px'),
       borderRadius: '4px',
       color: textColor,
       background: background,
@@ -70,11 +74,15 @@ core.Component('ui.Button', {
       transition: '0.2s ease',
       borderWidth: '1px',
       borderStyle: 'solid',
-      borderColor: disabled ? inactiveColor : (hollow ? color : background),
+      borderColor: disabled ? disabledColor : (hollow ? color : background),
       ':hover': {
-        color: (hollow ? (disabled ? inactiveColor : hoverColor) : '#fff'),
+        color: (hollow ? (disabled ? disabledColor : hoverColor) : '#fff'),
         background: (disabled ? background : (hollow ? '#fff' : hoverColor)),
-        borderColor: disabled ? inactiveColor : hoverColor
+        borderColor: disabled ? disabledColor : hoverColor
+      },
+      ':active': {
+        background: (disabled ? background : (hollow ? '#fff' : activeColor)),
+        borderColor: disabled ? disabledColor : activeColor
       },
       ...this.props.style
     };

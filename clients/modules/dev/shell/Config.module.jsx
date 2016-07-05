@@ -99,3 +99,11 @@ core.Component('shell.Config', ['shell.Btn', 'shell.Config.DragColor'], (Btn, Dr
     }
   };
 });
+
+
+var pallete = {
+  normal: '#fff',
+  hover: '#fff',
+  active: '#fff',
+  disabled: '#fff'
+}

@@ -1,6 +1,30 @@
 var React = require('react');
 var PropTypes = React.PropTypes;
 
+function getPropTypes(propTypes) {
+  var key, type, PropType, index, required;
+  var pt = {};
+  for(key in propTypes){
+    type = propTypes[key];
+    if(!core.isString(type)) {
+      pt[key] = propTypes[key];
+      continue;
+    }
+    index = type.indexOf('!');  // a required param has an '!' at the end.
+    required = index > -1;
+    if(required) type = type.substr(0, index);
+    PropType = PropTypes[type]
+    if(!PropType) return console.error(`cannot find PropType ${type}`);
+    if(required){  // if it's required and missing - fail.
+      pt[key] = PropType.isRequired;
+    }
+    else{
+      pt[key] = PropType;
+    }
+  }
+  return pt;
+}
+
 function Component(name, definition){
 
   var ComposedComponent, component;
@@ -20,6 +44,9 @@ function Component(name, definition){
     definition = { ...definition };
     if(!definition.mixins) definition.mixins = [];
     definition.mixins.unshift(mixin);
+    if(definition.propTypes){
+      definition.propTypes = getPropTypes(definition.propTypes);
+    }
     component = React.createClass(definition);
     component.displayName = name;
     if(definition.enhancers){  // enhancers is an array of higher order constructors.

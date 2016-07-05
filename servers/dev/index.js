@@ -55,7 +55,7 @@ var actions = {
       });
       return done();
     }
-    done()
+    done('path parameter is missing');
   },
   get(data, done){
     if(data.path){
@@ -67,7 +67,10 @@ var actions = {
 var sockets = [];
 
 server.on('connection', function (socket) {           // fired for every incoming socket connection.
+
+  sockets.push(socket);
   socket.action = function(type, data){
+    console.log('sending');
     socket.send(JSON.stringify({type: type, data: data}));
   }
 

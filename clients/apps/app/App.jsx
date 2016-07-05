@@ -96,7 +96,7 @@ core.Input('MultiSelect',['ui.Select', 'ui.Input', 'ui.Icon'],  (Select, Input, 
 core.Component('a', ({ children }) => <div>AAA { children }</div>);
 core.Component('b', ({ children }) => <div>BBB { children }</div>);
 core.Component('c', ({ children }) => <div>CCC { children }</div>);
-core.Component('DevTools', (props) => <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom:0 }}>{ core.router.render() }</div>);
+
 
 core.Component('Test', ['TextField', 'MultiSelect', 'ui.Select', 'core.Bindings', ], (TextField, MultiSelect, Select, Bindings)=> {
   return {
@@ -152,9 +152,7 @@ core.require([
       // console.debug("getMuiTheme()", getMuiTheme());
       ReactDom.render(
         <App>
-          <MuiThemeProvider muiTheme={getMuiTheme()}>
               <DevTools/>
-          </MuiThemeProvider>
         </App>, element);
 
     }, core.error);

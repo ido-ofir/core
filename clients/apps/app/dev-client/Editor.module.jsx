@@ -6,9 +6,15 @@ import brace from 'brace';
 import AceEditor from 'react-ace';
 
 import 'brace/theme/terminal';
+import 'brace/ext/language_tools.js';
 require('brace/mode/json');
 
-core.Component('aceEditor', {
+core.Component('AceEditor', {
+  getInitialState(){
+    return {
+      id: `AceEditor-${ core.utils.uuid() }`
+    };
+  },
   componentDidMount(){
     this.editor = this.refs.editor;
   },
@@ -17,7 +23,7 @@ core.Component('aceEditor', {
     return (
       <AceEditor mode="json"
         theme="terminal"
-        name="UNIQUE_ID_OF_DIV"
+        name={ this.state.id }
         width="100%"
         height="100%"
         ref="editor"

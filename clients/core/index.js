@@ -12,6 +12,7 @@ var Renderer = require('./Renderer');
 var Connection = require('./Connection');
 var Router = require('./Router');
 var Form = require('./Form');
+var Collection = require('./Collection');
 var validations = require('./Form/validations.js');
 var defaultTheme = require('./theme/defaultTheme.js');
 var format = require("string-template");
@@ -22,7 +23,7 @@ var injector = Injector((loadedModule, data, dependencies)=>{
 });
 
 var coreObject = window.__coreObject || {}
-var currentSource = {};
+var currentSource = { core: {} };
 
 
 var tree = new Baobab({
@@ -31,6 +32,7 @@ var tree = new Baobab({
     source: currentSource,   // source is initialy empty. updating the source builds the rest of the core object.
     styles: [],
     forms: [],
+    collections: [],
     language: {},
     theme: defaultTheme,
     router: {
@@ -48,22 +50,28 @@ tree.on('write', (e)=>{                          // listen for synced writes to 
   if(path[0] !== 'core') return;                 // but do something only if 'core.source' has been chaged.
   if(path[1] !== 'source') return;
   var source = tree.get(['core', 'source']);
-
-
+  console.debug("source", source);
   /* forms */
-  if(source.forms !== currentSource.forms){
+  if(source.core.forms !== currentSource.core.forms){
     // tree.set(['core', 'source', 'forms'], {});
     // console.debug("setting forms", source.forms);
-    source.forms.map((form)=>{
+    source.core.forms.map((form)=>{
       core.Form(form.name, form);
     });
   }
-
+  /* collection */
+  if(source.core.collections !== currentSource.core.collections){
+    // tree.set(['core', 'source', 'forms'], {});
+    // console.debug("setting forms", source.forms);
+    source.core.collections.map((collection)=>{
+      core.Collection(collection.name, collection);
+    });
+  }
   /* theme */
-  if(source.theme !== currentSource.theme){
+  if(source.core.theme !== currentSource.core.theme){
     // tree.set(['core', 'source', 'forms'], {});
     // console.debug("setting theme", source.theme);
-    core.tree.set(['core', 'theme'], source.theme);
+    core.tree.set(['core', 'theme'], source.core.theme);
   }
 });
 
@@ -338,15 +346,19 @@ var core = window.core = utils.Emitter({
     },
     language(lang){
       if(lang) {
-        tree.set(['core', 'source', 'language'], lang);
+        return tree.set(['core', 'source', 'language'], lang);
       }
-
+      return tree.get(['core', 'source', 'language']);
+    },
+    pallete(name){
+      return tree.get(['core', 'theme', 'palletes', { name: name }, "pallete"])
     },
     loadContext: injector.loadContext,
     require: injector.require
 });
 
 core.Form = Form(core);
+core.Collection = Collection(core);
 core.router = Router(core);
 core.renderer = Renderer(core);
 core.render = core.renderer.render;
@@ -422,6 +434,6 @@ core.Style('flex', { display: 'flex' });
 core.Style('center', { display: 'flex', alignItems: 'center', justifyContent: 'center' });
 core.Style('spread', { display: 'flex', justifyContent: 'space-between' });
 
-core.tree.set(['core', 'source'], coreObject.core);
+core.tree.set(['core', 'source'], coreObject);
 
 module.exports = core;

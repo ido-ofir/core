@@ -1,5 +1,4 @@
 
-var Ajax = require('./ajax');
 var Socket = require('./socket');
 var Emitter = require('../utils/Emitter.js');
 var utils = require('./utils.js');
@@ -10,19 +9,16 @@ var utils = require('./utils.js');
 module.exports = function(config, options){
   config = config || {};
   options = options || {};
-  var ajax = Ajax(config, options);
   var socket = Socket();
   var connected = false;
   var noFail = options ? options.fail : (any)=>{ console.error(any); };
 
   var connection = Emitter({
-    ajax: ajax,
     config(_config){
       for(var m in _config){
         config[m] = _config[m];
       }
     },
-    getAccessToken: ajax.getAccessToken,
     connect(success, fail){
       if(!fail) fail = noFail;
       socket.connect(`${config.domain}:${config.port}`, (message)=>{
@@ -59,7 +55,7 @@ module.exports = function(config, options){
         success = data;
         data = {};
       }
-      ajax.action(path, data, success, fail);
+      // ajax.action(path, data, success, fail);
     }
   });
   if(config.autoConnect) connection.connect();

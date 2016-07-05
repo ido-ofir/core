@@ -5,6 +5,14 @@ var uuid = require('./uuid.js');
 var animation = require('./animation.js');
 var immutableMerge = require('./immutableMerge.js');
 
+function stringify(data){
+  try {
+    return JSON.stringify(data);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 function parse(data){
   try {
     return JSON.parse(data);
@@ -98,6 +106,7 @@ function equals(a, b){
 
 
 module.exports = {
+  stringify: stringify,
   parse: parse,
   find: find,
   set: set,

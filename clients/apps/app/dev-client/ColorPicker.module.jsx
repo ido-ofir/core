@@ -9,34 +9,148 @@ var core = require('core');
 //   test[t].push({ name: c, value: colors[c] });
 // }
 
+var style = {
+  width: 30,
+  height: 30,
+  borderRadius: '50%',
+  border: '1px solid #ddd',
+  cursor: '-webkit-grab',
+  outline: 0
+}
+
 core.Component('Swatch', {
   render(){
     var color = this.props.color;
+    var wrap = { width: 30, height: 30, border: this.props.active ? '1px solid #880' : 'none', padding: '1px', borderRadius: '2px'}
+    var style = { width: 28, height: 28, background: color.value, borderRadius: '2px', cursor: 'pointer' };
+    if(color && color.name === 'transparent'){
+      style.border = '2px #000 dashed'
+    }
     return (
-      <div style={{ width: 30, height: 30, background: color.value }} key={ color.name }></div>
+      <div style={ wrap }>
+        <div style={ style }
+             key={ color.name }
+             onClick={ e => this.props.onClick(this.props.color) }></div>
+       </div>
     );
   }
 });
 
-core.Component('ColorPicker', {
-  renderSection(section){
-    return (
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        { section.map(color => core.render({ Swatch: { color: color } })) }
-      </div>
-    );
-  },
-  render(){
-    var swatches = [];
-    for(var m in colors){
-      swatches.push(<div style={{ padding: 10 }} key={ m }>{ this.renderSection(colors[m]) }</div>);
+const Cell = props =>
+  <div style={{ padding: '2px', background: (props.active ? '#ff0' : 'none') }} onClick={ props.select }>
+    <div style={{ height: 20, background: props.background }}></div>
+  </div>
+
+const ButtonSample = props =>
+  <div style={{ padding: '2px', background: (props.active ? '#ff0' : 'none') }} onClick={ props.select }>
+    <div style={{ height: 20, background: props.background }}></div>
+  </div>
+
+core.Component('Palletes', ['ui.Table'], (Table)=>{
+  return {
+    bindings: {
+      palletes: ['core', 'theme', 'palletes']
+    },
+    getInitialState(){
+      return {
+        targetPalleteName: null,
+        targetItemName: null
+      };
+    },
+    selectTarget(palleteName, itemName){
+      this.setState({
+        targetPalleteName: palleteName,
+        targetItemName: itemName
+      });
+    },
+    setValue(color){
+      this.props.onSelect(color);
+    },
+    render(){
+      var palletes = this.state.palletes;
+      return (
+        <div>
+          <Table style={{ textAlign: 'center' }}
+                 columns={[{
+              "title": "normal",
+            },{
+              "title": "hover",
+            },{
+              "title": "active",
+            },{
+              "title": "disabled",
+            }]} rows={ palletes && palletes.map((pallete)=>{
+              return {
+                name: pallete.name,
+                cells: [
+                  <Cell background={ pallete.pallete.normal }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'normal') }
+                        select={ e => this.selectTarget(pallete.name, 'normal') }/>,
+                  <Cell background={ pallete.pallete.hover }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'hover') }
+                        select={ e => this.selectTarget(pallete.name, 'hover') }/>,
+                  <Cell background={ pallete.pallete.active }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'active') }
+                        select={ e => this.selectTarget(pallete.name, 'active') }/>,
+                  <Cell background={ pallete.pallete.disabled }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'disabled') }
+                        select={ e => this.selectTarget(pallete.name, 'disabled') }/>
+                ]
+              };
+            }) }/>
+        </div>
+      );
     }
-    return (
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom:0, overflow: 'auto', display: 'flex', flexDirection: 'column', background: '#888'}}>
-        { swatches }
-      </div>
-    );
   }
+})
+
+core.Component('ColorPicker', ['ui.Button'], (Button)=>{
+  return {
+    renderSection(section){
+      return (
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {
+            section.map(color => core.render({
+              Swatch: {
+                active: this.props.selected === color.value,
+                color: color,
+                key: color.name,
+                onClick: this.setValue
+              }
+            }))
+          }
+        </div>
+      );
+    },
+    render(){
+      var selected = this.props.selected;
+      var background = selected ? selected.value : 'none';
+      var swatches = [];
+      for(var m in colors){
+        swatches.push(<div style={{  }} key={ m }>{ this.renderSection(colors[m]) }</div>);
+      }
+      return (
+        <div style={{ overflow: 'auto', display: 'flex', flexDirection: 'column', background: '#888'}}>
+          { swatches }
+        </div>
+      );
+    }
+  };
+});
+
+core.Component('ThemeEditor', ['ColorPicker', 'Palletes'], (ColorPicker, Palletes)=>{
+  return {
+    render(){
+      return (
+        <div style={{ display: 'flex', background: '#888'}}>
+          <ColorPicker/>
+          <div style={{ overflow: 'auto', display: 'flex', flexDirection: 'column', flex: 1}}>
+            <Palletes onSelect={ this.props.onSelect }/>
+          </div>
+        </div>
+      );
+    }
+  };
 });
 
 
@@ -1095,7 +1209,7 @@ var colors = {
       "value": "#212121"
     }
   ],
-  "black": [
+  "other": [
     {
       "name": "black",
       "value": "#000000"
@@ -1116,8 +1230,6 @@ var colors = {
       "name": "lightBlack",
       "value": "rgba(0, 0, 0, 0.54)"
     },
-  ],
-  "white": [
     {
       "name": "white",
       "value": "#ffffff"
@@ -1129,9 +1241,7 @@ var colors = {
     {
       "name": "lightWhite",
       "value": "rgba(255, 255, 255, 0.54)"
-    }
-  ],
-  "transparent": [
+    },
     {
       "name": "transparent",
       "value": "rgba(0, 0, 0, 0)"
