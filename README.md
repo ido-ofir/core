@@ -16,8 +16,6 @@ step into the root of the repo and install dependencies:
 npm install
 ```
 
-installation may take a while because it includes some compiling tools.
-
 make sure webpack is installed globally:
 
 ```
@@ -46,18 +44,21 @@ webpack -w
 #### Defining core modules
 The core contains a module dependency management system that runs on the client.
 
-A module can be anything and the only requirement is that you give it a unique name.
+a module can be anything and the only requirement is that you give it a unique name.
 
-A module with no dependencies can be defined like this:
+a module with no dependencies can be defined like this:
 ```js
 var core = require('core');
 
 // the first argument is a unique name for the module.
 // the second argument is your module, which could be anything.
+
 core.Module('utils', { ... });
 
 ```
-A module can get a reference to other modules using their unique names.
+A module can require other modules using their unique names.
+
+for example this defines a module called 'engine' that requires the module 'utils':
 ```js
 var core = require('core');
 
@@ -70,14 +71,19 @@ core.Module('engine', ['utils'], (utils) => {
 });
 
 ```
+<div>note that the callback will get the modules in the order that you've required them in the array.</div>
+<div>this callback is expected to return the actual module.
+
 #### Requiring modules
-If you only need to get some modules without defining new a one, use the `require` function: 
+If you only need to get some modules without defining a new one, use the `require` function: 
 ```js
 core.require([
   'engine',
   'utils'
   ], (engine, utils) => {
+  
   ...
+  
 });
 ```
 
@@ -85,7 +91,7 @@ core.require([
 
 Components can be defined similar to normal modules, using a unique name.
 
-very simple components can be just a function:
+very simple components can be a simple function:
 ```jsx
 var core = require('core');
 
@@ -98,20 +104,23 @@ var core = require('core');
 
 core.Component('Cell', {
   render(){
+  
     return (
       <div>{ props.text }</div>
     );
+    
   }
 });
-
 ```
-or using an array and a function to get dependecies:
+or using an array and a callback to get dependecies:
 ```jsx
 var core = require('core');
 
 core.Component('Table', ['Cell'], (Cell)=>{
+
   return {
     render(){
+    
       return (
         <div>
           <Cell text="one"/>
@@ -119,8 +128,10 @@ core.Component('Table', ['Cell'], (Cell)=>{
           <Cell text="three"/>
         </div>
       );
+      
     }
   };
+  
 });
 
 ```
