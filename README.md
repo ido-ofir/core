@@ -71,7 +71,7 @@ core.Module('engine', ['utils'], (utils) => {
 
 ```
 #### Requiring modules
-
+If you only need to get some modules without defining new a one, use the `require` function: 
 ```js
 core.require([
   'engine',
