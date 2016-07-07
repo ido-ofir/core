@@ -8,7 +8,7 @@ This repo is meant to be cloned as the basis for a webapp or a group of webapps.
 
 so just clone the repo and rename it, or copy the files to your own repo.
 
-make sure <a href="https://nodejs.org/en/">node</a> is installed on your machine.
+make sure <a href="https://nodejs.org/en/" target="_blank">node</a> is installed on your machine.
 
 step into the root of the repo and install dependencies:
 
@@ -138,5 +138,11 @@ the object that you pass to `core.Component` ( or return from the callback ) is 
 
 #### Application state
 
-<div>The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab">Baobab</a> tree.</div>
-<div>a </div>
+<div>The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree.</div>
+<div>a Baobab tree is a persistent and immutable data structure, which is important for performance optimizations and general application health.</div>
+<div>it also provides some useful features, such as undo and redo, out of the box.</div>
+
+### Accessing the Baobab tree
+```js
+var data = core.tree.get();
+```
