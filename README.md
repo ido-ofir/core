@@ -175,7 +175,7 @@ core.Component('Table', ['Cell'], (Cell)=>{
     
       return (
         <div>
-          { this.state.cells.map((cell, i) => <Cell key={ i } text={ cell.text }/>) }
+          { this.state.cells.map((cell, i) => <Cell key={ i } text={ cell }/>) }
         </div>
       );
       
