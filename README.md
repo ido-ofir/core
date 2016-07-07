@@ -175,7 +175,7 @@ core.Component('Table', ['Cell'], (Cell)=>{
     
       return (
         <div>
-          { this.state.cells.map(cell => <Cell text={ cell.text }/>) }
+          { this.state.cells.map((cell, i) => <Cell key={ i } text={ cell.text }/>) }
         </div>
       );
       
@@ -186,16 +186,26 @@ core.Component('Table', ['Cell'], (Cell)=>{
 ```
 this will cause the `Table` component to update `cells` on it's state whenever `tableCells` changes on the tree.
 
-However in some cases it could be more convenient to make this binding 'on the fly'. the `core.bind` method creates a place inside your rendered react tree that is bound to a part of the app's state:
+however in some cases it could be more convenient to make this binding 'on the fly'. the `core.bind` method creates a place inside your rendered react tree that is bound to a part of the app's state:
 
 ```jsx
-  ... // in some render function
-          <div>
-            {
-              core.bind('stuff', stuff => 
-                <div>{ stuff }</div>
-              )
-            }
-          </div>
-  ...
+core.Component('Table', ['Cell'], (Cell)=>{
+
+  return {
+    render(){
+    
+      return (
+        <div>
+          {
+            core.bind('tableCells', cells => 
+              cells.map((cell, i) => <Cell key={ i } text={ cell.text }/>)
+            )
+          }
+        </div>
+      );
+      
+    }
+  };
+  
+});
 ```
