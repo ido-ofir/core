@@ -188,7 +188,7 @@ this will cause the `Table` component to update `cells` on it's state whenever `
 
 However in some cases it could be more convenient to make this binding 'on the fly'. the `core.bind` method creates a place inside your rendered react tree that is bound to a part of the app's state:
 
-```
+```jsx
   ... // in some render function
           <div>
             {
