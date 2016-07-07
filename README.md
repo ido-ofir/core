@@ -63,15 +63,17 @@ for example this defines a module called 'engine' that requires the module 'util
 var core = require('core');
 
 core.Module('engine', ['utils'], (utils) => {
-
-  // return your module.
+  
+  // you've got your dependencies here,
+  // use them to construct and return your module.
   return {
     ...
   }
 });
 
 ```
-<div>note that the callback will get the modules in the order that you've required them in the array.</div>
+
+<div>Note that the callback will get the modules in the order that you've required them in the array.</div>
 <div>also, with this pattern, the callback is expected to return the actual module.</div>
 
 #### Requiring modules
