@@ -209,3 +209,4 @@ core.Component('Table', ['Cell'], (Cell)=>{
   
 });
 ```
+changing the `tableCells` array now will cause the `Cell`s to re-render, but not the whole `Table`.
