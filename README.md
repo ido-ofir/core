@@ -209,4 +209,28 @@ core.Component('Table', ['Cell'], (Cell)=>{
   
 });
 ```
-changing the `tableCells` array now will cause the `Cell`s to re-render, but not the whole `Table`.
+changing the `tableCells` array now will cause the `Cell`s to re-render, but not the whole `Table` component.
+the `core.bind` method will run the function on every update and use the returned value to update the ui.
+
+
+### Router
+
+every component created with `core.Component` can be rendered by the router.
+
+to automatically render the routing stack call `core.router.render` somewhere in your render method:
+
+```jsx
+var ReactDom = require('react-dom');
+var core = require('core');
+
+var element = document.getElementById('app');
+
+ReactDom.render(
+  <div>
+    { core.router.render() }
+  </div>
+, element);
+        
+```
+
+unless configured otherwise, the router will render any component by name.
