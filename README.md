@@ -159,6 +159,7 @@ core.tree.set(['a', 'b'], 5);
 // changed to 5
 ```
 
+##### binding to a component's state
 binding to a component's state can be done by adding a `bindings` object to your component definition:
 ```jsx
 
@@ -183,4 +184,18 @@ core.Component('Table', ['Cell'], (Cell)=>{
   
 });
 ```
-this will cause the `Table` component to update `cells` on it's state whenever `tableCells` changes on the tree. 
+this will cause the `Table` component to update `cells` on it's state whenever `tableCells` changes on the tree.
+
+However in some cases it could be more convenient to make this binding 'on the fly'. the `core.bind` method creates a place inside your rendered react tree that is bound to a part of the app's state:
+
+```
+  ... // in some render function
+          <div>
+            {
+              core.bind('stuff', stuff => 
+                <div>{ stuff }</div>
+              )
+            }
+          </div>
+  ...
+```
