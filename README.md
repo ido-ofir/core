@@ -72,7 +72,7 @@ core.Module('engine', ['utils'], (utils) => {
 
 ```
 <div>note that the callback will get the modules in the order that you've required them in the array.</div>
-<div>this callback is expected to return the actual module.
+<div>also, with this pattern, the callback is expected to return the actual module.</div>
 
 #### Requiring modules
 If you only need to get some modules without defining a new one, use the `require` function: 
@@ -91,7 +91,7 @@ core.require([
 
 Components can be defined similar to normal modules, using a unique name.
 
-very simple components can be a simple function:
+very simple components can be represented as a function:
 ```jsx
 var core = require('core');
 
@@ -133,5 +133,10 @@ core.Component('Table', ['Cell'], (Cell)=>{
   };
   
 });
-
 ```
+the object that you pass to `core.Component` ( or return from the callback ) is the same object that you would have passed to `React.createClass`. there are a few enhancments that you can use when creating components with `core.Component`. see below for more details.
+
+#### Application state
+
+<div>The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab">Baobab</a> tree.</div>
+<div>a </div>
