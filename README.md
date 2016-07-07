@@ -147,3 +147,40 @@ The core instantiates a single tree to handle all of the app's state, and expose
 ```js
 var data = core.tree.get();
 ```
+
+apart from the api of the tree itself, the core provides several methods for creating bindings to this state.
+
+for the simplest binding, use the `core.watch` method:
+
+```js
+core.watch(['a', 'b'], value => console.log('changed to ', value));
+
+core.tree.set(['a', 'b'], 5);
+// changed to 5
+```
+
+binding to a component's state can be done by adding a `bindings` object to your component definition:
+```jsx
+
+core.tree.set('tableCells', ['one', 'two', 'three']);
+
+core.Component('Table', ['Cell'], (Cell)=>{
+
+  return {
+    bindings: {
+      cells: ['tableCells']
+    },
+    render(){
+    
+      return (
+        <div>
+          { this.state.cells.map(cell => <Cell text={ cell.text }/>) }
+        </div>
+      );
+      
+    }
+  };
+  
+});
+```
+this will cause the `Table` component to update `cells` on it's state whenever `tableCells` changes on the tree. 
