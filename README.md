@@ -136,13 +136,11 @@ core.Component('Table', ['Cell'], (Cell)=>{
 ```
 the object that you pass to `core.Component` ( or return from the callback ) is the same object that you would have passed to `React.createClass`. there are a few enhancments that you can use when creating components with `core.Component`. see below for more details.
 
-#### Application state
+### Application state
 
-<div>The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree.</div>
-<div>a Baobab tree is a persistent and immutable data structure, which is important for performance optimizations and general application health.</div>
-<div>it also provides some useful features, such as undo and redo, out of the box.</div>
+The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree. a Baobab tree is a persistent and immutable data structure, which is important for performance optimizations and general application health. Baobab also provides some useful features, such as undo and redo, out of the box.</div>
 
-### Accessing the Baobab tree
+#### Accessing the Baobab tree
 ```js
 var data = core.tree.get();
 ```
