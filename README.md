@@ -215,12 +215,10 @@ the `core.bind` method will run the function on every update and use the returne
 
 
 ### Routing
-The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`.
-the actual rendering logic of the router can be in a 'free' or a 'mapped' mode.
+The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`. the router uses `core.components` as a pool of components from which it can select components to render.
+> `core.components` holds all the components that were created using `core.Component`.
 
-* in free mode every component created with `core.Component` can be rendered by name.
-* in mapped mode a map object is provided to the router and only components permitted by this map may be rendered to screen. a default value can be assigned to every level.
-
+to get the router's rendered result call `core.router.render()` and render the result wherever you like:
 ```jsx
 var ReactDom = require('react-dom');
 var core = require('core');
@@ -234,6 +232,17 @@ ReactDom.render(
 , element);
         
 ```
+the actual rendering logic of the router can be in a 'free' or a 'mapped' mode.
+
+* both modes use 
+* both modes allow infinite nesting of routes and they both use a json based query for serializing the routing state.
+
+#### Free mode
+In free mode every component created with `core.Component` can be rendered by name. this mode may be handy during development as it lets you structure your app dynamically before hard-coding it's actual structure.
+
+#### Mapped mode
+In mapped mode a map object is provided to the router and only components permitted by this map may be rendered to screen.  a default value may be assigned to each level in case of missing or invalid paths.
+
 unless configured otherwise, the router will render any component by name. so if you've created a component called `Table`, and you set your browser's hash to `#Table` the router will render the `Table` component on screen.
 The core automatically listens for changes in the browser's hash, and whenever a change accurs a `route` object and a `query` object are being updated on the tree at 'core/router/route' and 'core/router/query'.
 #### route
