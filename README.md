@@ -4,7 +4,7 @@ A boilerplate repo for react and node applications.
 
 * [Installation](#installation)
 * [Startup](#startup)
-* [Defining core modules](#defining-core-modules)
+* [Modules and components](#modules-and-components)
 * [Application state](#application-state)
 
 ## Installation
@@ -44,7 +44,7 @@ cd clients/apps/app
 webpack -w
 ```
 
-## Usage
+## Modules and components
 
 ### Defining core modules
 The core contains a module dependency management system that runs on the client.
