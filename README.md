@@ -2,10 +2,10 @@
 
 A boilerplate repo for react and node applications.
 
-* [Installation](#Installation)
-* [Startup](#Startup)
-* [Defining core modules](#Defining core modules)
-* [Application state](#Application state)
+* [Installation](#installation)
+* [Startup](#startup)
+* [Defining core modules](#defining core modules)
+* [Application state](#application state)
 
 ## Installation
 
