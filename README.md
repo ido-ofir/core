@@ -2,7 +2,7 @@
 
 A boilerplate repo for react and node applications.
 
-### Installation
+## Installation
 
 This repo is meant to be cloned as the basis for a webapp or a group of webapps.
 
@@ -22,7 +22,7 @@ make sure webpack is installed globally:
 npm install -g webpack
 ```
 
-### Startup
+## Startup
 
 Start the default server by running this command from the root of this repo:
 
@@ -39,9 +39,9 @@ cd clients/apps/app
 webpack -w
 ```
 
-### Usage
+## Usage
 
-#### Defining core modules
+### Defining core modules
 The core contains a module dependency management system that runs on the client.
 
 a module can be anything and the only requirement is that you give it a unique name.
@@ -50,8 +50,7 @@ a module with no dependencies can be defined like this:
 ```js
 var core = require('core');
 
-// the first argument is a unique name for the module.
-// the second argument is your module, which could be anything.
+// defining a module called 'utils' as an object
 
 core.Module('utils', { ... });
 
@@ -64,19 +63,18 @@ var core = require('core');
 
 core.Module('engine', ['utils'], (utils) => {
   
-  // you've got your dependencies here,
-  // use them to construct and return your module.
-  return {
+  // do something with 'utils'.
+  
+  return {    // return the 'engine' module.
     ...
   }
 });
 
 ```
 
-<div>Note that the callback will get the modules in the order that you've required them in the array.</div>
-<div>also, with this pattern, the callback is expected to return the actual module.</div>
+##### Note that the callback will get the modules in the order that you've required them in the array.
 
-#### Requiring modules
+### Requiring modules
 If you only need to get some modules without defining a new one, use the `require` function: 
 ```js
 core.require([
@@ -89,18 +87,18 @@ core.require([
 });
 ```
 
-#### Defining core components
+### Defining core components
 
 Components can be defined similar to normal modules, using a unique name.
 
-very simple components can be represented as a function:
+very simple components can be represented by a function:
 ```jsx
 var core = require('core');
 
 core.Component('Cell', props => <div>{ props.text }</div>);
 
 ```
-more complext components can be defined with an object:
+more complext components can be defined using an object:
 ```jsx
 var core = require('core');
 
@@ -138,17 +136,20 @@ core.Component('Table', ['Cell'], (Cell)=>{
 ```
 the object that you pass to `core.Component` ( or return from the callback ) is the same object that you would have passed to `React.createClass`. there are a few enhancments that you can use when creating components with `core.Component`. see below for more details.
 
-### Application state
+## Application state
 
-The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree. a Baobab tree is a persistent and immutable data structure, which is important for performance optimizations and general application health. Baobab also provides some useful features, such as undo and redo, out of the box.</div>
+The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree. a Baobab tree is a persistent and immutable data structure.
 
-#### Accessing the Baobab tree
-The core instantiates a single tree to handle all of the app's state, and exposes it as `core.tree`. 
+### Accessing the Baobab tree
+The core instantiates a single tree to handle all of the app's state. it is accessible as `core.tree`. 
 ```js
 var data = core.tree.get();
 ```
+if you look at `data` you will notice that there is a `core` object on it. this is where the core keeps all the data that it manages internally, such as forms and routing state. the rest of the tree is initially empty and you can put whatever you like on it. 
+##### because Baobab is immutable, `data` is <b>your app's state at a specific point in time</b>.
 
-apart from the api of the tree itself, the core provides several methods for creating bindings to this state.
+### Bindings
+apart from the api of the tree itself, the core provides some methods for creating bindings to this state.
 
 for the simplest binding, use the `core.watch` method:
 
@@ -159,8 +160,8 @@ core.tree.set(['a', 'b'], 5);
 // changed to 5
 ```
 
-##### binding to a component's state
-binding to a component's state can be done by adding a `bindings` object to your component definition:
+### Binding components
+binding a component's state to the tree can be done by adding a `bindings` object to your component definition:
 ```jsx
 
 core.tree.set('tableCells', ['one', 'two', 'three']);
@@ -209,15 +210,16 @@ core.Component('Table', ['Cell'], (Cell)=>{
   
 });
 ```
-changing the `tableCells` array now will cause the `Cell`s to re-render, but not the whole `Table` component.
+now, changing the `tableCells` array will cause the `Cell`s to re-render, but not the whole `Table` component.
 the `core.bind` method will run the function on every update and use the returned value to update the ui.
 
 
-### Router
+### Routing
+The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`.
+the actual rendering logic of the router can be in a 'free' or a 'mapped' mode.
 
-every component created with `core.Component` can be rendered by the router.
-
-to automatically render the routing stack call `core.router.render` somewhere in your render method:
+* in free mode every component created with `core.Component` can be rendered by name.
+* in mapped mode a map object is provided to the router and only components permitted by this map may be rendered to screen. a default value can be assigned to every level.
 
 ```jsx
 var ReactDom = require('react-dom');
@@ -232,5 +234,14 @@ ReactDom.render(
 , element);
         
 ```
+unless configured otherwise, the router will render any component by name. so if you've created a component called `Table`, and you set your browser's hash to `#Table` the router will render the `Table` component on screen.
+The core automatically listens for changes in the browser's hash, and whenever a change accurs a `route` object and a `query` object are being updated on the tree at 'core/router/route' and 'core/router/query'.
+#### route
 
-unless configured otherwise, the router will render any component by name.
+#### query
+The core's routing system is designed to enable very complex states to be serialized to and from the browser's address bar. this allows your apps to have links pointing to a very specific application state.
+
+
+
+
+
