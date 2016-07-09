@@ -5,6 +5,7 @@ A boilerplate repo for react and node applications.
 * [Installation](#installation)
 * [Startup](#startup)
 * [Modules and components](#modules-and-components)
+  - * [Defining core modules](#defining-core-modules)
 * [Application state](#application-state)
 
 ## Installation
