@@ -146,7 +146,7 @@ the object that you pass to `core.Component` ( or return from the callback ) is 
 
 ## Application state
 
-The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree. a Baobab tree is a persistent and immutable data structure.
+The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree. a Baobab tree is a persistent and immutable data structure. immutabilty is helpful with optimizations and persistency adds an undo/redo capability to your app.
 
 ### Accessing the Baobab tree
 The core instantiates a single tree to handle all of the app's state. it is accessible as `core.tree`. 
@@ -222,10 +222,10 @@ now, changing the `tableCells` array will cause the `Cell`s to re-render, but no
 the `core.bind` method will run the function on every update and use the returned value to update the ui.
 
 
-### Routing
-The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`. the router uses `core.components` as a pool of components from which it can select components to render.
-> `core.components` holds all the components that were created using `core.Component`.
+## Routing
+The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`. 
 
+### Rendering
 to get the router's rendered result call `core.router.render()` and render the result wherever you like:
 ```jsx
 var ReactDom = require('react-dom');
@@ -240,25 +240,33 @@ ReactDom.render(
 , element);
         
 ```
-the actual rendering logic of the router can be in a 'free' or a 'mapped' mode.
-
-* both modes use 
-* both modes allow infinite nesting of routes and they both use a json based query for serializing the routing state.
+the actual rendering logic of the router can be in a 'free' or a 'mapped' mode. both modes allow infinite nesting of routes and they both use a json based query for serializing the routing state. the router uses `core.components` to select components to render. `core.components` holds all the components that were created using `core.Component`.
 
 #### Free mode
-In free mode every component created with `core.Component` can be rendered by name. this mode may be handy during development as it lets you structure your app dynamically before hard-coding it's actual structure.
+In free mode every component created with `core.Component` can be rendered by using it's name. this mode may be handy during development as it lets you structure your app dynamically before hard-coding it's actual structure.
+```jsx
+core.Component('Main', props => <div>Main page</div>);
+
+location.hash = 'Main';
+```
 
 #### Mapped mode
 In mapped mode a map object is provided to the router and only components permitted by this map may be rendered to screen.  a default value may be assigned to each level in case of missing or invalid paths.
 
-unless configured otherwise, the router will render any component by name. so if you've created a component called `Table`, and you set your browser's hash to `#Table` the router will render the `Table` component on screen.
-The core automatically listens for changes in the browser's hash, and whenever a change accurs a `route` object and a `query` object are being updated on the tree at 'core/router/route' and 'core/router/query'.
-#### route
+```jsx
+core.Component('Main', props => <div>Main page</div>);
 
-#### query
+core.tree.set(['core', 'router', 'map'], [{ name: 'welcome', type: 'Main' }])
+
+location.hash = 'welcome';
+```
+
+
+
+### Query
 The core's routing system is designed to enable very complex states to be serialized to and from the browser's address bar. this allows your apps to have links pointing to a very specific application state.
 
-
+### Route
 
 
 
