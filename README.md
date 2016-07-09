@@ -9,6 +9,15 @@ A boilerplate repo for react and node applications.
   - [Requiring modules](#requiring-modules)
   - [Defining core components](#defining-core-components)
 * [Application state](#application-state)
+  - [Accessing the Baobab tree](#accessing-the-baobab-tree)
+  - [Bindings](#bindings)
+  - [Bindings components](#bindings-components)
+* [Router](#router)
+  - [Rendering](#rendering)
+    * [Free mode](#free-mode)
+    * [Mapped mode](#mapped-mode)
+  - [Query](#query)
+  - [Route](#route)
 
 ## Installation
 
