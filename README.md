@@ -2,6 +2,11 @@
 
 A boilerplate repo for react and node applications.
 
+* [Installation](#Installation)
+* [Startup](#Startup)
+* [Defining core modules](#Defining core modules)
+* [Application state](#Application state)
+
 ## Installation
 
 This repo is meant to be cloned as the basis for a webapp or a group of webapps.
