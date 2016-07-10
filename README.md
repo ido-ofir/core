@@ -16,8 +16,7 @@ A boilerplate repo for react and node applications.
   - [Rendering](#rendering)
     * [Free mode](#free-mode)
     * [Mapped mode](#mapped-mode)
-  - [Query](#query)
-  - [Route](#route)
+  - [Query and route](#query-and-route)
 
 ## Installation
 
