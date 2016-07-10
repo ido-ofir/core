@@ -263,19 +263,24 @@ location.hash = 'Main';
 In mapped mode a map object is provided to the router and only components permitted by this map may be rendered to screen.  a default value may be assigned to each level in case of missing or invalid paths.
 
 ```jsx
-core.Component('Main', props => <div>Main page</div>);
-
 core.tree.set(['core', 'router', 'map'], [{ name: 'welcome', type: 'Main' }])
+
+core.Component('Main', props => <div>Main page</div>);
 
 location.hash = 'welcome';
 ```
 
-
-
 ### Query
-The core's routing system is designed to enable very complex states to be serialized to and from the browser's address bar. this allows your apps to have links pointing to a very specific application state.
+The core's routing system is designed to enable very complex states to be expressed in your app's address. this allows your app to have links pointing to a very specific application state. to achieve this flexability a JSON object is being serialized to and from the address bar. this object is called a 'query' because it replaces a query string. 
+
+a common, simple route with a query might look like this:
+```
+#/store/product/{"id":"xyz"}
+```
+the router will parse this address, extract the object `{"id":"xyz"}` and set it to the tree at `/core/router/query`.  it is worth mentioning that in more complex situations the query object will obey immutability rules during state transition, so that you can tell what actualy changed in the query and what didn't.
 
 ### Route
+The route object is produced every time the address changes. 
 
 
 
