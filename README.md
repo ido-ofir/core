@@ -270,21 +270,20 @@ core.Component('Main', props => <div>Main page</div>);
 location.hash = 'welcome';
 ```
 
-### Query
+### Query and route
 The core's routing system is designed to enable very complex states to be expressed in your app's address. this allows your app to have links pointing to a very specific application state. to achieve this flexability a JSON object is being serialized to and from the address bar. this object is called a 'query' because it replaces a query string. 
 
 a common, simple route with a query might look like this:
 ```
 #/store/product/{"id":"xyz"}
 ```
-the router will parse this address, extract the object `{"id":"xyz"}` and set it to the tree at `/core/router/query`.  it is worth mentioning that in more complex situations the query object will obey immutability rules during state transition, so that you can tell what actualy changed in the query and what didn't.
+the router will parse this address, and split it into two parts. the 'slashed' part of the hash will produce a `route` object, and the 'json' part of the hash will produce a `query` object. both of these objects are set to the state tree at  `/core/router/route` and `/core/router/query` respectively.
 
-### Route
-The route object is produced from the 'slashed' part of the hash. for example an address like this:
+for example the address above would produce a `query` object that looks like this:
+```json
+{"id":"xyz"}
 ```
-#/store/product/{"id":"xyz"}
-```
-would produce a route object that looks like this:
+and a `route` that looks loke this:
 ```json
 [
   {
@@ -302,5 +301,5 @@ would produce a route object that looks like this:
 ```
 the `core.router.render()` method will transform this object to a tree of react elements ready to be rendered. every level in this object will have a 'type' property which is a name of a component in `core.components`.
 
-
+it is worth mentioning that in more complex situations the query object will obey immutability rules during state transition, so that you can tell what actualy changed in the query and what didn't.
 
