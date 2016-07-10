@@ -157,7 +157,7 @@ the object that you pass to `core.Component` ( or return from the callback ) is 
 
 The core handles the application's state using a <a href="https://github.com/Yomguithereal/baobab" target="_blank">Baobab</a> tree. a Baobab tree is a persistent and immutable data structure. immutabilty is helpful with optimizations and persistency adds an undo/redo capability to your app.
 
-### Accessing the Baobab tree
+### Accessing the state tree
 The core instantiates a single tree to handle all of the app's state. it is accessible as `core.tree`. 
 ```js
 var data = core.tree.get();
