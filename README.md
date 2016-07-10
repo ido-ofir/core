@@ -280,7 +280,27 @@ a common, simple route with a query might look like this:
 the router will parse this address, extract the object `{"id":"xyz"}` and set it to the tree at `/core/router/query`.  it is worth mentioning that in more complex situations the query object will obey immutability rules during state transition, so that you can tell what actualy changed in the query and what didn't.
 
 ### Route
-The route object is produced every time the address changes. 
+The route object is produced from the 'slashed' part of the hash. for example an address like this:
+```
+#/store/product/{"id":"xyz"}
+```
+would produce a route object that looks like this:
+```json
+[
+  {
+    "name": "store",
+    "type": "Store",
+    "children": [
+          {
+        "name": "product",
+        "type": "Product",
+        "children": []
+      }
+    ]
+  }
+]
+```
+the `core.router.render()` method will transform this object to a tree of react elements ready to be rendered. every level in this object will have a 'type' property which is a name of a component in `core.components`.
 
 
 
