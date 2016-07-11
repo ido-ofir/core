@@ -180,58 +180,48 @@ core.tree.set(['a', 'b'], 5);
 binding a component's state to the tree can be done by adding a `bindings` object to your component definition:
 ```jsx
 
-core.tree.set('tableCells', ['one', 'two', 'three']);
+core.tree.set('count', 1);
 
-core.Component('Table', ['Cell'], (Cell)=>{
-
-  return {
-    bindings: {
-      cells: ['tableCells']
-    },
-    render(){
-    
-      return (
-        <div>
-          { this.state.cells.map((cell, i) => <Cell key={ i } text={ cell }/>) }
-        </div>
-      );
-      
-    }
-  };
+core.Component('Counter', {
+  bindings: {
+    count: ['count']
+  },
+  render(){
   
+    return (
+      <div>
+        { this.state.count }
+      </div>
+    );
+    
+  }
 });
 ```
-this will cause the `Table` component to update `cells` on it's state whenever `tableCells` changes on the tree.
+this will cause the `Counter` component to update `count` on it's state whenever `count` changes on the tree.
 
 however in some cases it could be more convenient to make this binding 'on the fly'. the `core.bind` method creates a place inside your rendered react tree that is bound to a part of the app's state:
 
 ```jsx
-core.Component('Table', ['Cell'], (Cell)=>{
-
-  return {
-    render(){
-    
-      return (
-        <div>
-          {
-            core.bind('tableCells', cells => 
-              cells.map((cell, i) => <Cell key={ i } text={ cell.text }/>)
-            )
-          }
-        </div>
-      );
-      
-    }
-  };
-  
-});
+core.Component('Counter', props => 
+  <div>
+    { core.bind('count', count => <div>{ count }</div>) }
+  </div>
+);
 ```
-now, changing the `tableCells` array will cause the `Cell`s to re-render, but not the whole `Table` component.
-the `core.bind` method will run the function on every update and use the returned value to update the ui.
+now, changing the `count` will cause the count to update on screen, but the `Counter` component did not need to re-render itself. the binding will run the function you've passed to `core.bind` on every update and use the returned value to update the ui.
 
 
 ## Routing
-The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`. 
+The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`.
+the router can render any component that was created with `core.Component`.
+  
+```
+core.Component('a', ({ children }) => <div> page a { children }</div>);
+core.Component('b', ({ children }) => <div> page b { children }</div>);
+core.Component('c', ({ children }) => <div> page c { children }</div>);
+
+location.hash = 'a/b/c';
+```
 
 ### Rendering
 to get the router's rendered result call `core.router.render()` and render the result wherever you like:
@@ -248,21 +238,18 @@ ReactDom.render(
 , element);
         
 ```
-the actual rendering logic of the router can be in a 'free' or a 'mapped' mode. both modes allow infinite nesting of routes and they both use a json based query for serializing the routing state. the router uses `core.components` to select components to render. `core.components` holds all the components that were created using `core.Component`.
 
-#### Free mode
-In free mode every component created with `core.Component` can be rendered by using it's name. this mode may be handy during development as it lets you structure your app dynamically before hard-coding it's actual structure.
-```jsx
-core.Component('Main', props => <div>Main page</div>);
-
-location.hash = 'Main';
-```
-
-#### Mapped mode
-In mapped mode a map object is provided to the router and only components permitted by this map may be rendered to screen.  a default value may be assigned to each level in case of missing or invalid paths.
+If you provide the router with a map object, it will restrict routing to that map.  a default value may be assigned to each level of the map in case of missing or invalid paths.
 
 ```jsx
-core.tree.set(['core', 'router', 'map'], [{ name: 'welcome', type: 'Main' }])
+core.router.map(
+  [
+    { 
+      name: 'welcome',
+      component: 'Main'
+    }
+  ]
+);
 
 core.Component('Main', props => <div>Main page</div>);
 
@@ -278,27 +265,7 @@ a common, simple route with a query might look like this:
 ```
 the router will parse this address, and split it into two parts. the 'slashed' part of the hash will produce a `route` object, and the 'json' part of the hash will produce a `query` object. both of these objects are set to the state tree at  `/core/router/route` and `/core/router/query` respectively.
 
-for example the address above would produce a `query` object that looks like this:
-```json
-{"id":"xyz"}
-```
-and a `route` that looks loke this:
-```json
-[
-  {
-    "name": "store",
-    "type": "Store",
-    "children": [
-          {
-        "name": "product",
-        "type": "Product",
-        "children": []
-      }
-    ]
-  }
-]
-```
-the `core.router.render()` method will transform this object to a tree of react elements ready to be rendered. every level in this object will have a 'type' property which is a name of a component in `core.components`.
+the `core.router.render()` method will transform the `route` object to a tree of react elements ready to be rendered. components are referenced by name and they must  `core.components`.
 
 it is worth mentioning that in more complex situations the query object will obey immutability rules during state transition, so that you can tell what actualy changed in the query and what didn't.
 
