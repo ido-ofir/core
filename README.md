@@ -9,7 +9,7 @@ A boilerplate repo for react and node applications.
   - [Requiring modules](#requiring-modules)
   - [Defining core components](#defining-core-components)
 * [Application state](#application-state)
-  - [Accessing the State tree](#accessing-the-state-tree)
+  - [Accessing the state tree](#accessing-the-state-tree)
   - [Bindings](#bindings)
   - [Binding components](#binding-components)
 * [Routing](#router)
