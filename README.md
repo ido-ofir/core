@@ -9,13 +9,11 @@ A boilerplate repo for react and node applications.
   - [Requiring modules](#requiring-modules)
   - [Defining core components](#defining-core-components)
 * [Application state](#application-state)
-  - [Accessing the Baobab tree](#accessing-the-baobab-tree)
+  - [Accessing the State tree](#accessing-the-state-tree)
   - [Bindings](#bindings)
-  - [Binding components](#bindings-components)
+  - [Binding components](#binding-components)
 * [Routing](#router)
   - [Rendering](#rendering)
-    * [Free mode](#free-mode)
-    * [Mapped mode](#mapped-mode)
   - [Query and route](#query-and-route)
 
 ## Installation
@@ -244,17 +242,25 @@ If you provide the router with a map object, it will restrict routing to that ma
 ```jsx
 core.router.map([
     { 
-      name: 'only',
+      name: 'valid',
       component: 'a',
       children: [
-      
+        { 
+          name: 'routes',
+          component: 'b',
+          children: [
+            { 
+              name: 'only',
+              component: 'c',
+              children: []
+            }
+          ]
+        }
       ]
     }
   ]);
 
-core.Component('Main', props => <div>Main page</div>);
-
-location.hash = 'welcome';
+location.hash = '/valid/routes/only';
 ```
 
 ### Query and route
