@@ -12,7 +12,7 @@ A boilerplate repo for react and node applications.
   - [Accessing the state tree](#accessing-the-state-tree)
   - [Bindings](#bindings)
   - [Binding components](#binding-components)
-* [Routing](#router)
+* [Routing](#routing)
   - [Rendering](#rendering)
   - [Query and route](#query-and-route)
 
