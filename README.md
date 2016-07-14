@@ -213,7 +213,7 @@ now, changing the `count` will cause the count to update on screen, but the `Cou
 The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`.
 the router can render any component that was created with `core.Component`.
   
-```
+```jsx
 core.Component('a', ({ children }) => <div> page a { children }</div>);
 core.Component('b', ({ children }) => <div> page b { children }</div>);
 core.Component('c', ({ children }) => <div> page c { children }</div>);
