@@ -242,14 +242,15 @@ ReactDom.render(
 If you provide the router with a map object, it will restrict routing to that map.  a default value may be assigned to each level of the map in case of missing or invalid paths.
 
 ```jsx
-core.router.map(
-  [
+core.router.map([
     { 
-      name: 'welcome',
-      component: 'Main'
+      name: 'only',
+      component: 'a',
+      children: [
+      
+      ]
     }
-  ]
-);
+  ]);
 
 core.Component('Main', props => <div>Main page</div>);
 
@@ -257,15 +258,13 @@ location.hash = 'welcome';
 ```
 
 ### Query and route
-The core's routing system is designed to enable very complex states to be expressed in your app's address. this allows your app to have links pointing to a very specific application state. to achieve this flexability a JSON object is being serialized to and from the address bar. this object is called a 'query' because it replaces a query string. 
+The core's routing system is designed to enable very complex state to be expressed in your app's address. this allows your apps to have links pointing to a very specific application state. to achieve this flexability a JSON object is being serialized to and from the address bar. this object is called a 'query' because it replaces a query string. 
 
 a common, simple route with a query might look like this:
 ```
 #/store/product/{"id":"xyz"}
 ```
-the router will parse this address, and split it into two parts. the 'slashed' part of the hash will produce a `route` object, and the 'json' part of the hash will produce a `query` object. both of these objects are set to the state tree at  `/core/router/route` and `/core/router/query` respectively.
+the router will parse this address, and produce a `route` object - the structure of the current resolved route, and a `query` object - a dynamic routing state.
 
-the `core.router.render()` method will transform the `route` object to a tree of react elements ready to be rendered. components are referenced by name and they must  `core.components`.
-
-it is worth mentioning that in more complex situations the query object will obey immutability rules during state transition, so that you can tell what actualy changed in the query and what didn't.
+the `core.router.render()` uses these two objects to produce the rendered tree.
 
