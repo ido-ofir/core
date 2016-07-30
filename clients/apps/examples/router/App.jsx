@@ -97,6 +97,29 @@ core.Component('a', ({ children }) => <div> page a { children }</div>);
 core.Component('b', ({ children }) => <div> page b { children }</div>);
 core.Component('c', ({ children }) => <div> page c { children }</div>);
 
+core.router.map({
+  defaultChild: 'valid',
+  children: [{
+    name: 'valid',
+    component: 'a',
+    defaultChild: 'routes',
+    children: [
+      {
+        name: 'routes',
+        component: 'b',
+        defaultChild: 'only',
+        children: [
+          {
+            name: 'only',
+            component: 'c',
+            children: []
+          }
+        ]
+      }
+    ]
+  }]
+});
+core.router.on();
 
 core.Component('Test', ['TextField', 'MultiSelect', 'ui.Select', 'core.Bindings', ], (TextField, MultiSelect, Select, Bindings)=> {
   return {
@@ -152,7 +175,7 @@ core.require([
       // console.debug("getMuiTheme()", getMuiTheme());
       ReactDom.render(
         <App>
-          <DevTools/>
+              { core.router.render() }
         </App>, element);
 
     }, core.error);

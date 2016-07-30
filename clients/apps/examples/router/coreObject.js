@@ -1,7 +1,5 @@
 
 window.__coreObject = {
-    "apps": [],
-    "targetSource": {},
     "core": {
         "config": {
             "dev": {
@@ -9,7 +7,9 @@ window.__coreObject = {
             }
         },
         "router": {
-            "initialMap": {}
+            "initialMap": {},
+            "map": {},
+            "encodeURI": false
         },
         "templates": [],
         "views": [],
@@ -138,8 +138,5 @@ window.__coreObject = {
             }
         }
     },
-    "stuff": "abcd",
-    "number": 1234,
-    "boolean": true,
-    "null": null
-};
+    "stuff": "abcd"
+}

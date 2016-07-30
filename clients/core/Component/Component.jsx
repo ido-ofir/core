@@ -47,6 +47,9 @@ function Component(name, definition){
     if(definition.propTypes){
       definition.propTypes = getPropTypes(definition.propTypes);
     }
+    if(definition.childContextTypes){
+      definition.childContextTypes = getPropTypes(definition.childContextTypes);
+    }
     component = React.createClass(definition);
     component.displayName = name;
     if(definition.enhancers){  // enhancers is an array of higher order constructors.

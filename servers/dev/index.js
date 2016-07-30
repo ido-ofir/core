@@ -8,67 +8,177 @@ var fs = require('fs');
 var httpServer = http.createServer();
 var server = new WebSocketServer({ server: httpServer });
 
-var objectPath = path.join(process.cwd(), 'clients', 'apps', 'app', 'coreObject.js');
+var apps = [];
 
-var lastUpdate = 0;
-var lastSave = 0;
+function App() {
 
-function save() {
-  var json = tree.get();
-  var jsonString = JSON.stringify(json, null, 4);
-  var js = `\nwindow.__coreObject = ${jsonString}`;
-  fs.writeFile(objectPath, js, function (err) {
-    if(err) return console.log(err);
-    console.log('saved');
-  });
 }
 
-setInterval(function () {
-  if(lastSave > lastUpdate) return;
-  var now = new Date().getTime();
-  if((now - lastUpdate) > 1000){
-    save();
-    lastSave = now;
+function getApp(path) {
+  for (var i = 0; i < apps.length; i++) {
+    if(apps[i].path === path) return apps[i];
   }
-}, 1000)
+}
 
-var tree = new Baobab();
+function detachSocket(socket) {
+  apps.map(function (app) {
+    var index = app.clientSockets.indexOf(socket);
+    if(index > -1){
+      console.log('detaching client socket');
+      app.clientSockets.splice(index, 1);
+    }
+    index = app.devtoolsSockets.indexOf(socket);
+    if(index > -1){
+      console.log('detaching devtools socket');
+      app.devtoolsSockets.splice(index, 1);
+    }
+  })
+}
 
-tree.on('update', function () {
-  lastUpdate = new Date().getTime();
-});
+function addApp(appPath, cb) {
 
-fs.readFile(objectPath, { encoding: 'utf8'}, function (err, str) {
-  if(err) return console.log(err);
-  var jsonString = str.slice(str.indexOf('{'), str.lastIndexOf('}') + 1);
-  var json = JSON.parse(jsonString);
-  tree.set(json);
-});
+  var objectPath = path.join(process.cwd(), 'clients', 'apps', appPath, 'coreObject.js');
+  var tree = new Baobab();
+  var lastUpdate = 0;
+  var lastSave = 0;
+
+  function save() {
+    var json = tree.get();
+    var jsonString = JSON.stringify(json, null, 4);
+    var js = `\nwindow.__coreObject = ${jsonString};`;
+    fs.writeFile(objectPath, js, function (err) {
+      if(err) return console.log(err);
+      console.log(`saved ${appPath}`);
+    });
+  }
+
+  tree.on('update', function () {
+    lastUpdate = new Date().getTime();
+  });
+
+  fs.readFile(objectPath, { encoding: 'utf8'}, function (err, str) {
+    if(err) return cb(err);
+    var jsonString = str.slice(str.indexOf('{'), str.lastIndexOf('}') + 1);
+    var json = JSON.parse(jsonString);
+    tree.set(json);
+    console.log(`adding app ${appPath}`);
+    cb(null, app);
+  });
+
+  var interval = setInterval(function () {
+    if(lastSave > lastUpdate) return;
+    var now = new Date().getTime();
+    if((now - lastUpdate) > 1000){
+      save();
+      lastSave = now;
+    }
+  }, 1000)
+
+  var app = {
+    tree: tree,
+    path: appPath,
+    objectPath: objectPath,
+    save: save,
+    set(dataPath, data){
+      this.tree.set(path, value);
+      this.clientSockets.map(function (socket) {
+        socket.action('set', { path: path, value: value });
+      });
+      this.devtoolsSockets.map(function (socket) {
+        socket.action('update', { path: path, value: value });
+      });
+    },
+    clientSockets: [],
+    devtoolsSockets: [],
+    registerClient(socket, done){
+      if(this.clientSockets.indexOf(socket) === -1){
+        this.clientSockets.push(socket);
+      }
+      console.log(`registered client to ${appPath}`);
+      done();
+    },
+    registerDevtools(socket, done){
+      detachSocket(socket, done);
+      this.devtoolsSockets.push(socket);
+      console.log(`registered client to ${appPath}`);
+      done(null, tree.get());
+    }
+  };
+  apps.push(app);
+  return app;
+}
 
 
 var actions = {
   set(data, done){
-    if(data.path){
-      tree.set(data.path, data.value);
-      sockets.map(function (socket) {
-        socket.action('set', data);
-      });
-      return done();
+    var appPath = data.appPath;
+    var path = data.path;
+    var value = data.value;
+    if(!appPath){
+      return done(`appPath parameter is missing`);
     }
-    done('path parameter is missing');
+    if(!path){
+      return done(`path parameter is missing`);
+    }
+    if(!value){
+      return done(`value parameter is missing`);
+    }
+    var app = getApp(appPath);
+    if(!app){
+      return done(`cannot find app ${appPath}`);
+    }
+    app.set(path, value);
+    done();
   },
   get(data, done){
-    if(data.path){
-      done(null, tree.get(data.path));
+    var appPath = data.appPath;
+    var path = data.path;  // may be undefined
+    if(!appPath){
+      return done(`appPath parameter is missing`);
+    }
+    var app = getApp(appPath);
+    if(!app){
+      return done(`cannot find app ${appPath}`);
+    }
+    done(null, app.tree.get(path));
+  },
+  getApps(data, done){
+    var paths = apps.map(function (app) {
+      return app.path;
+    });
+    done(null, paths);
+  },
+  registerClient(data, done, socket){
+    var appPath = data.appPath;
+    if(!appPath){
+      return done('appPath parameter is missing');
+    }
+    var app = getApp(appPath);
+    if(!app){
+      addApp(appPath, function (err, app) {
+        app.registerClient(socket, done);
+      });
+    }
+    else{
+      app.registerClient(socket, done);
+    }
+  },
+  registerDevtools(){
+    var appPath = data.appPath;
+    if(!appPath){
+      return done('appPath parameter is missing');
+    }
+    var app = getApp(appPath);
+    if(!app){
+      addApp(appPath, function (err, app) {
+        app.registerDevtools(socket);
+      });
     }
   }
 };
 
-var sockets = [];
-
 server.on('connection', function (socket) {           // fired for every incoming socket connection.
 
-  sockets.push(socket);
   socket.action = function(type, data){
     console.log('sending');
     socket.send(JSON.stringify({type: type, data: data}));
@@ -83,28 +193,17 @@ server.on('connection', function (socket) {           // fired for every incomin
         // console.log(err);
         // console.log(res);
         socket.send(JSON.stringify({id: json.id, error: err, data: res}));
-      },socket);
+      }, socket);
     } catch (e) {
       return console.error(e);
     }
   });
 
   socket.on('close', function () {
-    sockets.splice(sockets.indexOf(socket), 1);
+    detachSocket(socket);
   });
 });
 
 httpServer.listen(8001, function(){
   console.log('➜  dev socket at port 8001');
 });
-
-
-
-
-
-// var test = new SchemaModel({
-//   name: 'tests5',
-//   model: { name: 'string' }
-// });
-// test.markModified('model');
-// test.save();

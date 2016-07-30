@@ -7,6 +7,7 @@ core.Component('ui.Select', ['ui.Card', 'ui.Icon', 'ui.ListItem'], (Card, Icon, 
     propTypes: {
       options: pt.array,
       onSelect: pt.func,
+      selected: pt.any,
       listStyle: pt.object,
       itemStyle: pt.object
     },
@@ -38,7 +39,8 @@ core.Component('ui.Select', ['ui.Card', 'ui.Icon', 'ui.ListItem'], (Card, Icon, 
     },
     renderOptions(){
       return this.props.options.map((option, i)=>{
-        return (<ListItem key={ i } onClick={ e => this.onSelect(option) }>{ option }</ListItem>)
+        var isSelected = (this.props.selected === option);
+        return (<ListItem key={ i } onClick={ e => this.onSelect(option) } selected={ isSelected }>{ option }</ListItem>)
       })
     },
     render: function() {

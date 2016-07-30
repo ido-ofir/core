@@ -17,9 +17,12 @@ var listItemStyle = {
 
 core.Component('ui.ListItem', {
   enhancers: [Radium],
+  propTypes: {
+    selected: 'bool'
+  },
   render: function() {
     return (
-      <div { ...this.props } style={{ ...listItemStyle, ...this.props.style }}>
+      <div { ...this.props } style={{ ...listItemStyle, ...this.props.style, background: (this.props.selected ? '#eee' : '#fff') }}>
       { this.props.children }
       </div>
     );
