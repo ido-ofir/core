@@ -1,6 +1,6 @@
 # core
 
-A boilerplate repo for react and node applications.
+An un-opinionated framework for react and node applications.
 
 * [Installation](#installation)
 * [Startup](#startup)
@@ -207,6 +207,56 @@ core.Component('Counter', props =>
 );
 ```
 now, changing the `count` will cause the count to update on screen, but the `Counter` component did not need to re-render itself. the binding will run the function you've passed to `core.bind` on every update and use the returned value to update the ui.
+
+### Modifying state
+
+updating the state of your app should be done in a place that is detached from the UI, but allows operations to be triggered easily by any component. the core provides a simple platform to do this, called actions.
+
+#### Defining Actions
+
+actions are basically functions that get an object of parameters and a promise. to define an action call `core.Action` passing a name for the action and a function.
+```js
+core.Action('test', (data, promise)=>{
+  
+  core.tree.set('test', '√');
+  
+});
+```
+#### Executing actions
+
+to execute an action, call `core.run` passing the name of the action and an object of parameters.
+
+```
+core.run('test', {});
+```
+
+
+a schema object can be defined with the action to make sure it gets the right parameters:
+
+```js
+core.Action('test', {
+  name: {
+    type: 'string',
+    required: true
+  }
+}, (data, promise)=>{
+
+  promise.resolve(`testing ${ data.name }`);
+  
+});
+```
+
+or using a shorthand:
+```js
+core.Action('test', {
+  name: 'string!'  // <- type 'string' and the '!' means it's required.
+}, (data, promise)=>{
+
+  promise.resolve('yey!');
+  
+});
+```
+
 
 
 ## Routing
