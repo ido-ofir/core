@@ -8,6 +8,7 @@ var animation = require('./animation.js');
 var immutableMerge = require('./immutableMerge.js');
 var stringify = require('./stringify.js');
 var parse = require('./parse.js');
+var parseSchema = require('./parseSchema.js');
 var find = require('./find.js');
 var set = require('./set.js');
 var merge = require('./merge.js');
@@ -25,6 +26,7 @@ module.exports = {
   immutableMerge: immutableMerge,
   stringify: stringify,
   parse: parse,
+  parseSchema: parseSchema,
   find: find,
   set: set,
   unset: unset,

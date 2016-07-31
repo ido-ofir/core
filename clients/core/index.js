@@ -303,7 +303,7 @@ var core = window.core = utils.Emitter({
       this.actions[name] = action;
     },
     run(name, data){
-        var i, defered, type, types, index, required, valid, param, validated, passed;
+        var i, defered, schema, type, types, index, required, valid, param, validated, passed;
         var action = this.actions[name];
         if(!data) data = {};
         defered = utils.Promise();
@@ -317,48 +317,32 @@ var core = window.core = utils.Emitter({
 
         if(!action) return reject(`cannot find action '${name}'`);
         for(param in action.schema){  // validate required params and param types.
-          type = action.schema[param];
-          // if(core.isObject(type))
-          index = type.indexOf('!');  // a required param has an '!' at the end.
-          required = index > -1;
-          if(required){  // if it's required and missing - fail.
+          schema = utils.parseSchema(action.schema[param]);
+          if(schema.required){  // if it's required and missing - fail.
             if(!(param in data)){
               return reject(`required param '${param}' is missing in action '${name}'`);
             }
-            type = type.substr(0, index);  // remove the '!'
-            if(!type || (type === 'any')) continue;   // if was '!' or 'any!' skit the type validation.
+            if(schema.types.indexOf('any') > -1) continue;   // if was 'any!' skip the type validation.
           }
-          index = type.indexOf('~');  // multiple types.
-          if(index > -1){
-            types = type.split('~').map(t => t.trim());
-            passed = false;
-            for (i = 0; i < types.length; i++) {
-              type = types[i];
-              if(!this.types[type]){
-                return reject(`unknown type '${type}' in action '${name}'`);
-              }
-              if(param in data){  // validate the type of param.
-                valid = this.types[type](data[param]);
-                if(valid){
-                  passed = true;
-                  break;
-                }
-              }
-            }
-            if(!passed){
-              return reject(`parameter '${param}' in action '${name}' is of type '${ this.typeOf(data[param]) }'. it should be one of ${types}.`);
-            }
-          }
-          else{
+          passed = false;
+          for (i = 0; i < schema.types.length; i++) {
+            type = schema.types[i];
             if(!this.types[type]){
               return reject(`unknown type '${type}' in action '${name}'`);
             }
             if(param in data){  // validate the type of param.
               valid = this.types[type](data[param]);
-              if(!valid){
-                return reject(`parameter '${param}' in action '${name}' is of type '${ this.typeOf(data[param]) }'. it should be of type '${type}'.`);
+              if(valid){
+                passed = true;
+                break;
               }
             }
+          }
+          if(!passed){
+            if(schema.types.length > 1) {
+              return reject(`parameter '${param}' in action '${name}' should be one of ${ schema.types }. but it is a ${ this.typeOf(data[param]) }`);
+            }
+            return reject(`parameter '${param}' in action '${name}' should be a ${ schema.types[0] }. but it is a ${ this.typeOf(data[param]) }`);
           }
         }
         action(data, defered);
