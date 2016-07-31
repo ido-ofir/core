@@ -214,14 +214,22 @@ updating the state of your app should be done in a place that is detached from t
 
 #### Defining Actions
 
-actions are basically functions that get an object of parameters and a promise, and they are identified by name:
+actions are basically functions that get an object of parameters and a promise. to define an action call `core.Action` passing a name for the action and a function.
 ```js
 core.Action('test', (data, promise)=>{
-
-  promise.resolve('yey!');
+  
+  core.tree.set('test', '√');
   
 });
 ```
+#### Executing actions
+
+to execute an action, call `core.run` passing the name of the action and an object of parameters.
+
+```
+core.run('test', {});
+```
+
 
 a schema object can be defined with the action to make sure it gets the right parameters:
 
@@ -233,7 +241,7 @@ core.Action('test', {
   }
 }, (data, promise)=>{
 
-  promise.resolve('yey!');
+  promise.resolve(`testing ${ data.name }`);
   
 });
 ```
@@ -249,30 +257,7 @@ core.Action('test', {
 });
 ```
 
-you can provide multiple types, in this case 'name' can be a string or an object:
-```js
-core.Action('test', {
-  name: {
-    types: ['string', 'object'],
-    required: true
-  }
-}, (data, promise)=>{
 
-  promise.resolve('yey!');
-  
-});
-```
-
-and the shorthand would look like this:
-```js
-core.Action('test', {
-  name: 'string ~ object!'  // <- the '~' means it's either type 'string' or type 'object'.
-}, (data, promise)=>{
-
-  promise.resolve('yey!');
-  
-});
-```
 
 ## Routing
 The core handles routing through `core.router` and the current routing state is stored on the state tree at `/core/router`.
