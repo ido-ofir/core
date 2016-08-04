@@ -79,30 +79,32 @@ module.exports = function(core){
       };
     },
     getInitialState(){
+      var animation = routerCursor.get('animation');
       return {
-        animation: routerCursor.get('animation'),
-        mode: 'forward',
+        animation: animation,
+        animationClass: `core-animation-${animation}`,
+        stage: 'idle',
         direction: 'forward',
         viewIndex: 0,
         classNames: ['', '', '']
       };
     },
     componentWillReceiveProps(nextProps){
-      var viewIndex, currentIndex, mode, classNames;
+      var viewIndex, currentIndex, stage, classNames;
       var animation = this.state.animation;
-      if(animation && nextProps.route !== this.props.route){
+      if(animation && (nextProps.route !== this.props.route)){
         currentIndex = this.state.viewIndex;
-        mode = this.state.mode;
+        stage = this.state.stage;
         classNames = [ ...this.state.classNames ];
         if(nextProps.index < this.props.index){
           viewIndex = currentIndex - 1;
           if(viewIndex < 0) {
             viewIndex = 2;
           }
-          classNames[currentIndex] = 'core-route-exit-back';
+          classNames[currentIndex] = 'core-view core-route-exit-back';
           classNames[viewIndex] = 'core-route-enter-back';
           this.setState({
-            mode: 'back',
+            stage: 'back',
             viewIndex: viewIndex
           });
         }
@@ -112,7 +114,7 @@ module.exports = function(core){
             viewIndex = 0;
           }
           this.setState({
-            mode: 'forward',
+            stage: 'forward',
             viewIndex: viewIndex
           });
         }
@@ -121,15 +123,9 @@ module.exports = function(core){
     to(path, query){
 
     },
-    renderCurrentRoute(){
-      if(this.state.mode === 'enter'){
-        console.log('enter', this.props.route.name);
-      }
-    },
     render(){
       var { route, query, id } = this.props;
       var classNames = this.state.classNames;
-      this.renderCurrentRoute();
       if(this.state.animation){
         return (
           <div style={ box }>

@@ -35,9 +35,12 @@ function routeToString(route){
 function routeToUrl(route, query){
   var url = routeToString(route);
   var path = ['/', url];
+  if(url){
+    path.push('/');
+  }
   if(query){
     if(Object.keys(query).length){
-      path.push('/', parseObjectToUrl(query));
+      path.push(parseObjectToUrl(query));
     }
   }
   return path.join('');

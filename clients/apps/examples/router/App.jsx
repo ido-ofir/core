@@ -23,6 +23,19 @@ core.Action('test', {
   promise.resolve('yey!');
 });
 
+core.Action('toggleMap', (params, promise)=>{
+
+  var map = core.tree.get(['core', 'router', 'map']);
+  if(map){
+    core.tree.set(['core', 'router', 'map'], null);
+    core.tree.set(['routerMap'], map);
+  }
+  else{
+    core.tree.set(['core', 'router', 'map'], core.tree.get(['routerMap']));
+  }
+
+});
+
 core.on('error', (err)=>{
   console.error(err && (err.error || err));
 });
@@ -31,36 +44,15 @@ core.Component('a', ({ children }) => <div style={ style }> page a { children }<
 core.Component('b', ({ children }) => <div style={ style }> page b { children }</div>);
 core.Component('c', ({ children }) => <div style={ style }> page c { children }</div>);
 
-// core.router.map({
-//   defaultChild: 'valid',
-//   children: [{
-//     name: 'valid',
-//     component: 'a',
-//     defaultChild: 'routes',
-//     children: [
-//       {
-//         name: 'routes',
-//         component: 'b',
-//         defaultChild: 'only',
-//         children: [
-//           {
-//             name: 'only',
-//             component: 'c',
-//             children: []
-//           }
-//         ]
-//       }
-//     ]
-//   }]
-// });
 core.router.on();
 
-
-
+// core.on('update', (updatedPaths)=>{
+//   console.log(updatedPaths);
+// });
 
 var element = document.getElementById('app');
 core.require([
-  'core.App'], (App)=>{
+  'core.App', 'ui.Button'], (App, Button)=>{
 
     ReactDom.render(
       <App>
@@ -74,9 +66,10 @@ core.require([
             {
               core.bind(['core','router'], router =>
 
-              <pre style={{ flex: 1, overflow: 'auto', height: '100%' }}>
-                { JSON.stringify(router, null, 4) }
-              </pre>
+                <pre style={{ flex: 1, overflow: 'auto', height: '100%', position: 'relative' }}>
+                  <Button onClick={ e => core.run('toggleMap')} size="small" style={{ width: 100, height: 24, right: 10, position: 'absolute', top: 10}}>map</Button>
+                  { JSON.stringify(router, null, 4) }
+                </pre>
 
               )
             }

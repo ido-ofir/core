@@ -18,6 +18,8 @@ var validations = require('./Form/validations.js');
 var defaultTheme = require('./theme/defaultTheme.js');
 var format = require("string-template");
 
+var initialized = false;
+
 var injector = Injector((loadedModule, data, dependencies)=>{
   // console.log('loaded:');
   // console.dir(data);
@@ -48,12 +50,18 @@ var tree = new Baobab({
 
 
 tree.select(['core', 'source']).on('update', (e)=>{                          // listen for synced writes to the tree.
-  // var path = e.data.path;
-  // if(path[0] !== 'core') return;                 // but do something only if 'core.source' has been chaged.
-  // if(path[1] !== 'source') return;
+
+
   var source = tree.get(['core', 'source']);
-  var { forms, collections, theme, config } = source.core;
-  var { currentConfig, currentForms, currentCollections, currentTheme } = currentSource.core;
+  var { router, forms, collections, theme, config } = source.core;
+
+  /* router */
+  if(router !== currentSource.core.router){
+
+    tree.set(['core', 'router'], router);
+
+  }
+
   /* forms */
   if(forms !== currentSource.core.forms){
     // tree.set(['core', 'source', 'forms'], {});
@@ -75,6 +83,12 @@ tree.select(['core', 'source']).on('update', (e)=>{                          // 
     // tree.set(['core', 'source', 'forms'], {});
     // console.debug("setting theme", source.theme);
     core.tree.set(['core', 'theme'], theme);
+  }
+
+  currentSource = source;
+  if(!initialized){
+    initialized = true;
+    core.emit('ready');
   }
 
 });
@@ -118,6 +132,7 @@ var core = window.core = utils.Emitter({
     connection: connection,
     Router: Router,
     tree: tree,
+    updatedPaths: [],
     utils: utils,
     set(path, value){
       if(typeof path === 'string'){
@@ -222,18 +237,27 @@ var core = window.core = utils.Emitter({
           }
         }
       });
-      function update(e) {
+      function update(updatedPaths) {
         if(isRemoteUpdating){
           isRemoteUpdating = false;
           return;
         }
-        socket.run('update', )
+        var updates = updatedPaths.filter((path) => {
+          for (var i = 0; i < localPath.length; i++) {
+            if(path.indexOf(localPath[i]) !== i) return false;
+          }
+          return true;
+        });
+        if(!updates.length) return;
+        socket.run('update', updates.map((path) => {
+          return {
+            path: path,
+            data: core.tree.get(path)
+          };
+        }));
       }
-      function write() {
 
-      }
-      core.tree.on('write', write);
-      localCursor.on('update', update);
+      core.on('update', update);
     },
 
     Module(name, dependencies, method){
@@ -412,6 +436,13 @@ var core = window.core = utils.Emitter({
     require: injector.require
 });
 
+core.tree.on('write', e => core.updatedPaths.push(e.data.path));
+core.tree.on('update', (e) => {
+  var updatedPaths = core.updatedPaths;
+  core.updatedPaths = [];
+  core.emit('update', updatedPaths);
+});
+
 core.Form = Form(core);
 core.Collection = Collection(core);
 core.router = Router(core);
@@ -490,6 +521,7 @@ core.Style('flex', { display: 'flex' });
 core.Style('center', { display: 'flex', alignItems: 'center', justifyContent: 'center' });
 core.Style('spread', { display: 'flex', justifyContent: 'space-between' });
 
-core.tree.set(['core', 'source'], coreObject);
+tree.set(['core', 'source'], coreObject);
+tree.commit();
 
 module.exports = core;

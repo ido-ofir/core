@@ -15,7 +15,9 @@ function getChildMap(name, map){
     if(children[i].name === name) return { ...children[i], index: i };
     if(children[i].name === map.defaultChild) defaultive = children[i];
   }
-  if(!defaultive) return null;
+  if(!defaultive) {
+    return null;
+  }
   console.warn(`invalid route ${name}, defaulting to ${defaultive.name}`)
   return { ...defaultive, index: -1 };
 }
@@ -33,7 +35,7 @@ function makeRoute(urlArray, parentMap) {
   if(!urlArray.length) return null;
   var name = urlArray.shift();
   var map, route = {};
-  if(parentMap){  // restricted routes
+  if(parentMap && parentMap.children){  // restricted routes
     map = getChildMap(name, parentMap);
     if(map){
       route.name = map.name;
@@ -44,7 +46,7 @@ function makeRoute(urlArray, parentMap) {
       }
     }
     else {
-      route.name =  name;
+      return null;
     }
   }
   else{  // freestyle
@@ -82,6 +84,7 @@ module.exports = function(core){
   routerCursor.on('update', setRoute);
 
   function parseHash(hash) {
+    hash = hash || '';
     var urlArray, urlString, queryString, route, query;
     var map = routerCursor.get('map');
     var encodeURI = routerCursor.get('encodeURI');
@@ -102,7 +105,7 @@ module.exports = function(core){
       query = {};
     }
     urlArray = urlString.split('/').filter(n => n);
-    route = makeRoute(urlArray, map);
+    route = makeRoute(urlArray, { children: map });
     return {
       route: route,
       query: query
@@ -118,12 +121,13 @@ module.exports = function(core){
     var query, oldQuery = routerCursor.get('query');
     var newState = parseHash(hash);
     if(!newState.route || !newState.route.component){
-      newState = parseHash(routerCursor.get('home'));
+      newState = parseHash(routerCursor.get('home') || '');
     }
     route = core.utils.immutableMerge(oldRoute, newState.route)
     query = core.utils.immutableMerge(oldQuery, newState.query)
     routerCursor.set('route', route);
     routerCursor.set('query', query);
+    routerCursor.set('updatedAt', new Date());
   }
 
 

@@ -7,8 +7,15 @@ window.__coreObject = {
             }
         },
         "router": {
-            "initialMap": {},
-            "map": {},
+            "map": [{
+              "name": "koko",
+              "component": "a",
+              "children": [{
+                "name": "loko",
+                "component": "b",
+                "children": []
+              }]
+            }],
             "encodeURI": false
         },
         "templates": [],
