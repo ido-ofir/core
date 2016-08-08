@@ -7,15 +7,32 @@ window.__coreObject = {
             }
         },
         "router": {
+            "animation": false,
+            "home": "/a/b/c",
+            // "map": null,
             "map": [{
               "name": "koko",
-              "component": "a",
+              "component": "first",
+              "children": [{
+                "name": "loko",
+                "component": "second",
+                "children": []
+              },{
+                "name": "moko",
+                "component": "third",
+                "children": []
+              }]
+            },{
+              "name": "loko",
+              "component": "b",
+              "defaultChild": "loko",
               "children": [{
                 "name": "loko",
                 "component": "b",
                 "children": []
               }]
             }],
+            "hash": "",
             "encodeURI": false
         },
         "templates": [],

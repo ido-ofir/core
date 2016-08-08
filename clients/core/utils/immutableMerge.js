@@ -13,11 +13,12 @@ module.exports = function immutableMerge(oldValue, newValue){
     if(!Array.isArray(oldValue)){ return newValue; }
     result = [];
     newValue.map((item, index) => {
-      var newItem = immutableMerge(oldValue[index], item);
-      if(newItem !== item){ changed = true; }
+      var oldItem = oldValue[index];
+      var newItem = immutableMerge(oldItem, item);
+      if(newItem !== oldItem){ changed = true; }
       result[index] = newItem;
     });
-    if(!changed && newValue.length === oldValue.length){
+    if(!changed && (newValue.length === oldValue.length)){
       return oldValue;
     }
     return result;

@@ -2,6 +2,7 @@ var React = require('react');
 var pt = React.PropTypes;
 var ReactDom = require('react-dom');
 var core = require('core');
+require('./style.css');
 
 core.loadContext('modules', require.context('modules', true, /.*\.module\.js/));
 core.loadContext(require.context('./', true, /.*\.module\.js/));
@@ -11,6 +12,22 @@ var style = {
   margin: 20,
   border: '1px solid #ddd'
 };
+
+var pageStyle = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0
+};
+
+var innerPageStyle = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0
+}
 
 core.Action('test', {
   one: {
@@ -27,11 +44,11 @@ core.Action('toggleMap', (params, promise)=>{
 
   var map = core.tree.get(['core', 'router', 'map']);
   if(map){
-    core.tree.set(['core', 'router', 'map'], null);
+    core.router.map(null);
     core.tree.set(['routerMap'], map);
   }
   else{
-    core.tree.set(['core', 'router', 'map'], core.tree.get(['routerMap']));
+    core.router.map(core.tree.get(['routerMap']));
   }
 
 });
@@ -46,6 +63,20 @@ core.Component('c', ({ children }) => <div style={ style }> page c { children }<
 
 core.router.on();
 
+
+core.Component('first', ({ children }) => <div style={ pageStyle }>
+  first
+  <div style={{ ...pageStyle, top: 50 }}>{ children }</div>
+</div>);
+core.Component('second', ({ children }) => <div style={ pageStyle }>
+  second
+  <div style={{ ...pageStyle, top: 50 }}>{ children }</div>
+</div>);
+core.Component('third', ({ children }) => <div style={ pageStyle }>
+  third
+  <div style={{ ...pageStyle, top: 50 }}>{ children }</div>
+</div>);
+
 // core.on('update', (updatedPaths)=>{
 //   console.log(updatedPaths);
 // });
@@ -57,7 +88,7 @@ core.require([
     ReactDom.render(
       <App>
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: '100%' }}>
-          <div style={{ flex: 1}}>
+          <div style={{ flex: 1, position: 'relative'}}>
             {
               core.router.render()
             }

@@ -50,6 +50,7 @@ function makeRoute(urlArray, parentMap) {
     }
   }
   else{  // freestyle
+    if(!core.components[name]) return null;
     map = null;
     route.name = name;
     route.component = name;
@@ -128,6 +129,8 @@ module.exports = function(core){
     routerCursor.set('route', route);
     routerCursor.set('query', query);
     routerCursor.set('updatedAt', new Date());
+
+
   }
 
 
@@ -138,6 +141,7 @@ module.exports = function(core){
     },
     render(){
       var { route, query } = this.state.router;
+      console.debug("router render", route);
       return <Route route={ route } query={ query } id={ `0` }/>;
     }
   });
@@ -165,10 +169,12 @@ module.exports = function(core){
       return core.tree.get(path);
     },
     map(map){
-      core.tree.set(['core', 'router', 'map'], map)
+      core.tree.set(['core', 'router', 'map'], map);
+      onHashChange();
     },
     home(home){
-      core.tree.set(['core', 'router', 'home'], home)
+      core.tree.set(['core', 'router', 'home'], home);
+      onHashChange();
     },
     unset(){
       var query = routerCursor.get('query');
