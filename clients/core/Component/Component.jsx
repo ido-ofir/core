@@ -91,9 +91,15 @@ var mixin = {
     }
   },
   watch(bindings){
+    if(this._watcher){
+      this.unwatch();
+    }
     this._watcher = core.tree.watch(bindings);
     this._watcher.on('update', this._updateBindings);
     return this._watcher.get();
+  },
+  unwatch(){
+    this._watcher.off('update', this._updateBindings);
   },
   _updateBindings(){
     if(this._watcher){

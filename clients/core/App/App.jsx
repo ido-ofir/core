@@ -1,7 +1,6 @@
 var React = require('react');
 var PropTypes = React.PropTypes;
 var Baobab = require('baobab');
-var Connection = require('../Connection');
 // comment
 var style = {
   position: 'absolute',
@@ -18,6 +17,9 @@ var App = function (core) {
   return {
     componentDidMount(){
       document.body.addEventListener('keyup', this.onKeyUp);  // react does not fire the keyUp event if an input is not focused, so we use native.
+    },
+    binding: {
+      source: ['core', 'source']
     },
     onClick(e){ core.emit('bodyClick', e); },
     // onMouseUp(e){ core.emit('mouseUp', e); },
@@ -44,6 +46,7 @@ var App = function (core) {
       }
     },
     render() {
+
       return (
         <div style={{ ...style, ...this.props.style }}
              onClick={ this.onClick }

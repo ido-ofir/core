@@ -1,21 +1,20 @@
 
 var React = require('react');
 var Baobab = require('baobab');
+var superagent = require('superagent');
 var pt = React.PropTypes;
 
 var utils = require('./utils');
 var App = require('./App');
 var Component = require('./Component');
-var Element = require('./Element');
 var Injector = require('./Injector');
 var Renderer = require('./Renderer');
-var Connection = require('./Connection');
 var Router = require('./Router');
 var Socket = require('./Socket');
 var Form = require('./Form');
 var Collection = require('./Collection');
+var Value = require('./Value');
 var validations = require('./Form/validations.js');
-var defaultTheme = require('./theme/defaultTheme.js');
 var format = require("string-template");
 
 var initialized = false;
@@ -36,9 +35,11 @@ var tree = new Baobab({
     styles: [],
     forms: [],
     collections: [],
+    objects: [],
+    values: [],
     mirrors: [],
     language: {},
-    theme: defaultTheme,
+    theme: {},
     router: {
       home: 'a/b/c',
       route: {},
@@ -53,7 +54,8 @@ tree.select(['core', 'source']).on('update', (e)=>{                          // 
 
 
   var source = tree.get(['core', 'source']);
-  var { router, forms, collections, theme, config } = source.core;
+  if(!source.core) return;
+  var { router, forms, collections, theme, config, values } = source.core;
 
   /* router */
   if(router !== currentSource.core.router){
@@ -76,6 +78,14 @@ tree.select(['core', 'source']).on('update', (e)=>{                          // 
     // console.debug("setting forms", source.forms);
     source.core.collections.map((collection)=>{
       core.Collection(collection.name, collection);
+    });
+  }
+  /* values */
+  if(values !== currentSource.core.values){
+    // tree.set(['core', 'source', 'forms'], {});
+    // console.debug("setting forms", source.forms);
+    source.core.values.map((value)=>{
+      core.Value(value.name, value);
     });
   }
   /* theme */
@@ -105,7 +115,9 @@ tree.select(['core', 'source', 'core', 'config', 'dev', 'ws']).on('update', (e)=
       onOpen(socket){
         socket.run('registerClient', { appPath: location.pathname }).then(() => { core.emit('registerClient') });
         socket.on('set', (data)=>{
-          core.tree.set(['core', 'source'].concat(data.path), data.value);
+          console.log('set', data);
+          core.tree.set(data.path, data.value);
+          // core.tree.set(['core', 'source'].concat(data.path), data.value);
         });
         console.log('started');
       }
@@ -120,20 +132,17 @@ tree.select(['core', 'source', 'core', 'config', 'dev', 'ws']).on('update', (e)=
   }
 });
 
-var connection = Connection();
 
 
 
 var core = window.core = utils.Emitter({
     devSocket: null,
     App: App,
-    Element: Element,
-    Connection: Connection,
-    connection: connection,
     Router: Router,
     tree: tree,
     updatedPaths: [],
     utils: utils,
+    injector: injector,
     set(path, value){
       if(typeof path === 'string'){
         path = path.split('.');
@@ -155,6 +164,7 @@ var core = window.core = utils.Emitter({
     mirrors: [],
     validations: validations,
     types: {
+      any(v){ return true; },
       undefined(v){ return core.isUndefined(v); },
       null(v){ return core.isNull(v); },
       boolean(v){ return core.isBoolean(v); },
@@ -181,6 +191,37 @@ var core = window.core = utils.Emitter({
     emptyObject: {},
     emptyArray: [],
     emptyFunction(){},
+    script(src){
+      var script = document.createElement('script');
+      script.src = src;
+      var promise = utils.Promise();
+      script.onload = () => {
+        promise.resolve();
+      };
+      script.onerror = () => {
+        promise.reject();
+      };
+      document.body.appendChild(script);
+      return promise.promise;
+    },
+    loadLanguage(key){
+      return core.script(`languages/${key}.js`);
+    },
+    server: {
+      run(name, params){
+        var path = ['actions', ...name.split(/[\,\/]/)];
+        var promise = utils.Promise();
+        superagent.post(`/${ path.join('/') }`, (err, res)=>{
+          if(res.body.success){
+            promise.resolve(res.body.data);
+          }
+          else{
+            promise.reject(res.body.data);
+          }
+        });
+        return promise.promise;
+      }
+    },
     Style(name, style){
       if(this.styles[name]){
         console.warn(`style ${name} was defined twice, overriding..`)
@@ -207,8 +248,19 @@ var core = window.core = utils.Emitter({
     },
 
     input(inputName, formName, render){ // provides a higher order for binding to a form input
-      var path = ['core', 'forms', { name: formName }, 'inputs', inputName];
-      return <Bindings bindings={ path } render={ render }/>
+      return core.bind(['core', 'forms', { name: formName }, 'inputs', inputName], render);
+    },
+
+    collection(name, render){ // provides a higher order for binding to a form input
+      return core.bind(['core', 'collections', { name: name }], render);
+    },
+
+    object(name, render){
+      return core.bind(['core', 'objects', { name: name }], render);
+    },
+
+    value(name, render){
+      return core.bind(['core', 'values', { name: name }], render);
     },
 
     watch(path, callback){
@@ -278,6 +330,7 @@ var core = window.core = utils.Emitter({
         return component;
       });
     },
+
     Input(name, dependencies, construct){
 
       var definition;
@@ -286,7 +339,6 @@ var core = window.core = utils.Emitter({
         dependencies = [];
       }
       core.Component(name, dependencies, (...dep)=>{
-
         if(construct){
           definition = construct(...dep);
         }
@@ -344,7 +396,7 @@ var core = window.core = utils.Emitter({
           schema = utils.parseSchema(action.schema[param]);
           if(schema.required){  // if it's required and missing - fail.
             if(!(param in data)){
-              return reject(`required param '${param}' is missing in action '${name}'`);
+              throw new Error(`required param '${param}' is missing in action '${name}'`);
             }
             if(schema.types.indexOf('any') > -1) continue;   // if was 'any!' skip the type validation.
           }
@@ -352,21 +404,23 @@ var core = window.core = utils.Emitter({
           for (i = 0; i < schema.types.length; i++) {
             type = schema.types[i];
             if(!this.types[type]){
-              return reject(`unknown type '${type}' in action '${name}'`);
+              throw new Error(`unknown type '${type}' in action '${name}'`);
             }
             if(param in data){  // validate the type of param.
               valid = this.types[type](data[param]);
               if(valid){
                 passed = true;
-                break;
               }
+            }
+            else{
+              passed = true;
             }
           }
           if(!passed){
             if(schema.types.length > 1) {
-              return reject(`parameter '${param}' in action '${name}' should be one of ${ schema.types }. but it is a ${ this.typeOf(data[param]) }`);
+              throw new Error(`parameter '${param}' in action '${name}' should be one of ${ schema.types }. but it is a ${ this.typeOf(data[param]) }`);
             }
-            return reject(`parameter '${param}' in action '${name}' should be a ${ schema.types[0] }. but it is a ${ this.typeOf(data[param]) }`);
+            throw new Error(`parameter '${param}' in action '${name}' should be a ${ schema.types[0] }. but it is a ${ this.typeOf(data[param]) }`);
           }
         }
         action(data, defered);
@@ -408,7 +462,7 @@ var core = window.core = utils.Emitter({
       return React.createElement(type, result, ...children);
     },
     translate(key, context){
-      var cursor = tree.select(['core', 'config', 'language', key]);
+      var cursor = tree.select(['core', 'language', key]);
       if(!cursor.exists()) return core.error({
         type: 'core.translate',
         error: `cannot find key ${key}`
@@ -425,9 +479,10 @@ var core = window.core = utils.Emitter({
     },
     language(lang){
       if(lang) {
-        return tree.set(['core', 'source', 'language'], lang);
+        tree.set(['core', 'language'], lang);
+        tree.commit();
       }
-      return tree.get(['core', 'source', 'language']);
+      return tree.get(['core', 'language']);
     },
     pallete(name){
       return tree.get(['core', 'theme', 'palletes', { name: name }, "pallete"])
@@ -445,6 +500,7 @@ core.tree.on('update', (e) => {
 
 core.Form = Form(core);
 core.Collection = Collection(core);
+core.Value = Value(core);
 core.router = Router(core);
 core.renderer = Renderer(core);
 core.Socket = Socket(core);
@@ -454,10 +510,9 @@ core.render = core.renderer.render;
 
 core.Module('core', core);
 core.Module('core.tree', tree);
-core.Module('core.connection', connection);
 core.Component('core.App', ['core'], App);
 
-var Bindings = core.Component('core.Bindings', {
+var Bindings = core.Bindings = core.Component('core.Bindings', {
   propTypes: {
     bindings: pt.oneOfType([pt.object, pt.string, pt.array]).isRequired,
     render: pt.func
@@ -478,6 +533,30 @@ var Bindings = core.Component('core.Bindings', {
     var data = this.isSingle ? this.state.item : this.state;
     var render = this.props.render || this.props.children;
     return render(data);
+  }
+});
+
+var Input = core.Component('core.Input', {
+  propTypes: {
+    form: pt.string,
+    name: pt.string,
+    render: pt.func
+  },
+  contextTypes: {
+    form: pt.string
+  },
+  getInitialState(){
+    var formName = this.props.form || this.context.form;
+    var inputName = this.props.name;
+    return this.watch({
+      input: ['core', 'forms', { name: formName }, 'inputs', inputName]
+    });
+  },
+  shouldComponentUpdate(nextProps, nextState){
+    return (nextState.input !== this.state.input);
+  },
+  render(){
+    return this.props.render(this.state.input, this.props);
   }
 });
 

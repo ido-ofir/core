@@ -4,6 +4,7 @@ var PropTypes = React.PropTypes;
 
 var pure = require('./pure.js');
 var RouteConsructor = require('./Route.jsx');
+require('./animations.css');
 
 // find 'name' in 'map.children', if not found return the default route
 function getChildMap(name, map){
@@ -23,6 +24,8 @@ function getChildMap(name, map){
 }
 
 
+
+
 /*
   creates a route object:
   {
@@ -38,6 +41,10 @@ function makeRoute(urlArray, parentMap) {
   if(parentMap && parentMap.children){  // restricted routes
     map = getChildMap(name, parentMap);
     if(map){
+      // if(!core.components[map.component]) {
+      //   console.warn(`cannot find component ${map.component}`);
+      //   return null;
+      // }
       route.name = map.name;
       route.component = map.component;
       route.index = map.index;
@@ -141,12 +148,23 @@ module.exports = function(core){
     },
     render(){
       var { route, query } = this.state.router;
-      console.debug("router render", route);
+      // console.debug("router render", route);
       return <Route route={ route } query={ query } id={ `0` }/>;
     }
   });
 
+  function forward(map, route) {
 
+  }
+
+  function back(map, route) {
+    var name = route.name;
+    for (var i = 0; i < map.length; i++) {
+      if(map[i].name === name){
+        return map[i - 1];
+      }
+    }
+  }
 
   var router = {
     on(){
@@ -155,6 +173,63 @@ module.exports = function(core){
     },
     off(){
       window.removeEventListener('hashchange', onHashChange);
+    },
+    step(forward, amount){
+      var query = routerCursor.get('query') || {};
+      var route = routerCursor.get('route');
+      var topMap = routerCursor.get('map');
+      if(!topMap) return null;
+      var map = topMap;
+      var routes = [];
+      var child = route;
+      while(child){
+        routes.push({ name: child.name, index: child.index });
+        child = child.children[0];
+      }
+      function find(indexes) {
+        var i = 0;
+        var children = topMap;
+        var map;
+        while (children && (i < indexes.length)) {
+          map = children[indexes[i]];
+          children = map && map.children;
+          i++;
+        }
+        return map;
+      }
+
+      var indexes = routes.map(r => r.index);
+      var next;
+      while (!next && indexes.length) {
+        indexes[indexes.length - 1] = indexes[indexes.length - 1] + (forward ? 1 : -1);
+        next = find(indexes);
+        if(!next){
+          indexes.pop();
+        }
+      }
+      if(!next){
+        // return console.error('cannot find next');
+        return;
+      }
+      routes[indexes.length - 1] = { name: next.name };
+      routes.length = indexes.length;
+      if(!forward){
+        child = next.children[next.children.length - 1];
+        while(child){
+          routes.push({name: child.name})
+          child = child.children[child.children.length - 1];
+        }
+      }
+      var urlArray = routes.map(route => route.name);
+      var nextRoute = makeRoute(urlArray, { children: topMap });
+      var hash = pure.routeToUrl(nextRoute, routerCursor.get('query'));
+      location.hash = hash;
+    },
+    forward(){
+      router.step(true);
+    },
+    back(){
+      router.step(false);
     },
     set(path, value){
       var query = routerCursor.get('query') || {};
@@ -165,8 +240,14 @@ module.exports = function(core){
     },
     get(path){
       if(core.isString(path)){ path = path.split('.'); }
-      path = ['core', 'router', 'query', ...path ];
-      return core.tree.get(path);
+      var getPath;
+      if(path){
+        getPath = ['core', 'router', 'query', ...path ];
+      }
+      else{
+        getPath = ['core', 'router', 'query'];
+      }
+      return core.tree.get(getPath);
     },
     map(map){
       core.tree.set(['core', 'router', 'map'], map);
@@ -176,6 +257,7 @@ module.exports = function(core){
       core.tree.set(['core', 'router', 'home'], home);
       onHashChange();
     },
+
     unset(){
       var query = routerCursor.get('query');
       var route = routerCursor.get('route');

@@ -39,7 +39,15 @@ core.Component('DevTools', [
       }
     },
     save(){
-      socket.action('set', { path: path, value: this.jsonValue });
+      var value = JSON.parse(this.jsonValue);
+      var params = { appPath: core.tree.get('selectedAppPath'), path: core.tree.get(['target', 'path']), value: value };
+      console.debug("params", params);
+      socket.run('set', params).then(()=>{
+        console.log('ok');
+      }).catch(e => console.log(e));
+    },
+    onSelectApp(appPath){
+      core.run('getSource', { appPath: appPath })
     },
     select(path, value){
       // this.setState({ path: path, value: value });
@@ -53,11 +61,21 @@ core.Component('DevTools', [
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 50, borderBottom: '1px solid #ddd', display: 'flex' }}>
           {
             core.bind({ apps: 'apps', selectedAppPath: 'selectedAppPath'}, ({ apps, selectedAppPath })=>
-              <Select options={ apps } selected={ selectedAppPath } onSelect={ this.onSelect } listStyle={{ left: 20, right: 'initial'}}>
+              <Select options={ apps } selected={ selectedAppPath } onSelect={ this.onSelectApp } listStyle={{ left: 20, right: 'initial'}}>
                 {
-                  (select) => {
-                    return (<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 20px', borderRight: '1px solid #ddd', minWidth: 120, cursor: 'pointer' }}>{ selectedAppPath }</div>);
-                  }
+                  (select) =>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        padding: '0 20px',
+                        borderRight: '1px solid #ddd',
+                        minWidth: 120,
+                        cursor: 'pointer'
+                      }}>
+                      { selectedAppPath }
+                    </div>
                 }
               </Select>
             )
@@ -69,18 +87,21 @@ core.Component('DevTools', [
             <Vertical>
               <div>
                 {
-                  core.bind('targetSource', source => {
-                    return (
-                      <div>
-                        <Property key={ 0 } path={ [] } value={ source } initialyOpen={ true } isLast={ true }/>
-                      </div>
-                    );
-                  })
+                  core.bind('targetSource', source =>
+                    <div>
+                      <Property key={ 0 } path={ [] } value={ source } initialyOpen={ true } isLast={ true }/>
+                    </div>
+                  )
                 }
               </div>
               <div style={{ height: '100%'}}>
-                { core.bind('target', target => <AceEditor value={ target ? core.utils.stringify(target.value, null, 4) : '' } onChange={ this.jsonEdit }/> ) }
-                <Icon className="fa fa-save" style={{ position: 'absolute', top: 10, right: 10, color: 'green'}}/>
+                {
+                  core.bind('target', target =>
+                    <AceEditor value={ target ? core.utils.stringify(target.value, null, 4) : '' }
+                               onChange={ this.jsonEdit }/>
+                  )
+                }
+                <Icon onClick={ this.save } className="fa fa-save" style={{ position: 'absolute', top: 10, right: 10, zIndex: 1, color: 'green'}}/>
               </div>
             </Vertical>
 

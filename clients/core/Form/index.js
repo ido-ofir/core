@@ -134,7 +134,7 @@ module.exports = function(core){  // generates the 'Form' function
   }
 
   function setInput(formName, inputName, eventOrValue) {
-    console.log('setting');
+
     var target, value = null;
     if(eventOrValue && eventOrValue.target){
       target = eventOrValue.target;

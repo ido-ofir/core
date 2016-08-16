@@ -1,6 +1,6 @@
 
 var React = require('react');
-
+var sa = require('superagent')
 var core = require('core');
 
 core.Component('Index', ['core.App', 'View'], (App, View)=>{
@@ -11,9 +11,10 @@ core.Component('Index', ['core.App', 'View'], (App, View)=>{
         };
       },
       componentDidMount(){
-        core.connection.action('shell.apps.getApps', (apps)=>{
+        sa.post('/actions/shell/apps/getApps', (err, res)=>{
+          console.debug("apps", res.body);
           this.setState({
-            apps: apps
+            apps: res.body.data
           });
         });
       },
@@ -30,7 +31,7 @@ core.Component('Index', ['core.App', 'View'], (App, View)=>{
       render () {
           return (
             <App style={ {padding: 30} }>
-              <h2>Koko</h2>
+              <h2>Apps</h2>
               <ul>
               { this.renderApps(this.state.apps) }
               </ul>

@@ -52,17 +52,21 @@ function addApp(appPath, cb) {
     });
   }
 
+  function load(cb) {
+    fs.readFile(objectPath, { encoding: 'utf8'}, function (err, str) {
+      if(err) return cb(err);
+      var jsonString = str.slice(str.indexOf('{'), str.lastIndexOf('}') + 1);
+      var json = JSON.parse(jsonString);
+      tree.set(json);
+      console.log(`loading app ${appPath}`);
+      cb(null, json);
+    });
+  }
+
+
+
   tree.on('update', function () {
     lastUpdate = new Date().getTime();
-  });
-
-  fs.readFile(objectPath, { encoding: 'utf8'}, function (err, str) {
-    if(err) return cb(err);
-    var jsonString = str.slice(str.indexOf('{'), str.lastIndexOf('}') + 1);
-    var json = JSON.parse(jsonString);
-    tree.set(json);
-    console.log(`adding app ${appPath}`);
-    cb(null, app);
   });
 
   var interval = setInterval(function () {
@@ -79,14 +83,17 @@ function addApp(appPath, cb) {
     path: appPath,
     objectPath: objectPath,
     save: save,
-    set(dataPath, data){
-      this.tree.set(path, value);
+    set(dataPath, value){
+      this.tree.set(dataPath, value);
       this.clientSockets.map(function (socket) {
-        socket.action('set', { path: path, value: value });
+        socket.action('set', { path: dataPath, value: value });
       });
       this.devtoolsSockets.map(function (socket) {
-        socket.action('update', { path: path, value: value });
+        socket.action('update', { path: dataPath, value: value });
       });
+    },
+    get(cb){  // get from disc
+      load(cb);
     },
     clientSockets: [],
     devtoolsSockets: [],
@@ -104,7 +111,11 @@ function addApp(appPath, cb) {
       done(null, tree.get());
     }
   };
+
   apps.push(app);
+
+  load(err => cb(err, app));
+
   return app;
 }
 
@@ -114,6 +125,7 @@ var actions = {
     var appPath = data.appPath;
     var path = data.path;
     var value = data.value;
+    console.log(appPath, path, value);
     if(!appPath){
       return done(`appPath parameter is missing`);
     }
@@ -139,6 +151,9 @@ var actions = {
     var app = getApp(appPath);
     if(!app){
       return done(`cannot find app ${appPath}`);
+    }
+    if(!path || !path[0]){
+      return app.get(done);
     }
     done(null, app.tree.get(path));
   },

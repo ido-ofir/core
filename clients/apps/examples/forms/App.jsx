@@ -3,9 +3,6 @@ var pt = React.PropTypes;
 var ReactDom = require('react-dom');
 var core = require('core');
 var Baobab = require('baobab');
-import TextField from 'material-ui/TextField';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 core.loadContext('modules', require.context('modules', true, /.*\.module\.js/));
 // core.loadContext('dev-client', require.context('./dev-client', true, /.*\.module\.js/));
@@ -31,128 +28,104 @@ core.on('error', (err)=>{
 // core.on('mouseUp', ()=>{ console.log('mouseUp'); })
 // core.on('esc', ()=>{ console.log('esc'); })
 
-core.Form('form', {
-  inputs: {
-    name: {
-      type: "string",
-      required: true
-    },
-    lastName: {
-      type: "string",
-      required: true
-    },
-    validations: {
-      type: "array",
-      value: []
-    }
-  }
-});
 
-core.Input('TextField', ({ input, ...props })=> {
-  return (
-    <TextField
-      value={ input.value }
-      onChange={ input.set }
-      hintText={ input.placeholder }
-      errorText={ input.error }
-      { ...props }
-    />
+core.require('ui.Input', (Input)=>{
+
+  core.Input('TextField', ({ input, ...props })=>
+    <div>
+      <Input
+        value={ input.value }
+        onChange={ input.set }
+        placeholder={ input.placeholder }
+        { ...props }
+      />
+      <div style={{ height: 20, lineHeight: '20px', fontSize: '12px', color: '#f00' }}>{ input.error }</div>
+    </div>
   );
+
 });
 
-core.Input('MultiSelect',['ui.Select', 'ui.Input', 'ui.Icon'],  (Select, Input, Icon)=>{
-
-
-      return {
-        propTypes: {
-          input: pt.object
-        },
-        onSelect(value){
-          var input = this.props.input.push(value);
-        },
-        render(){
-          var input = this.props.input;
-          return (
-            <div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 10, position: 'relative' }}>
-                  <TextField form="otherForm" name="name" style={{ flex: 1, width: '100%'}}/>
-                    <Select options={['four', 'two', 'three']} onSelect={ this.onSelect }>
-                      {
-                        (select) => {
-                          return (<Icon className="fa fa-plus" active={ select.state.isOpen }/>);
-                        }
-                      }
-                    </Select>
-
-                </div>
-              </div>
-            </div>
-          );
-        }
-    };
-});
-
-core.Component('a', ({ children }) => <div> page a { children }</div>);
-core.Component('b', ({ children }) => <div> page b { children }</div>);
-core.Component('c', ({ children }) => <div> page c { children }</div>);
-
-// core.router.map({
-//   defaultChild: 'valid',
-//   children: [{
-//     name: 'valid',
-//     component: 'a',
-//     defaultChild: 'routes',
-//     children: [
-//       {
-//         name: 'routes',
-//         component: 'b',
-//         defaultChild: 'only',
-//         children: [
-//           {
-//             name: 'only',
-//             component: 'c',
-//             children: []
-//           }
-//         ]
-//       }
-//     ]
-//   }]
-// });
-core.router.on();
-
-core.Component('Test', ['TextField', 'MultiSelect', 'ui.Select', 'core.Bindings', ], (TextField, MultiSelect, Select, Bindings)=> {
+core.Component('Test', [
+  'TextField',
+  'ui.Select',
+  'ui.Icon',
+  'ui.Input',
+  'ui.Button',
+  'ui.Json'], (TextField, Select, Icon, Input, Button, Json)=> {
   return {
     render(){
-      console.log('render');
       // console.debug("form", form);
       return (
-        <div style={{ padding: '20px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: '100%' }}>
-          <div style={{ flex: 1}}>
-            {
-              core.bind('stuff', stuff => <div>{ stuff }</div>)
-            }
+        <div style={{ padding: '10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: '100%' }}>
+          <div style={{ flex: 1, padding: '10px', overflow: 'auto'}}>
+            
+            <TextField form="otherForm" name="name" style={{ flex: 1, width: '100%'}}/>
+            <Button>Hello</Button>
             {
               core.input('lastName', 'otherForm', input =>
                 <div>
-                  { input.value.map((item, index) => <div key={ index } onClick={ e => input.delete(index) }>{ item }</div>) }
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 10, position: 'relative' }}>
+                      <div>Array</div>
+                      <Select options={ input.options.filter(opt => input.value.indexOf(opt) === -1) } onSelect={ input.push }>
+                        {
+                          (select) => <Icon className="fa fa-plus" disabled={ input.value.length === input.options.length } active={ select.state.isOpen }/>
+                        }
+                      </Select>
+
+                  </div>
+                  <div style={{ border: '1px solid #ddd', borderRadius: '4px', minHeight: '30px'}}>
+                    {
+                      input.value.map((item, i) =>
+                        <div key={ i } style={{ display: 'flex', padding: '0 6px', lineHeight: '30px' }}>
+                          <div style={{ flex: 1 }}>{ item }</div>
+                          <Icon className="fa fa-close" onClick={ e => input.delete(i) }/>
+                        </div>
+                      )
+                    }
+                  </div>
                 </div>
               )
             }
-            <Bindings bindings="stuff">
-              { stuff => <div>{ stuff }</div> }
-            </Bindings>
-          </div>
-          {
-            core.bind(['core','router'], router =>
+            <div>
+              {
+                core.collection('list', list =>
+                  <div>
+                    <div>List</div>
+                    {
+                      core.value('test', test =>
+                        <div style={{ display: 'flex'}}>
+                          <Input value={ test.value } onChange={ e => test.set(e.target.value) }/>
+                          <Icon className="fa fa-plus" onClick={ e => list.push(test.value) }/>
+                        </div>
 
-              <pre style={{ flex: 1, overflow: 'auto' }}>
-                { JSON.stringify(router, null, 4) }
+                      )
+                    }
+
+                    <div>
+                      {
+                        list.items.map((item, i) =>
+                          <div key={ i } style={{ display: 'flex' }}>
+                            <div>{ item }</div>
+                          </div>
+                        )
+                      }
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+          </div>
+          <div style={{ flex: 1, padding: '10px', display: 'flex' }}>
+          {
+            core.bind(['core', 'forms', { name: 'otherForm' }], otherForm =>
+
+              <pre style={{ flex: 1, overflow: 'auto', padding: '10px' }}>
+                { JSON.stringify(otherForm, null, 4) }
               </pre>
 
             )
           }
-
+          </div>
         </div>
       );
     }
@@ -161,20 +134,15 @@ core.Component('Test', ['TextField', 'MultiSelect', 'ui.Select', 'core.Bindings'
 
 
 core.loadContext(require.context('./', true, /.*\.module\.js/));
-
 var element = document.getElementById('app');
 core.require([
-  'core.App', 'DevTools'], (App, DevTools)=>{
-
-    core.connection.action('language.get', {}, (lang)=>{
-      core.set('config.language', JSON.parse(lang));
-      core.tree.commit();
-      // console.debug("getMuiTheme()", getMuiTheme());
+  'core.App', 'Test'], (App, Test)=>{
+    console.log(1);
+    core.loadLanguage('default').then(()=>{
       ReactDom.render(
-        <App>
-              { core.router.render() }
-        </App>, element);
-
-    }, core.error);
+          <App>
+            <Test/>
+          </App>, element);
+    });
 
 })

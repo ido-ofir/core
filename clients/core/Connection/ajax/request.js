@@ -5,7 +5,7 @@ var accessToken = localStorage.getItem('koko.AuthorizationToken');
 if(accessToken === 'null') accessToken = null;
 
 function setAccessToken(token){
-  console.log('setting access token', token);
+  // console.log('setting access token', token);
   accessToken = token;
   localStorage.setItem('koko.AuthorizationToken', token);
 }

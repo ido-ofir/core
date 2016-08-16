@@ -8,6 +8,17 @@ module.exports = function(core){  // generates the 'Collection' function
       // clone the original definition and set defaults
       var collection = { ...definition, name: collectionName };
       if(!collection.items) collection.items = [];
+      collection.push = function (item, index) {
+        var params = { collection: collectionName, item: item };
+        if(index || (index === 0)){
+          params.index = index;
+        }
+        console.debug("params", params);
+        return core.run('core.collections.push', params);
+      };
+      collection.pop = function (index) {
+        return core.run('core.collections.pop', { index: index });
+      };
       return collection;
   }
 
@@ -63,9 +74,9 @@ module.exports = function(core){  // generates the 'Collection' function
   core.Action(`core.collections.pop`, {
     "collection": "string ~ object!",
     "index": "number"
-  }, ({ collection, item, index }, promise)=>{
+  }, ({ collection, index }, promise)=>{
 
-    var itemsCursor;
+    var item, itemsCursor;
     if(core.isString(collection)){
       itemsCursor = collectionsCursor.select({ name: collection }, 'items');
     }
@@ -76,11 +87,14 @@ module.exports = function(core){  // generates the 'Collection' function
       return console.error(`cannot find collection ${ collection.name || collection }`);
     }
     if(index || index === 0){
-      promise.resolve(itemsCursor.splice([index, 1]));
+      item = itemsCursor.get(index);
+      itemsCursor.splice([index, 1])
+      promise.resolve(item);
     }
     else {
+      item = itemsCursor.down().rightmost().get();
       itemsCursor.pop();
-      promise.resolve(itemsCursor.get());
+      promise.resolve(item);
     }
   });
 

@@ -54,7 +54,12 @@ module.exports = function Injector(constructed){
 
       var dependency,
           dependencies,
-          hasAllDependencies;
+          hasAllDependencies,
+          ready = [];
+
+          // if(listName === 'requires') {
+          //   console.log('testAndRun', listName, lists[listName]);
+          // }
 
       var lastLength = lists[listName].length;
 
@@ -75,13 +80,15 @@ module.exports = function Injector(constructed){
 
           }
           if(hasAllDependencies){
-              // console.log('running', item.name);
+              ready.push({ item: item, dependencies: dependencies });
               lists.resolved.push(item);
-              run(item, dependencies);
+
               return false;
           }
           return true;
       });
+
+      ready.map(r => run(r.item, r.dependencies))
 
       if(lastLength !== lists[listName].length){   // if something has chaged, test again..
         testAndRun(listName, run);

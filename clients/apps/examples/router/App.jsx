@@ -40,6 +40,9 @@ core.Action('test', {
   promise.resolve('yey!');
 });
 
+core.on('leftKey', core.router.back)
+core.on('rightKey', core.router.forward)
+
 core.Action('toggleMap', (params, promise)=>{
 
   var map = core.tree.get(['core', 'router', 'map']);

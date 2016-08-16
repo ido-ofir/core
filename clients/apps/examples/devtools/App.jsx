@@ -2,6 +2,7 @@ var React = require('react');
 var pt = React.PropTypes;
 var ReactDom = require('react-dom');
 var core = require('core');
+var sa = require('superagent');
 var Baobab = require('baobab');
 import TextField from 'material-ui/TextField';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -145,16 +146,10 @@ core.loadContext(require.context('./', true, /.*\.module\.js/));
 var element = document.getElementById('app');
 core.require([
   'core.App', 'DevTools'], (App, DevTools)=>{
-
-    core.connection.action('language.get', {}, (lang)=>{
-      core.set('config.language', JSON.parse(lang));
-      core.tree.commit();
-      // console.debug("getMuiTheme()", getMuiTheme());
+    core.loadLanguage('default').then(()=>{
       ReactDom.render(
         <App>
           <DevTools/>
         </App>, element);
-
-    }, core.error);
-
+    });
 })

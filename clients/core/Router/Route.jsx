@@ -54,7 +54,6 @@ module.exports = function(core){
     },
     getInitialState(){
       var animation = routerCursor.get('animation');
-      var time = new Date().getTime();
       var classes = {
         animation: `core-animation-${animation.name}`,
         active: `core-animation-${animation.name}-active`,
@@ -65,31 +64,65 @@ module.exports = function(core){
         leaveForward: `core-animation-${animation.name}-leave-forward`,
         leaveBack: `core-animation-${animation.name}-leave-back`
       };
-      var history = [{ ...this.props, time: time }];
+      var history = [{ ...this.props, id: core.utils.uuid(), classNames: [ classes.animation,  classes.active ] }];
       return {
         animation: animation,
         classes: classes,
         stage: 'idle',
         direction: 'forward',
-        classNames: [`${ classes.animation } ${ classes.active }`, classes.animation, classes.animation],
         history: history,
         viewIndex: 0
       };
     },
+    componentDidMount(){
+      // console.log('mount', this.props.route.name);
+    },
+    componentWillUnmount(){
+      // console.log('unmount', this.props.route.name);
+    },
     componentWillReceiveProps(nextProps, nextState){
 
-      if(nextProps.route !== this.props.route){
-        var animation = this.state.animation;
-        var time = new Date().getTime();
-        var history = [ ...this.state.history, { ...nextProps, time: time } ];
-        this.setState({ history: history });
-        if(animation && animation.duration){
-          setTimeout(clear, animation.duration + 50);
-        }
+      // console.log('recieve', nextProps.route.name);
+      var classes = this.state.classes,
+          animation,
+          item,
+          history;
+
+      if(nextProps.route === this.props.route) return;
+
+      animation = this.state.animation;
+
+      if(!animation){
+        return this.setState({ history: [{ ...nextProps }] });
       }
 
+      history = [ ...this.state.history ];
+
+      if(nextProps.route.index === this.props.route.index){
+
+        // console.log('skip', nextProps.route.name);
+        item = history[history.length - 1];
+        item = { ...item, route: nextProps.route, query: nextProps.query };
+        history[history.length - 1] = item;
+        return this.setState({
+          history: history
+        });
+      }
+
+      else{
+        // console.log('updating', nextProps.route.name);
+        var isForward = (nextProps.route.index > this.props.route.index);
+        var classNames = [ classes.animation, classes.active ];
+        classNames.push(isForward ? classes.enterForward : classes.enterBack);
+        history.push({ ...nextProps, id: core.utils.uuid(), classNames: classNames });
+        this.transition(history, animation, isForward);
+        setTimeout(this.historyShift, animation.duration + 50);
+        return this.setState({
+          history: history
+        });
+      }
     },
-    clear(){
+    historyShift(){
       if(!this.isMounted()) return;
       var history = [ ...this.state.history ];
       history.shift();
@@ -98,8 +131,34 @@ module.exports = function(core){
     to(path, query){
 
     },
-    renderRoute({ route, query, id, time }) {
-      console.debug("render route", route);
+    transition(history, animation, forward){
+      var classes = this.state.classes;
+      setTimeout(()=>{
+        var next = history[history.length - 1];
+        var current = history[history.length - 2];
+        var ref;
+        if(next){
+          ref = next.id;
+          if(this.refs[ref]){
+            this.refs[ref].classList.remove(forward ? classes.enterForward : classes.enterBack);
+          }
+        }
+        if(current){
+          ref = current.id;
+          if(this.refs[ref]){
+            this.refs[ref].classList.add(forward ? classes.leaveForward : classes.leaveBack);
+          }
+        }
+      }, 50);
+    },
+    forward(){
+
+    },
+    back(){
+
+    },
+    renderRoute({ route, query, id }) {
+      // console.debug("render route", route);
       if(!route || !route.component) return null;
       var component = core.components[route.component];
       if(!component) {
@@ -107,25 +166,34 @@ module.exports = function(core){
         return null;
       }
       var children = route.children || [];
-      var props = { key: id, route: route, ...query };
+      var props = { route: route, ...query };
+
       return React.createElement(component, props, children.map((child, i)=>{
         return <Route route={ child } query={ query } id={ `${id}.${i}` } key={ i }/>;
       }));
     },
     render(){
       var { route, query, id } = this.props;
-      var classNames = this.state.classNames;
+      var classes = this.state.classes;
       var history = this.state.history;
+      // console.debug("render", this.props.route.name);
+      // console.debug("history", history, this.props.route.name);
       if(this.state.animation){
-        console.debug("render", route.name, route.component, views  );
+        // console.debug("render", route.name, route.component, views  );
         return (
           <div style={ box }>
-            { this.state.history.map(item => this.renderRoute(item)) }
+            { history.map((item, i)=>{
+              return (
+                <div key={ item.id } ref={ item.id } className={ item.classNames ? item.classNames.join(' ') : '' }>
+                  { this.renderRoute(item) }
+                </div>
+              );
+            }) }
           </div>
         );
       }
-      console.debug("history", history);
-      return this.renderRoute(history[history.length - 1]);
+
+      return this.renderRoute(history[0]);
     }
   });
 

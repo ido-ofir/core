@@ -22,12 +22,6 @@ core.require(['socket'], (socket)=>{
 
   });
 
-  core.Action('getSource', { appPath: 'string!' }, (params)=>{
-
-    socket.run('get', params).then(source => core.tree.set('targetSource', source));
-
-  });
-
   // socket.whenOpened(n => core.run('initialize'))
 
 });

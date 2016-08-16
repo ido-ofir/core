@@ -7,31 +7,47 @@ window.__coreObject = {
             }
         },
         "router": {
-            "animation": false,
-            "home": "/a/b/c",
-            // "map": null,
-            "map": [{
-              "name": "koko",
-              "component": "first",
-              "children": [{
-                "name": "loko",
-                "component": "second",
-                "children": []
-              },{
-                "name": "moko",
-                "component": "third",
-                "children": []
-              }]
-            },{
-              "name": "loko",
-              "component": "b",
-              "defaultChild": "loko",
-              "children": [{
-                "name": "loko",
-                "component": "b",
-                "children": []
-              }]
-            }],
+            "animation": {
+                "name": "koko",
+                "duration": 600
+            },
+            "home": "/first",
+            "map": [
+                {
+                    "name": "first",
+                    "component": "first",
+                    "defaultChild": "second",
+                    "children": [
+                        {
+                            "name": "second",
+                            "component": "second",
+                            "children": []
+                        },
+                        {
+                            "name": "third",
+                            "component": "third",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "name": "second",
+                    "component": "second",
+                    "defaultChild": "first",
+                    "children": [
+                        {
+                            "name": "first",
+                            "component": "first",
+                            "children": []
+                        },
+                        {
+                            "name": "third",
+                            "component": "third",
+                            "children": []
+                        }
+                    ]
+                }
+            ],
             "hash": "",
             "encodeURI": false
         },
