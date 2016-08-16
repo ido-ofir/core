@@ -9,43 +9,22 @@ window.__coreObject = {
                 "name": "slide",
                 "duration": 600
             },
-            "home": "reactive-programming",
+            "home": "editor",
             "map": [{
-                "name": "reactive-programming",
-                "component": "ReactiveProgramming",
-                "defaultChild": "article",
-                "children": [{
-                    "name": "article",
-                    "component": "ReactiveLink",
-                    // "defaultChild": "second",
-                    "children": []
-                },{
-                    "name": "streams",
-                    "component": "Streams",
-                    // "defaultChild": "second",
-                    "children": []
-                }]
-            }, {
-              "name": "function-vs-state",
-              "component": "FunctionVsState"
-            }, {
-              "name": "state-change",
-              "component": "StateChange",
-              "defaultChild": "1",
-              "children": [{
-                "name": "1",
-                "component": "StateChange1",
-                "children": []
-              },{
-                "name": "2",
-                "component": "StateChange2",
-                "children": []
+                "name": "editor",
+                "component": "AceEditor"
               }]
-            }]
         },
         "templates": [],
         "views": [],
         "collections": [],
+        "values": [{
+          "name": "code",
+          "value": "hi"
+        },{
+          "name": "theme",
+          "value": localStorage.getItem('theme') || "monokai"
+        }],
         "forms": [
             {
                 "name": "otherForm",

@@ -41,26 +41,71 @@ core.Component('FunctionVsState', ['ui.Box', 'Line'], (Box, Line)=>{
   return {
     render(){
       return (
+        <Box style={{ padding: 20, display: 'flex' }}>
+          <div style={{ flex: 1, padding: 20 }}>
+            <Line style={{ fontSize: '36px', padding: '20px 0' }}>functions</Line>
+              <pre>
+                <Line>
+                  door.open();
+                </Line>
+                <Line>
+                  door.close();
+                </Line>
+              </pre>
+          </div>
+
+          <div style={{ flex: 1, padding: 20 }}>
+            <Line style={{ fontSize: '36px', padding: '20px 0' }}>state</Line>
+              <pre>
+                <Line>
+                  door.isOpened = true;
+                </Line>
+                <Line>
+                  door.isOpened = false;
+                </Line>
+              </pre>
+          </div>
+
+        </Box>
+      );
+    }
+  };
+});
+
+
+core.Component('StateChange', ['ui.Box', 'Line'], (Box, Line)=>{
+  return {
+    render(){
+      return (
         <Box style={{ padding: 20 }}>
-          <Line style={{ fontSize: '26px', padding: '20px 0' }}>is there a difference between this:</Line>
-          <pre style={{ width: 600 }}>
-            <Line>
-              door.open();
-            </Line>
-            <Line>
-              door.close();
-            </Line>
-          </pre>
-          <Line style={{ fontSize: '26px', padding: '20px 0' }}>and this:</Line>
-          <pre style={{ width: 600 }}>
-            <Line>
-              door.isOpened = true;
-            </Line>
-            <Line>
-              door.isOpened = false;
-            </Line>
-          </pre>
-          <Line style={{ fontSize: '26px', padding: '20px 0' }}>?</Line>
+          <Line style={{ fontSize: '36px', padding: '20px 0' }}>State change</Line>
+          <Box style={{ top: 100 }}>
+            { this.props.children }
+          </Box>
+        </Box>
+      );
+    }
+  };
+});
+
+core.Component('StateChange1', ['ui.Box'], (Box)=>{
+  return {
+    render(){
+      return (
+        <Box style={{ padding: 20 }}>
+          <img src="images/change.png" style={{ width: 600 }}/>
+        </Box>
+      );
+    }
+  };
+});
+
+core.Component('StateChange2', ['ui.Box'], (Box)=>{
+  return {
+    render(){
+      return (
+        <Box style={{ padding: 20 }}>
+          <img src="images/change2.png" style={{ width: 600 }}/>
         </Box>
       );
     }

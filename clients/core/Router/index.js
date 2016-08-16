@@ -213,9 +213,9 @@ module.exports = function(core){
       }
       routes[indexes.length - 1] = { name: next.name };
       routes.length = indexes.length;
-      if(!forward){
+      if(!forward && next.children){
         child = next.children[next.children.length - 1];
-        while(child){
+        while(child && child.children){
           routes.push({name: child.name})
           child = child.children[child.children.length - 1];
         }
