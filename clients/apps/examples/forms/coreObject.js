@@ -3,7 +3,7 @@ window.__coreObject = {
     "core": {
         "config": {
             "dev": {
-                "ws": "ws://localhost:8001"
+                "ws": "ws://178.62.222.57:8001"
             }
         },
         "router": {
