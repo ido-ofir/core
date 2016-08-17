@@ -1,7 +1,11 @@
 
 window.__coreObject = {
     "core": {
-        "config": {},
+        "config": {
+            "dev": {
+                "ws": "ws://localhost:8001"
+            }
+        },
         "router": {
             "initialMap": {},
             "map": {},
