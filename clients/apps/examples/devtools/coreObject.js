@@ -3,11 +3,7 @@ window.__coreObject = {
     "apps": [],
     "targetSource": {},
     "core": {
-        "config": {
-            "dev": {
-                "ws": "ws://localhost:8001"
-            }
-        },
+        "config": {},
         "router": {
             "initialMap": {}
         },
