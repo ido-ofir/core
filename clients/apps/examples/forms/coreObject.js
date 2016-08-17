@@ -1,11 +1,7 @@
 
 window.__coreObject = {
     "core": {
-        "config": {
-            "dev": {
-                "ws": "ws://localhost:8001"
-            }
-        },
+        "config": {},
         "router": {
             "initialMap": {},
             "map": {},
@@ -13,7 +9,14 @@ window.__coreObject = {
         },
         "templates": [],
         "views": [],
-        "collections": [],
+        "collections": [{
+          "name": "list",
+          "items": []
+        }],
+        "values": [{
+          "name": "test",
+          "value": "44"
+        }],
         "forms": [
             {
                 "name": "otherForm",

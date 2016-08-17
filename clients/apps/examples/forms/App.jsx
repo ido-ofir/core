@@ -58,7 +58,7 @@ core.Component('Test', [
       return (
         <div style={{ padding: '10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: '100%' }}>
           <div style={{ flex: 1, padding: '10px', overflow: 'auto'}}>
-            
+
             <TextField form="otherForm" name="name" style={{ flex: 1, width: '100%'}}/>
             <Button>Hello</Button>
             {
@@ -91,17 +91,15 @@ core.Component('Test', [
                 core.collection('list', list =>
                   <div>
                     <div>List</div>
-                    {
-                      core.value('test', test =>
-                        <div style={{ display: 'flex'}}>
-                          <Input value={ test.value } onChange={ e => test.set(e.target.value) }/>
-                          <Icon className="fa fa-plus" onClick={ e => list.push(test.value) }/>
-                        </div>
+                      {
+                        core.value('test', test =>
+                          <div style={{ display: 'flex'}}>
+                            <Input value={ test.value } onChange={ e => test.set(e.target.value) }/>
+                            <Icon className="fa fa-plus" onClick={ e => list.push(test.value) }/>
+                          </div>
 
-                      )
-                    }
-
-                    <div>
+                        )
+                      }
                       {
                         list.items.map((item, i) =>
                           <div key={ i } style={{ display: 'flex' }}>
@@ -109,7 +107,6 @@ core.Component('Test', [
                           </div>
                         )
                       }
-                    </div>
                   </div>
                 )
               }
@@ -139,6 +136,7 @@ core.require([
   'core.App', 'Test'], (App, Test)=>{
     console.log(1);
     core.loadLanguage('default').then(()=>{
+      console.log(5);
       ReactDom.render(
           <App>
             <Test/>
