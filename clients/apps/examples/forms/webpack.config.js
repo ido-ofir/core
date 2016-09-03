@@ -2,7 +2,7 @@
 var webpack = require('webpack');
 var path = require('path');
 
-var entry = path.resolve(__dirname, 'App.jsx');
+var entry = path.resolve(__dirname, 'source/App.jsx');
 
 var array = __dirname.split(`${path.sep}clients${path.sep}apps`);
 if(!array[1]) return console.error(`cannot find core path from ${__dirname}`);

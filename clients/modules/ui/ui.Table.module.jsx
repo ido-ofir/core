@@ -21,6 +21,10 @@ core.Component('ui.Table', {
     return {
       columns: [{
         "title": "one",
+        "style": {
+          "width": "30%",
+          "flex": 1
+        }
       },{
         "title": "two",
       },{
@@ -45,9 +49,7 @@ core.Component('ui.Table', {
         <div style={ styles.row }>
           {
             columns.map((col, i) => {
-              var style = { flex: 1 };
-              if(col.width){ style.maxWidth = col.width; }
-              else if(col.flex){ style.flex = col.flex; }
+              var style = { flex: 1, ...col.style };
               return <div key={ i } style={ style }>{ col.title }</div>
             })
           }

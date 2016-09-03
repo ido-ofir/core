@@ -4,6 +4,7 @@ var Baobab = require('baobab');
 var async = require('async');
 var path = require('path');
 var fs = require('fs');
+var babel = require('babel-core');
 
 var httpServer = http.createServer();
 var server = new WebSocketServer({ server: httpServer });
@@ -13,6 +14,13 @@ var apps = [];
 function App() {
 
 }
+
+var code = `var a = { a: 3, b: 5 }; var b = { ...a }`
+
+var c = babel.transform(code, {
+  presets:['react','es2015', 'stage-0']
+});
+console.log(c.code);
 
 function getApp(path) {
   for (var i = 0; i < apps.length; i++) {

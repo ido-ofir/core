@@ -11,40 +11,41 @@ var closeStyle = {
 };
 core.Component('ui.CheckBox', {
   propTypes: {
-    onClick: PropTypes.func
+    onChange: PropTypes.func
   },
-  onClick(e){
-    if(this.props.onClick) this.props.onClick(e.target.checked)
+  onChange(e){
+    this.props.onChange(e.target.checked);
   },
-
   render () {
 
     return (
-      <input type="checkbox" { ...this.props } onClick={ this.onClick } style={{ alignItems: 'top'}}/>
+      <input type="checkbox" { ...this.props } onChange={ this.onChange } style={{ alignItems: 'top'}}/>
     )
+    console.debug("this.props", this.props);
 
     // return (
     //   <span onClick={ this.props.onClick } style={{
     //       display: 'inline-block',
-    //       width: '14px',
-    //       height: '14px',
-    //       background: '#eee',
-    //       border: '1px solid #ddd',
+    //       width: '20px',
+    //       height: '20px',
+    //       // background: '#eee',
+    //       border: '2px solid #ddd',
     //       position: 'relative',
     //       cursor: 'pointer',
     //       alignItem: 'center',
     //       justifyContent: 'center',
     //       top: 0,
-    //       color: this.theme('inactive.primary'),
+    //       borderRadius: '50%',
+    //       color: core.theme('inactive.primary'),
     //       verticalAlign: 'middle',
     //       ...this.props.style }}>
-    //     { this.props.checked ? (<span className="glyphicon glyphicon-ok" style={{
+    //     { this.props.checked ? (<span style={{
     //         position: 'absolute',
     //         top: '6px',
     //         left: '4px',
     //         fontSize: '8px',
-    //         color: this.theme('colors.primary')
-    //       }}></span>) : null }
+    //         color: core.theme('colors.primary')
+    //       }}>√</span>) : null }
     //   </span>
     // );
   }

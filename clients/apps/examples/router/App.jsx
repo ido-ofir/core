@@ -60,23 +60,23 @@ core.on('error', (err)=>{
   console.error(err && (err.error || err));
 });
 
-core.Component('a', ({ children }) => <div style={ style }> page a { children }</div>);
-core.Component('b', ({ children }) => <div style={ style }> page b { children }</div>);
-core.Component('c', ({ children }) => <div style={ style }> page c { children }</div>);
+// core.Component('Dash', ({ children }) => <div style={ style }> dash { children }</div>);
+// core.Component('Main', ({ children }) => <div style={ style }> main { children }</div>);
+// core.Component('Stuff', ({ children }) => <div style={ style }> stuff { children }</div>);
 
 core.router.on();
 
 
-core.Component('first', ({ children }) => <div style={ pageStyle }>
-  first
+core.Component('Dash', ({ children }) => <div style={ pageStyle }>
+  Dash
   <div style={{ ...pageStyle, top: 50 }}>{ children }</div>
 </div>);
-core.Component('second', ({ children }) => <div style={ pageStyle }>
-  second
+core.Component('Main', ({ children }) => <div style={ pageStyle }>
+  Main
   <div style={{ ...pageStyle, top: 50 }}>{ children }</div>
 </div>);
-core.Component('third', ({ children }) => <div style={ pageStyle }>
-  third
+core.Component('Stuff', ({ children }) => <div style={ pageStyle }>
+  Stuff
   <div style={{ ...pageStyle, top: 50 }}>{ children }</div>
 </div>);
 

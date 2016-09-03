@@ -24,12 +24,11 @@ var injector = Injector((loadedModule, data, dependencies)=>{
   // console.dir(data);
 });
 
-var coreObject = window.__coreObject || {}
-var currentSource = { core: {} };
+var coreObject = window.__coreObject || {};
+var currentSource = { };
 
 
 var tree = new Baobab({
-  ...coreObject,
   core: {
     source: currentSource,   // source is initialy empty. updating the source builds the rest of the core object.
     styles: [],
@@ -54,45 +53,49 @@ tree.select(['core', 'source']).on('update', (e)=>{                          // 
 
 
   var source = tree.get(['core', 'source']);
-  if(!source.core) return;
-  var { router, forms, collections, theme, config, values } = source.core;
+  // if(!source) return;
+  var { router, forms, collections, language, theme, config, values, globals } = source;
 
   /* router */
-  if(router !== currentSource.core.router){
+  if(router !== currentSource.router){
 
     tree.set(['core', 'router'], router);
 
   }
 
   /* forms */
-  if(forms !== currentSource.core.forms){
-    // tree.set(['core', 'source', 'forms'], {});
-    // console.debug("setting forms", source.forms);
-    source.core.forms.map((form)=>{
+  if(forms !== currentSource.forms){
+    source.forms.map((form)=>{
       core.Form(form.name, form);
     });
   }
   /* collection */
-  if(collections !== currentSource.core.collections){
-    // tree.set(['core', 'source', 'forms'], {});
-    // console.debug("setting forms", source.forms);
-    source.core.collections.map((collection)=>{
+  if(collections !== currentSource.collections){
+    source.collections.map((collection)=>{
       core.Collection(collection.name, collection);
     });
   }
   /* values */
-  if(values !== currentSource.core.values){
-    // tree.set(['core', 'source', 'forms'], {});
-    // console.debug("setting forms", source.forms);
-    source.core.values.map((value)=>{
+  if(values !== currentSource.values){
+    source.values.map((value)=>{
       core.Value(value.name, value);
     });
   }
   /* theme */
-  if(theme !== currentSource.core.theme){
-    // tree.set(['core', 'source', 'forms'], {});
-    // console.debug("setting theme", source.theme);
+  if(theme !== currentSource.theme){
     core.tree.set(['core', 'theme'], theme);
+  }
+
+  /* language */
+  if(language !== currentSource.language){
+    core.tree.set(['core', 'language'], language);
+  }
+
+  /* globals */
+  if(globals !== currentSource.globals){
+    for(var m in globals){
+      core.tree.set(m, globals[m]);
+    }
   }
 
   currentSource = source;
@@ -144,24 +147,39 @@ var core = window.core = utils.Emitter({
     utils: utils,
     injector: injector,
     set(path, value){
-      if(typeof path === 'string'){
-        path = path.split('.');
+      if(core.isString(path)){
+        return tree.set(path.split('.'), value);
       }
-      path.unshift('core');
-      return tree.set(path, value);
+      else if(core.isArray(path)){
+        return tree.set(path, value);
+      }
+      else {
+        throw new Error('cannot set path', path)
+      }
     },
     get(path){
-      if(typeof path === 'string'){
-        path = path.split('.');
+      if(core.isString(path)){
+        return tree.get(path.split('.'));
       }
-      path.unshift('core');
-      return tree.get(path, value);
+      else if(core.isArray(path)){
+        return tree.get(path);
+      }
+      else if(core.isObject(path)){
+        return tree.project(path);
+      }
+      else if(core.isUndefined(path)){
+        return tree.get();
+      }
+      else {
+        throw new Error('cannot get path', path)
+      }
     },
     styles: {},
     props: {},
     actions: {},
     components: {},
     mirrors: [],
+    plugins: [],
     validations: validations,
     types: {
       any(v){ return true; },
@@ -234,6 +252,12 @@ var core = window.core = utils.Emitter({
       }
       this.props[name] = prop;
     },
+    Plugin(name, ){
+
+    },
+    plugin(type, name){
+      
+    },
     error(err){
       core.emit('error', err);
     },
@@ -264,16 +288,23 @@ var core = window.core = utils.Emitter({
     },
 
     watch(path, callback){
-      var watcher = core.tree.watch({ item: path });
+      var isSingle = core.isArray(path);
+      var watched = core.tree.watch(isSingle ? { item: path } : path);
       var isOn = true;
       function update() {
-        callback(watcher.get().item);
+        var d = watched.get();
+        callback(isSingle ? d.item : d);
       }
-      watcher.on('update', update);
-      return {
-        on() { watcher.on('update', update); },
-        off(){ watcher.off('update', update); }
+      var watcher = {
+        on() { watched.on('update', update); },
+        off(){ watched.off('update', update); }
       };
+      watcher.on();
+      return watcher;
+    },
+
+    watchSync(path, callback){
+
     },
 
     Mirror({ localPath, remotePath, url, key }){
@@ -510,7 +541,7 @@ core.render = core.renderer.render;
 
 core.Module('core', core);
 core.Module('core.tree', tree);
-core.Component('core.App', ['core'], App);
+core.App = core.Component('core.App', App(core));
 
 var Bindings = core.Bindings = core.Component('core.Bindings', {
   propTypes: {
@@ -532,7 +563,11 @@ var Bindings = core.Bindings = core.Component('core.Bindings', {
   render(){
     var data = this.isSingle ? this.state.item : this.state;
     var render = this.props.render || this.props.children;
-    return render(data);
+    var rendered = render(data);
+    if(core.isUndefined(rendered)){
+      return null;
+    }
+    return rendered;
   }
 });
 

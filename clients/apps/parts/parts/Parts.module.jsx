@@ -20,6 +20,74 @@ var defaultProps = {
   }
 };
 
+const Cell = props =>
+  <div style={{ padding: '2px', background: (props.active ? '#ff0' : 'none') }} onClick={ props.select }>
+    <div style={{ height: 20, background: props.background }}></div>
+  </div>
+
+const ButtonSample = props =>
+  <div style={{ padding: '2px', background: (props.active ? '#ff0' : 'none') }} onClick={ props.select }>
+    <div style={{ height: 20, background: props.background }}></div>
+  </div>
+
+core.Component('Palletes', ['ui.Table'], (Table)=>{
+  return {
+    bindings: {
+      palletes: ['core', 'theme', 'palletes']
+    },
+    getInitialState(){
+      return {
+        targetPalleteName: null,
+        targetItemName: null
+      };
+    },
+    selectTarget(palleteName, itemName){
+      this.setState({
+        targetPalleteName: palleteName,
+        targetItemName: itemName
+      });
+    },
+    setValue(color){
+      this.props.onSelect(color);
+    },
+    render(){
+      var palletes = this.state.palletes;
+      return (
+        <div>
+          <Table style={{ textAlign: 'center' }}
+                 columns={[{
+              "title": "normal",
+            },{
+              "title": "hover",
+            },{
+              "title": "active",
+            },{
+              "title": "disabled",
+            }]} rows={ palletes && palletes.map((pallete)=>{
+              return {
+                name: pallete.name,
+                cells: [
+                  <Cell background={ pallete.pallete.normal }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'normal') }
+                        select={ e => this.selectTarget(pallete.name, 'normal') }/>,
+                  <Cell background={ pallete.pallete.hover }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'hover') }
+                        select={ e => this.selectTarget(pallete.name, 'hover') }/>,
+                  <Cell background={ pallete.pallete.active }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'active') }
+                        select={ e => this.selectTarget(pallete.name, 'active') }/>,
+                  <Cell background={ pallete.pallete.disabled }
+                        active={ (this.state.targetPalleteName === pallete.name) && (this.state.targetItemName === 'disabled') }
+                        select={ e => this.selectTarget(pallete.name, 'disabled') }/>
+                ]
+              };
+            }) }/>
+        </div>
+      );
+    }
+  }
+})
+
 
 
 module.exports = core.Component('Parts', [
@@ -29,8 +97,9 @@ module.exports = core.Component('Parts', [
   'Parts.Ui',
   'divide.Horizontal',
   'divide.Vertical',
-  'shell.Debug'
-], (Config, ui, Button, Ui, Horizontal, Vertical, Debug)=>{
+  'shell.Debug',
+  'Palletes'
+], (Config, ui, Button, Ui, Horizontal, Vertical, Debug, Palletes)=>{
 
   return {
     bindings: {
@@ -62,6 +131,7 @@ module.exports = core.Component('Parts', [
           <div>
               <Vertical width="360px" from="right">
                 <Ui/>
+                <Palletes/>
                 <Config/>
               </Vertical>
           </div>

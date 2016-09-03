@@ -76,7 +76,7 @@ var mixin = {
       this._events = {};
       for(var m in this.events){
         this._events[m] = this.events[m].bind(this);
-        core.on(m, this._events[m])
+        core.on(m, this._events[m]);
       }
     }
   },

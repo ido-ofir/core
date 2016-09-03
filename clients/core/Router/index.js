@@ -4,6 +4,7 @@ var PropTypes = React.PropTypes;
 
 var pure = require('./pure.js');
 var RouteConsructor = require('./Route.jsx');
+var baobab = require('baobab');
 require('./animations.css');
 
 // find 'name' in 'map.children', if not found return the default route
@@ -69,6 +70,24 @@ function makeRoute(urlArray, parentMap) {
 module.exports = function(core){
 
   var routerCursor = core.tree.select(['core', 'router']);
+  routerCursor.set('classes', baobab.monkey({
+    cursors: {
+      animationName: ['core', 'router', 'animation', 'name']
+    },
+    get: function(data) {
+      var animationName = data.animationName || 'none';
+      return {
+        animation: `core-animation-${ animationName }`,
+        active: `core-animation-${ animationName }-active`,
+        enter: `core-animation-${ animationName }-enter`,
+        enterForward: `core-animation-${ animationName }-enter-forward`,
+        enterBack: `core-animation-${ animationName }-enter-back`,
+        leave: `core-animation-${ animationName }-leave`,
+        leaveForward: `core-animation-${ animationName }-leave-forward`,
+        leaveBack: `core-animation-${ animationName }-leave-back`
+      };
+    }
+  }));
   var Route = RouteConsructor(core);
 
   // sets the hash in the browser's address bar to match the router's route and query.

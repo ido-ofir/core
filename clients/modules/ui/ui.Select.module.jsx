@@ -18,12 +18,14 @@ core.Component('ui.Select', ['ui.Card', 'ui.Icon', 'ui.ListItem'], (Card, Icon, 
     },
     events: {
       bodyClick(e, id){
-        if(id !== this.clickId){
+        if(this.isMounted() && (id !== this.clickId)){
           this.setState({ isOpen: false });
         }
       },
       escKey(){
-        this.setState({ isOpen: false });
+        if(this.isMounted()){
+          this.setState({ isOpen: false });
+        }
       }
     },
     toggle(e){

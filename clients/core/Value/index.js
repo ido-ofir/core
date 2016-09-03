@@ -12,7 +12,6 @@ module.exports = function(core){  // generates the 'Collection' function
       }
       value.set = function (value) {
         var params = { name: valueName, value: value };
-        console.debug("params", params);
         return core.run('core.values.set', params);
       };
       return value;

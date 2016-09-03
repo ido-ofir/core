@@ -21,7 +21,7 @@ core.Component('shell.Config.DragColor', ['ui.Color'], (Color)=>{
       drag.effectAllowed = 'copy';
     },
     onFineChange(val){
-      core.set(`config.theme.${this.props.path}`, val);
+      core.set(['config','theme', this.props.path ], val);
     },
     onChange(val){},
     render(){

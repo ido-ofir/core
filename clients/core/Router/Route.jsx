@@ -11,27 +11,18 @@ var box = {
   overflow: 'hidden'
 };
 
-var animation = {
-  init(page){
-    page.speed('0.4s').ease('ease');
-  },
-  forward: {
-    open(page){
-      page.x('100%').enter().x('0').done();
-    },
-    close(page){
-      page.wait(100).x('-100%').wait(600).exit();
-    }
-  },
-  back: {
-    open(page){
-      page.x('-100%').enter().x('0').done();
-    },
-    close(page){
-      page.wait(100).x('100%').wait(600).exit();
-    }
-  }
-};
+function getClasses(animationName) {
+  return {
+    animation: `core-animation-${ animationName }`,
+    active: `core-animation-${ animationName }-active`,
+    enter: `core-animation-${ animationName }-enter`,
+    enterForward: `core-animation-${ animationName }-enter-forward`,
+    enterBack: `core-animation-${ animationName }-enter-back`,
+    leave: `core-animation-${ animationName }-leave`,
+    leaveForward: `core-animation-${ animationName }-leave-forward`,
+    leaveBack: `core-animation-${ animationName }-leave-back`
+  };
+}
 
 module.exports = function(core){
 
@@ -44,6 +35,9 @@ module.exports = function(core){
       id: 'string!',
       className: 'string'
     },
+    bindings: {
+      animation: ['router', 'animation']
+    },
     childContextTypes: {
       route: 'object'
     },
@@ -54,19 +48,12 @@ module.exports = function(core){
     },
     getInitialState(){
       var animation = routerCursor.get('animation');
-      var classes = {
-        animation: `core-animation-${animation.name}`,
-        active: `core-animation-${animation.name}-active`,
-        enter: `core-animation-${animation.name}-enter`,
-        enterForward: `core-animation-${animation.name}-enter-forward`,
-        enterBack: `core-animation-${animation.name}-enter-back`,
-        leave: `core-animation-${animation.name}-leave`,
-        leaveForward: `core-animation-${animation.name}-leave-forward`,
-        leaveBack: `core-animation-${animation.name}-leave-back`
-      };
+      var classes = {};
+      if(animation){
+        classes = getClasses(animation.name);
+      }
       var history = [{ ...this.props, id: core.utils.uuid(), classNames: [ classes.animation,  classes.active ] }];
       return {
-        animation: animation,
         classes: classes,
         stage: 'idle',
         direction: 'forward',
@@ -83,16 +70,30 @@ module.exports = function(core){
     componentWillReceiveProps(nextProps, nextState){
 
       // console.log('recieve', nextProps.route.name);
-      var classes = this.state.classes,
+      var classes,
           animation,
           item,
           history;
+      if(nextState.animation !== this.state.animation){
+        animation = nextState.animation;
+        if(animation) {
+          classes = getClasses(animation.name);
+        }
+        this.setState({
+          animation: animation,
+          classes: classes
+        });
+      }
+      else{
+        animation = this.state.animation;
+        classes = this.state.classes;
+      }
 
       if(nextProps.route === this.props.route) return;
 
-      animation = this.state.animation;
+      console.log(animation);
 
-      if(!animation){
+      if(!animation || (animation.active === false)){
         return this.setState({ history: [{ ...nextProps }] });
       }
 

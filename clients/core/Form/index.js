@@ -122,13 +122,13 @@ module.exports = function(core){  // generates the 'Form' function
   }
 
   // validates the form by checking if there are any errors left. sets 'isValid' and 'isPristine' on the form.
-  function validateForm(cursors) {
+  function validateForm(formCursor) {
 
-    var errors = cursors.form.get('errors');
+    var errors = formCursor.get('errors');
     var formIsValid = Object.keys(errors).length === 0;
 
-    cursors.form.set('isValid', formIsValid);
-    cursors.form.set('isPristine', false);
+    formCursor.set('isValid', formIsValid);
+    formCursor.set('isPristine', false);
 
     return formIsValid;
   }
@@ -145,6 +145,7 @@ module.exports = function(core){  // generates the 'Form' function
     else{
       value = eventOrValue;
     }
+
     core.run(`core.forms.set`, {
       form: formName,
       input: inputName,
@@ -166,6 +167,25 @@ module.exports = function(core){  // generates the 'Form' function
       input: inputName,
       value: value
     });
+  }
+
+  function submitForm(formName) {
+    console.debug("formName", formName);
+    core.run(`core.forms.submit`, {
+      form: formName
+    });
+  }
+
+  function inputValidation(formName, inputName) {
+
+    var cursors = getCursors(formName, inputName);
+    var error = validateInput(cursors);
+
+    // set or unset this input's error in the form's errors object
+    var formError = cursors.form.select('errors', inputName);
+    if(error) formError.set(error);
+    else formError.unset();
+
   }
 
   // sets default values for the form and it's inputs, sets initial form data and stores the definition for a reset.
@@ -193,10 +213,12 @@ module.exports = function(core){  // generates the 'Form' function
       input.set = setInput.bind(input, formName, inputName);
       input.push = pushToInput.bind(input, formName, inputName);
       input.delete = deleteFromInput.bind(input, formName, inputName);
+      input.validate = inputValidation.bind(input, formName, inputName);
       inputs[inputName] = input;
     }
     form.inputs = inputs;
     form.definition = definition;
+    form.submit = submitForm.bind(form, formName);
     form.data = getFormData(form);
 
     return form;
@@ -232,7 +254,7 @@ module.exports = function(core){  // generates the 'Form' function
     if(error) formError.set(error);
     else formError.unset();
 
-    var formIsValid = validateForm(cursors);
+    var formIsValid = validateForm(cursors.form);
 
     // commit the tree and return the value
     core.tree.commit();
@@ -261,7 +283,7 @@ module.exports = function(core){  // generates the 'Form' function
     if(error) formError.set(error);
     else if(formError.exists()) formError.unset();
 
-    var formIsValid = validateForm(cursors);
+    var formIsValid = validateForm(cursors.form);
 
     // commit the tree and return the value
     core.tree.commit();
@@ -293,7 +315,7 @@ module.exports = function(core){  // generates the 'Form' function
     if(error) formError.set(error);
     else if(formError.exists()) formError.unset();
 
-    formIsValid = validateForm(cursors);
+    formIsValid = validateForm(cursors.form);
 
     // commit the tree and return the value
     core.tree.commit();
@@ -309,14 +331,27 @@ module.exports = function(core){  // generates the 'Form' function
   });
 
   // submit the form
-  core.Action(`core.forms.submit`, function(data, promise){
+  core.Action(`core.forms.submit`, {
+    form: 'string ~ object!',
+  }, ({ form }, promise)=>{
 
+    var formCursor = getFormCursor(form);
     var form = formCursor.get();
+    for(var m in form.inputs){
+      if(form.inputs[m].isPristine){
+        form.inputs[m].validate();
+      }
+    }
+    var formIsValid = validateForm(formCursor);
     if(!form.isValid){
       return promise.reject();
     }
-    formCursor.set('isSubmitted', true);
-
+    formCursor.set('isSubmitting', true);
+    if(form.action){
+      core.run(form.action, form.data)
+        .then(promise.resolve)
+        .catch(promise.reject);
+    }
   });
 
   return function Form(formName, definition){  // defines a form on the tree and sets up default values.

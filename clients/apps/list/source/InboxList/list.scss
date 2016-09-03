@@ -1,0 +1,304 @@
+/*******************************************************************
+ * SASS Stuff
+ ******************************************************************/
+$animation_speed: 150ms;
+
+// Mixin for the box shadow.  Ripped verbatim from Google Inbox :)
+@mixin shadow() {
+    bottom: 0;
+    box-shadow: 0 -1px 0 #e5e5e5,0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
+    content: '';
+    display: block;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+
+/*******************************************************************
+ * DEFAULT STYLES
+ *
+ * Just fer lookin...
+ ******************************************************************/
+
+
+.inbox-list{
+  .wrapper {
+      width: 66.66%;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+
+      // No special signficance of this number, just pushing it down from the top
+      padding-top: 60px;
+  }
+
+  // Pretend this is a real icon...
+  .icon {
+      height: 28px;
+      width: 28px;
+      border-radius: 14px;
+      background: seagreen;
+  }
+
+  .message {
+      background: #fff;
+  }
+
+  .message__summary {
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      width: 100%;
+
+      .message__summary__icon {
+          padding: 10px 22px;
+      }
+
+      .message__summary__body {
+          padding-left: 16px;
+          color: lighten(#333, 30%);
+      }
+
+      &:before {
+          @include shadow();
+      }
+  }
+
+  .message__details {
+
+      line-height: 1.5;
+      width: 100%;
+
+      .message__details__header {
+          display: flex;
+          align-items: center;
+          background: #fff;
+          cursor: pointer;
+          padding: 16px 20px;
+
+          &:before {
+              @include shadow();
+          }
+          h1 {
+              line-height: 1;
+              margin: 0;
+          }
+      }
+
+      .message__details__body {
+          border-top: 1px solid #e5e5e5;
+      }
+
+      .message__details__body__icon {
+          float: left;
+          width: 40px;
+          height: 40px;
+          margin: 16px 20px;
+      }
+
+      .message__details__body__content {
+          margin: 0 20px 16px 80px;
+          padding: 0 16px 16px;
+          text-align: justify;
+      }
+  }
+
+
+
+  /*******************************************************************
+   * FIXED / ABSOLUTE STYLES
+   ******************************************************************/
+
+  // The message needs relative positioning for when we absolutely place the
+  // header at the bottom
+  .message {
+      position: relative;
+  }
+
+  // The "pusher" div only displays when in fixed or absolute mode
+  .pusher {
+      display: none;
+  }
+
+  // When fixed or absolute, we bring in the "pusher" div that keeps the content in place visually
+  // The height is set via Javascript
+  .message--fixed,
+  .message--absolute {
+      .pusher {
+          display: block;
+      }
+  }
+
+  // When fixed, the header is well...fixed.
+  // We purposefully only set the top value and not the left value here to
+  // make sure the header doesn't stray from its parent
+  .message--fixed .message__details__header {
+      position: fixed;
+      top: 0;
+  }
+
+  // When absolute, we place the header at the bottom of the container to give the
+  // effect like it's scrolling with the window again
+  .message--absolute .message__details__header {
+      position: absolute;
+      bottom: 0;
+  }
+
+
+
+  /*******************************************************************
+   * ANIMATION STYLES
+   ******************************************************************/
+
+  // Message details start out hidden and are brought in via Javascript
+  .message__details {
+      display: none;
+  }
+
+  // The grower's height will get set via Javascript so we'll make sure to
+  // transition it when it's changed
+  .grower {
+      height: 0;
+      background: #fff;
+      will-change: height;
+      transition: height $animation_speed;
+  }
+
+  // The message's margins will change to give the horizontal growing effect
+  .message {
+      transition: margin $animation_speed;
+  }
+
+  .message--opening,
+  .message--open {
+      margin-left: -20px;
+      margin-right: -20px;
+      margin-bottom: 20px;
+      margin-top: 20px;
+  }
+
+  // Opening animation class
+  // Only applied when animating, it's removed after the animation
+  .message--opening {
+
+      // Unhide the details, but keep them off screen
+      .message__details {
+          display: block;
+          position: absolute;
+          left: -50000px;
+          width: 100%;
+      }
+
+      // Hide the pseudo element when animating (the box-shadow) so it looks like
+      // the summary itself is growing.  We'll then fade out the summary.
+      .message__summary {
+          &:before {
+              display:none;
+          }
+          animation: fade-out $animation_speed forwards;
+      }
+
+  }
+
+  // Opened class.  Applied after the open animation.
+  .message--open {
+      .message__summary {
+          display: none;
+      }
+
+      .grower {
+          display: none;
+      }
+
+      // We now bring in the details with a fade-in but delay the animation
+      .message__details {
+          display: block;
+          position: static;
+          opacity: 0.0001;
+          animation-name: fade-in;
+          animation-duration: $animation_speed;
+          animation-fill-mode: forwards;
+      }
+  }
+
+  // Closing class.  Applied when closing and removed after
+  .message--closing {
+
+      // Fade in both the pseudo element and summary element
+      .message__summary {
+          &:before {
+              display: block;
+              opacity: 0;
+              animation-name: fade-in;
+              animation-duration: $animation_speed;
+              animation-fill-mode: forwards;
+          }
+
+          // Only display flex because that's how I declared it before in my
+          // layout.  No special significance
+          display: flex;
+
+          opacity: 0;
+          animation-name: fade-in;
+          animation-duration: $animation_speed;
+          animation-fill-mode: forwards;
+      }
+
+      // The grower will have kept its height applied from the Javascript.  We can
+      // now animate it to zero.
+      .grower {
+          animation: shrink $animation_speed / 4 forwards;
+      }
+  }
+  .fixed-header{
+    position: absolute;
+    top: -66px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    transition: 0.4s ease;
+    transform: translate3d(0, 0, 0);
+
+    &.opened{
+      transform: translate3d(0, 66px, 0);
+    }
+
+  }
+}
+
+
+/*******************************************************************
+ * KEYFRAMES
+ ******************************************************************/
+
+@keyframes fade-out {
+    0%,33% {
+        opacity: 0.9999;
+    }
+
+    100% {
+        opacity: 0.0001;
+    };
+}
+
+@keyframes fade-in {
+    0%,33% {
+        opacity: 0.0001;
+    }
+
+    100% {
+        opacity: 0.9999;
+    };
+}
+
+@keyframes shrink {
+    to {
+        height: 0;
+    };
+}
