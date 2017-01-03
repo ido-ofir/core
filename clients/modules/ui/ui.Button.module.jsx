@@ -32,7 +32,9 @@ core.Component('ui.Button', {
   },
 
   getInitialState(){
-    return this.watch({ pallete: ['core', 'theme', 'palletes', { name: this.props.type || 'primary' }, 'pallete'] })
+    return this.watch({
+      pallete: ['core', 'theme', 'palletes', { name: this.props.type || 'primary' }, 'pallete']
+    });
   },
 
   getDefaultProps(){
@@ -47,7 +49,7 @@ core.Component('ui.Button', {
   },
 
   render () {
-    var pallete = this.state.pallete;
+      var pallete = this.state.pallete;
 
       var hollow = this.props.hollow;
       var disabled = this.props.disabled;

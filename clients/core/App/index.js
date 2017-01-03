@@ -1,1 +1,1 @@
-module.exports = require('./App.jsx');
+module.exports = require('./App.js');

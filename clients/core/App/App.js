@@ -1,76 +1,49 @@
 
 var React = require('react');
-var utils = require('./utils');
-var Injector = require('./Injector');
-var Renderer = require('./Renderer');
-var Bindings = require('./Bindings.jsx');
-var App, AppFunction = require('./App');
 var Baobab = require('baobab');
 
-var Emitter = utils.Emitter;
+module.exports = function (core) {
 
-function Core(name, tree) {
+  function App(definition) {
 
-  this.name = name;
-  this.events = {};
-  this.apps = {};
-  this.tree = new Baobab(tree);
-  this.injector = Injector();
+    var app = this;
+    app.name = definition.name;
+    app.isLoaded = false;
+    app.tree = new Baobab(definition.tree);
+    app.modules = {};
+    app.components = {};
+    app.actions = {};
+    app.plugins = {};
+    app.types = { ...core.types };
+    app.injector = core.Injector((loadedModule, data, dependencies)=>{
+      app.modules[data.name] = loadedModule;
+    });
+    app.loadContext = app.injector.loadContext;
+    app.require = app.injector.require;
+    app.PropTypes = { ...React.PropTypes };
 
-}
-
-Core.prototype = {
-    App(def){
-      if(!def.name){ throw new Error('an app must have a name'); }
-      var app = new App(def);
-      var dependencies = def.dependencies || [];
-      this.apps[name] = app;
-      return this.injector.load(def.name, dependencies, (...modules) => {
-        if(app.init){ app.init(...modules); }
-        return app;
-      });
-      return app;
-    },
-    require(...args){
-      return this.injector.require(...args);
-    },
-    utils: utils,
-    Injector: Injector,
-    types: {
-      undefined(v){ return core.isUndefined(v); },
-      null(v){ return core.isNull(v); },
-      boolean(v){ return core.isBoolean(v); },
-      string(v){ return core.isString(v); },
-      number(v){ return core.isNumber(v); },
-      array(v){ return core.isArray(v); },
-      object(v){ return core.isObject(v); },
-      function(v){ return core.isFunction(v); },
-      any(v){ return true; }
-    },
-    typeOf(thing){
-      for(var type in this.types){
-        if(this.types[type](thing)) return type;
+    for(var m in definition){ // bind all functions to app.
+      if(core.isFunction(definition[m])){
+        app[m] = definition[m].bind(app);
       }
-    },
-    isUndefined(v){ return v === undefined; },
-    isNull(v){ return v === null; },
-    isBoolean(v){ return typeof v === 'boolean'; },
-    isString(v){ return typeof v === 'string'; },
-    isNumber(v){ return typeof v === 'number'; },
-    isArray(v){ return Array.isArray(v); },
-    isObject(v){ return (v instanceof Object && !(Array.isArray(v))); },
-    isFunction(v){ return typeof v === 'function'; },
-    emptyObject: {},
-    emptyArray: [],
-    emptyFunction(){},
-    createElement(type, props, ...children){  // look for global props.
-      // return the rendered element.
-      return React.createElement(type, props, ...children);
-    },
-    Bindings: Bindings,
-    on: Emitter.prototype.on,
-    off: Emitter.prototype.off,
-    emit: Emitter.prototype.emit,
+    }
+
+    if(definition.modules){
+      definition.modules.map(m => {
+        'value' in m ?
+          app.Module(m.name, m.value) :
+          app.Module(m.name, m.dependencies || [], m.get)
+      });
+    }
+    if(definition.components){
+      definition.components.map(c => app.Component(c.name, c.dependencies || [], c.get))
+    }
+    if(definition.actions){
+      definition.actions.map(action => { this.actions[action.name] = action; })
+    }
+  }
+
+  App.prototype = core.utils.Emitter({
     set(path, value){
       return this.tree.set(path, value);
     },
@@ -143,10 +116,8 @@ Core.prototype = {
     View({ name, bindings, template }){
 
     }
-};
+  });
 
-var core = new Core('core', {});
+  return App;
 
-App = AppFunction(core);
-
-module.exports = core;
+}

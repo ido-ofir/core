@@ -181,12 +181,11 @@ module.exports = function Injector(constructed){
     modules: modules,
     contexts: contexts,
     load(name, dependencies, method){
-      // console.log('loading', name);
       if(activeContext && pathToSet){
         activeContext[name] = pathToSet;
       }
       var composedModule;
-      if(notUnique(name)) return;
+      if(notUnique(name)) throw new Error(`${name} is declared twice`);
 
       if(Array.isArray(dependencies) && method instanceof Function){   // normal call with array of dependencies and callback.
 
