@@ -17,11 +17,13 @@ var merge = require('./merge.js');
 var unset = require('./unset.js');
 var except = require('./except.js');
 var equals = require('./equals.js');
+var ArrayFind = require('./ArrayFind.js');
 
 module.exports = {
   Emitter: Emitter,
   Promise: Promise,
   Transform: Transform,
+  ArrayFind: ArrayFind,
   debounce: debounce,
   uuid: uuid,
   // animation: animation,

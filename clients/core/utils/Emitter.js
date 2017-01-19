@@ -7,9 +7,9 @@ Emitter.prototype = {
   on(eventName, listener){  // return false in listener to stop the event
     var event = this.events[eventName];
     if (!event) {
-        event = this.events[eventName] = {listeners: []};
+        event = this.events[eventName] = [];
     }
-    event.listeners.push(listener);
+    event.push(listener);
     return this;
   },
   off(eventName, listener){
@@ -23,10 +23,10 @@ Emitter.prototype = {
     }
     var event = this.events[eventName];
     if (event) {
-        event.listeners = event.listeners.filter((l)=>{
+        event = this.events[eventName] = event.filter((l)=>{
           return (l === listener);
         });
-        if (!event.listeners.length) delete this.events[eventName];
+        if (!event.length) delete this.events[eventName];
     }
     return this;
   },
@@ -34,8 +34,8 @@ Emitter.prototype = {
     var cont, event = this.events[eventName];
     if (!event) return;
     var args = [].slice.call(arguments, 1);
-    for (var i = 0; i < event.listeners.length; i++) {
-        cont = event.listeners[i].apply(null, args);
+    for (var i = 0; i < event.length; i++) {
+        cont = event[i].apply(null, args);
         if (cont === false) break;
     }
     return this;

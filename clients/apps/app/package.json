@@ -8,5 +8,9 @@
   },
   "author": "ido.ofir",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+    "brace": "^0.9.1",
+    "react-ace": "^4.1.0",
+    "react-select": "^1.0.0-rc.2"
+  }
 }

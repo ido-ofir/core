@@ -99,13 +99,14 @@ module.exports = function Injector(constructed){
     if(notUnique(item.name)) return;
     var constructedModule = item.method.apply(null, dependencies);
     modules[item.name] = constructedModule;
+    if(item.callback) item.callback(constructedModule);
     if(constructed){
       constructed(constructedModule, item, dependencies);
     }
   }
 
   function runRequire(item, dependecies){
-    item.cb.apply(null, dependecies);
+    item.callback.apply(null, dependecies);
   }
 
   function test(){
@@ -157,6 +158,7 @@ module.exports = function Injector(constructed){
   }
 
   function notUnique(name){
+    return false;
     if(modules[name]){
         console.error(`there is more than one module called '${name}', module names must be unique..`);
         return true;
@@ -180,7 +182,7 @@ module.exports = function Injector(constructed){
     resolved: lists.resolved,
     modules: modules,
     contexts: contexts,
-    load(name, dependencies, method){
+    load(name, dependencies, method, callback){
       if(activeContext && pathToSet){
         activeContext[name] = pathToSet;
       }
@@ -193,7 +195,8 @@ module.exports = function Injector(constructed){
           lists.delayed.push({
               name: name,
               dependencies: dependencies,
-              method: method
+              method: method,
+              callback: callback
           });
         }
         else{                              // no dependecies - load sync.
@@ -220,11 +223,11 @@ module.exports = function Injector(constructed){
       test();
       return module;
     },
-    require(dependency, cb){
+    require(dependency, callback){
       var dependencies = Array.isArray(dependency) ? dependency : [dependency];
       lists.requires.push({
         dependencies: dependencies,
-        cb: cb
+        callback: callback
       });
       test();
     },

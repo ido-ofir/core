@@ -6,9 +6,7 @@
   "dependencies": {
     "baobab": "^2.2.0",
     "q": "^1.4.1",
-    "react": "^15.0.2",
-    "string-template": "^1.0.0",
-    "superagent": "^1.5.0"
+    "react": "^15.0.2"
   },
   "scripts": {},
   "author": "ido-ofir",

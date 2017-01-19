@@ -39,6 +39,7 @@ function typeOf(thing, types){
 
 module.exports = function (schema, types, params, actionName) {
   var name, i, param, passed, type, valid;
+  if(!params) params = {};
   for(name in schema){  // validate required params and param types.
     param = parseSchema(schema[name]);
     if(param.required){  // if it's required and missing - fail.

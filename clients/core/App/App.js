@@ -2,121 +2,162 @@
 var React = require('react');
 var Baobab = require('baobab');
 
+
+
 module.exports = function (core) {
 
-  function App(definition) {
+  // var structure = core.Array([{
+  //   name: 'plugins',
+  //   builder: 'Plugin'
+  // },{
+  //   name: 'modules',
+  //   builder: 'Module'
+  // },{
+  //   name: 'components',
+  //   builder: 'Component'
+  // },{
+  //   name: 'views',
+  //   builder: 'View'
+  // },{
+  //   name: 'templates',
+  //   builder: 'Template'
+  // },{
+  //   name: 'actions',
+  //   builder: 'Action'
+  // }]);
+
+  function update(path, source) {
 
     var app = this;
-    app.name = definition.name;
-    app.isLoaded = false;
-    app.tree = new Baobab(definition.tree);
-    app.modules = {};
-    app.components = {};
-    app.actions = {};
-    app.plugins = {};
-    app.types = { ...core.types };
-    app.injector = core.Injector((loadedModule, data, dependencies)=>{
-      app.modules[data.name] = loadedModule;
-    });
-    app.loadContext = app.injector.loadContext;
-    app.require = app.injector.require;
-    app.PropTypes = { ...React.PropTypes };
 
-    for(var m in definition){ // bind all functions to app.
-      if(core.isFunction(definition[m])){
-        app[m] = definition[m].bind(app);
+    if(arguments.length === 1){
+      source = path;
+      path = [];
+    }
+
+    var lastSource = this.source || {};
+
+    if(!path.length){
+
+      app.name = source.name;
+      if(source.tree){
+        if(source.tree !== lastSource.tree){
+          var built = app.build(source.tree);
+          if(app.tree) app.tree.set(built);
+          else{
+            app.tree = new Baobab(built);
+          }
+        }
       }
+      // structure.map((branch) => {  // inherit all fields in structure from core.
+      //   var name = branch.name;
+      //   if(!app[name]) app[name] = Object.create(core[name]);
+      // });
+      if(!app.plugins) app.plugins = Object.create(core.plugins);
+      if(!app.modules) app.modules = Object.create(core.modules);
+      if(!app.components) app.components = Object.create(core.components);
+      if(!app.views) app.views = Object.create(core.views);
+      if(!app.templates) app.templates = Object.create(core.templates);
+      if(!app.actions) app.actions = Object.create(core.actions);
+      if(!app.builders) app.builders = Object.create(core.buildres);
+
+
+
+      for(var m in source){ // bind all functions to app.
+        if(core.isFunction(source[m])){
+          app[m] = source[m].bind(app);
+        }
+      }
+
+      if(source.modules){
+        source.modules.map(m => {
+          app.Module(m);
+        });
+      }
+      if(source.components){
+        source.components.map((c) => {
+          app.Component(c);
+        });
+      }
+      if(source.views){
+        source.views.map((v) => {
+          app.View(v);
+        });
+      }
+      if(source.templates){
+        source.templates.map((t) => {
+          app.Template(t);
+        });
+      }
+      if(source.actions){
+        source.actions.map((action) => {
+          app.Action(action)
+        });
+      }
+
+      if(source.root){
+        var Root = (
+          core.isString(source.root) ?
+            app.components[source.root] :
+            app.View(source.root)
+        );
+
+        app.Root = React.createClass({
+          childContextTypes: {
+            app: React.PropTypes.object
+          },
+          getChildContext(){
+            return {
+              app: app
+            };
+          },
+          componentDidMount(){
+            app.on('update', this.update);
+          },
+          componentWillUnmount(){
+            app.off('update', this.update);
+          },
+          update(){
+            this.forceUpdate();
+          },
+          render(){
+            return <Root app={ app } { ...this.props }>{ this.props.children }</Root>
+          }
+        });
+      }
+
+      app.source = source;
+      app.emit('update', { path, source });
     }
 
-    if(definition.modules){
-      definition.modules.map(m => {
-        'value' in m ?
-          app.Module(m.name, m.value) :
-          app.Module(m.name, m.dependencies || [], m.get)
-      });
-    }
-    if(definition.components){
-      definition.components.map(c => app.Component(c.name, c.dependencies || [], c.get))
-    }
-    if(definition.actions){
-      definition.actions.map(action => { this.actions[action.name] = action; })
+    else{
+      var type = path[0];
+      var builder = this.builders[type];
+      if(!builder) {
+        var single = type.substr(0, type.length - 1);
+        builder = this.builders[single];
+        if(!builder) {
+          throw new Error(`cannot find builder '${type}' or '${single}'`);
+        }
+      }
+      builder.call(this, source);
+      app.emit('update', { path, source });
     }
   }
 
-  App.prototype = core.utils.Emitter({
-    set(path, value){
-      return this.tree.set(path, value);
-    },
-    get(path){
-      return this.tree.get(path);
-    },
-    Module(name, dependencies, method){
-      this.injector.load(name, dependencies, method);
-    },
-    Component(name, dependencies, method){
-      var component, definition;
-      if(!method){
-        definition = dependencies;
-        dependencies = [];
-      }
-      return this.injector.load(name, dependencies, (...modules) => {
-        if(method){
-          definition = method.apply(this, modules);
-        }
-        if(definition instanceof Function){ // stateless component function
-          component = definition;
-        }
-        else{
-          definition = { ...definition };
-          definition.propTypes = core.utils.getPropTypes(definition.propTypes, this.PropTypes);
-          definition.childContextTypes = core.utils.getPropTypes(definition.childContextTypes, this.PropTypes);
-          component.displayName = name;
-          if(definition.enhancers){  // enhancers is an array of higher order constructors.
-            definition.enhancers.map((higherOrder)=>{
-              component = higherOrder(component);
-            });
-          }
-        }
+  function App(source) {
 
-        this.components[name] = component;
-        return component;
-      });
-    },
-    Action(name, schema, run){
-      if(!run && schema instanceof Function){  // allow schemaless actions
-        run = schema;
-        schema = {};
-      }
-      this.actions[name] = {
-        name: name,
-        schema: schema,
-        run: run
-      };
-    },
-    run(name, data){
-      var action = this.actions[name];
-      if(!action) throw new Error(`cannot find action '${name}'`);
-      if(!data) data = {};
-      var defered = core.utils.Promise();
-      core.utils.validateSchema(action.schema, this.types, data, action.name);
-      action.run.call(this, data, defered);
-      return defered.promise;
-    },
-    typeOf(thing){
-      for(var type in this.types){
-        if(this.types[type](thing)) return type;
-      }
-    },
-    bind(bindings, render){
-      return <core.Bindings bindings={ bindings } render={ render } tree={ this.tree }/>
-    },
-    view(name){
+    var app = this;
+    app.core = core;
+    app.update = update.bind(app);
+    app.update(source);
+    app.emit('load');
 
-    },
-    View({ name, bindings, template }){
+  }
 
-    }
-  });
+  App.prototype = core;
+
+  // App.structure = structure;
 
   return App;
 
