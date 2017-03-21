@@ -1,5 +1,5 @@
 
-var core = window.core = require('core');
+var core = require('core');
 var counts = {};
 var count = 0;
 var compile = window.compile = {
@@ -25,6 +25,7 @@ ${ source }
   }
 };
 module.exports = {
+  $_type: 'module',
   name: 'compile',
   value: compile
 };

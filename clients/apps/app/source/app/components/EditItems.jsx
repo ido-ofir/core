@@ -2,9 +2,10 @@
 var React = require('react');
 
 module.exports = {
+    $_type: 'component',
     name: 'EditItems',
     dependencies: ['Editor'],
-    get(Editor, compile){
+    get(Editor){
       return {
         propTypes: {
           type: 'string',
@@ -28,6 +29,9 @@ module.exports = {
           if(!items) return null;
           var { selectedIndex } = this.state;
           var item = items[selectedIndex];
+          var app = this.app;
+          console.log('items', items);
+          
 
           return (
             <div style={{ height: '100%', display: 'flex'}}>
@@ -37,7 +41,7 @@ module.exports = {
                     <div key={ i }
                          onClick={ e => this.setState({ selectedIndex: i }) }
                          style={{ padding: 10, cursor: 'pointer', background: (selectedIndex === i) ? '#ddd' : '#fff', borderBottom: '1px solid #bbb' }}>
-                      { item.name }
+                      { app.build(item.name) }
                     </div>
                   )
                 }

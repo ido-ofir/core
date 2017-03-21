@@ -3,6 +3,7 @@ var core = require('core');
 var source =
 `
 ({
+    $_type: 'action',
     name: 'yo',
     get(){
 
@@ -16,29 +17,57 @@ var source =
 var compiled =
 `
 (function(){
-return {
-name: 'yo',
-get: function(){
 
-return function(){
-  alert(333);
-};
+  return function(){
+    alert('go');
+  };
 
-}
-};
-}())
+})
 `;
 module.exports = core.App({
   name: 'test',
-  tree: {},
-  components: [],
-  modules: [],
-  actions: [{
-    $_type: 'code',
-    name: 'yo',
-    source: source,
-    compiled: compiled
-  }],
-  views: [],
-  templates: [],
+  tree: {
+    wow: 'asd'
+  },
+  components: {
+    $_type: 'array',
+    ofType: 'component',
+    items: []
+  },
+  types: {
+    $_type: 'array',
+    ofType: 'type',
+    items: []
+  },
+  modules: {
+    $_type: 'array',
+    ofType: 'module',
+    items: []
+  },
+  actions: {
+    $_type: 'array',
+    ofType: 'action',
+    items: [{
+      $_type: 'action',
+      name: {
+        $_type: 'string',
+        value: 'go'
+      },
+      get: {
+        $_type: 'function',
+        source: compiled,
+        compiled: compiled,
+      }
+    }]
+  },
+  views: {
+    $_type: 'array',
+    ofType: 'view',
+    items: []
+  },
+  templates: {
+    $_type: 'array',
+    ofType: 'template',
+    items: []
+  },
 });

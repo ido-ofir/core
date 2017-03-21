@@ -13,6 +13,7 @@ require('brace/mode/jsx');
 var themes = `monokai github tomorrow kuroir twilight xcode textmate ambiance dawn merbivore_soft terminal`.split(' ');
 
 module.exports = {
+  $_type: 'component',
   name: 'Editor',
   get(){
 

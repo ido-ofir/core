@@ -1,25 +1,27 @@
 
 module.exports = [{
+  $_type: 'action',
   name: 'setSource',
   schema: {
-    'source': 'object!',
+    'source': 'any',
     'path': 'array'
   },
   dependencies: [],
   get(){
       return ({ source, path }) => {
-        console.debug("source", source, path);
+        console.log('1');
+        
         var sourcePath = path ? [ ...path ] : [];
         sourcePath.unshift('source');
 
-        console.log('setting', sourcePath, source);
+        console.log(sourcePath, source);
         this.set(sourcePath, source);
         this.editedApp.update(path, source);
         // console.log('setSource', { source, path });
       }
   }
 },{
-  // $_type: 'action',
+  $_type: 'action',
   name: 'save',
   schema: {
     'item': 'object!',
@@ -35,40 +37,4 @@ module.exports = [{
 
       }
   }
-},{
-  name: 'test',
-  $_type: 'code',
-  source:
-`
-return {
-    name: 'test',
-    schema: {
-        'code': 'string'
-    },
-    get(){
-
-        return ()=>{
-          alert(56);
-        };
-
-    }
-};
-`,
-  compiled:
-`
-(function(){
-return {
-  name: 'test',
-  schema: {
-    'code': 'string'
-  },
-  get: function get() {
-
-    return function () {
-      alert(77);
-    };
-  }
-};
-}())
-`
 }];

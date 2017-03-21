@@ -1,14 +1,15 @@
 var React = require('react');
-var core = require('core');
+var core = window.core = require('core');
 var components = require('./components/components.js');
 var modules = require('./modules/modules.js');
 var tree = require('./tree/tree.js');
 var actions = require('./actions/actions.js');
 var views = require('./views/views.js');
+var plugins = require('./plugins/plugins.js');
 
 var editedApp = require('./editedApp');
-
-var app = window.app = core.App({
+var app = window.xApp = core.build({
+  $_type: 'app',
   name: 'coreEditor',
   tree: tree,
   components: components,
@@ -16,19 +17,13 @@ var app = window.app = core.App({
   actions: actions,
   views: views,
   templates: [],
+  plugins: plugins,
   types: [{
-    'name': 'myNumber',
-    'schema': {}
+    $_type: 'type',
+    name: 'kokoloko'
   }],
-  init(app){
-
-    app.editedApp = window.editedApp = editedApp;
-
-    app.run('setSource', { source: this.editedApp.source, path: [] });
-
-  },
   root: {
-    name: 'CoreEditor',
+    name: 'CoreEditorRoot',
     dependencies: [
       'EditItems'
     ],
@@ -36,6 +31,8 @@ var app = window.app = core.App({
       'source': 'source'
     },
     get(EditItems){
+
+      var app = this;
 
       return {
 
@@ -50,42 +47,32 @@ var app = window.app = core.App({
         },
 
         onSave({ code, item, type }){
-          this.app.run('save', { code, item, type });
+          app.run('save', { code, item, type });
+        },
+
+        onChange(path, source){
+          console.debug('change', path, source);
+          app.run('setSource', { path: path, source: source })
         },
 
         render() {
 
+          
           var { source } = this.props;
-          var { selectedIndex } = this.state;
           if(!source) return null;
-          var structure = this.app.get('structure');
-          var type = structure[selectedIndex].name;
-          console.log(this.props);
+          var { renderers, popup } = app.plugins;
+          var map = core.mapTypes(source);
+          var res = renderers.render({
+            source: source,
+            path: [],
+            onChange: this.onChange,
+            map: map
+          });
+
           return (
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1, maxHeight: 40, borderBottom: '1px solid #ddd', alignItems: 'center', padding: 10 }}>
-                  <div>{ app.editedApp && app.editedApp.name }</div>
-                </div>
-                <div style={{ flex: 1, display: 'flex' }}>
-                  <div style={{ borderRight: '1px solid #bbb', minWidth: 120 }}>
-                    {
-                      structure.map((item, i) =>
-                        <div key={ i }
-                             onClick={ e => this.setState({ selectedIndex: i }) }
-                             style={{ padding: 10, cursor: 'pointer', background: (selectedIndex === i) ? '#ddd' : '#fff' }}>
-                          { item.name }
-                        </div>
-                      )
-                    }
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <EditItems items={ source[type] } onSave={ this.onSave } type={ this.state.type }/>
-                  </div>
-                  <div style={{ flex: 1 }}>
-
-                  </div>
-                </div>
-
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom:0,  display: 'flex' }}>
+              { res }
+              { popup.render() }
             </div>
           );
 
@@ -95,6 +82,7 @@ var app = window.app = core.App({
   },
 });
 
-
+app.editedApp = window.editedApp = editedApp;
+app.set('source', editedApp.source);
 
 module.exports = app;

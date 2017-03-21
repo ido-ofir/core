@@ -1,8 +1,8 @@
 {
   "name": "client-core",
-  "version": "0.0.1",
-  "description": "frontend toolchain for (mostly) webpack and react",
-  "main": "index.js",
+  "version": "0.0.21",
+  "description": "frontend toolchain",
+  "main": "index.jsx",
   "dependencies": {
     "baobab": "^2.2.0",
     "q": "^1.4.1",
