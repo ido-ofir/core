@@ -145,7 +145,12 @@ var core = window.core = new Core({
         return defered.promise;
       },
       bind(bindings, render){
-        return <Bindings bindings={ bindings } render={ render } tree={ this.tree }/>
+        var props = {
+          bindings: bindings,
+          render: render,
+          tree: this.tree
+        };
+        return React.createElement(Bindings, props);
       },
       Bindings: Bindings,
       bequeath(definition, options) {
