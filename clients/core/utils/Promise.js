@@ -1,7 +1,8 @@
 
 var Q = require('q');
 
-function callback(err, ...args) {
+function callback(err, rest) {
+  var args = [].slice.call(arguments);
   if(err !== null){
     return this.reject(err);
   }

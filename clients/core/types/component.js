@@ -11,7 +11,8 @@ module.exports = {
     }
     if(!dependencies) dependencies = [];
     if(!this.isArray(dependencies)) dependencies = [dependencies];
-    var component = this.injector.load(name, dependencies, (...modules) => {
+    var component = this.injector.load(name, dependencies, (modules) => {
+      modules = [].slice.call(arguments);
       if( !hasValue ){
         componentDefinition = get.apply(this, modules);
       }

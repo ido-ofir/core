@@ -71,7 +71,7 @@ function update(path, source) {
     app.name = build.name;
     if (build.tree) {
       if (source.tree !== lastSource.tree) {
-        tree = { ...build.tree }
+        tree = Object.assign({}, build.tree);
         if(build.plugins){
           tree.plugins = {};
           for(var index in build.plugins){
@@ -122,11 +122,8 @@ function update(path, source) {
           this.forceUpdate();
         },
         render() {
-          return ( 
-            <Root app={ app } { ...this.props }>
-              { this.props.children }
-            </Root>
-          );
+          var props = Object.assign({ app: app }, this.props);
+          return React.createElement(Root, props, this.props.children);
         }
       });
     }

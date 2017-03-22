@@ -39,7 +39,8 @@ module.exports = {
           done(get.call(this));
         }
         else{
-          this.require(dependencies, (...modules)=>{
+          this.require(dependencies, (modules)=>{
+            modules = [].slice.call(arguments);
             done(get.apply(this, modules));
           })
         }

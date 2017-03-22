@@ -6,8 +6,9 @@ function typeOf(thing){ // return correct native type.
 
 function Core(options) {
 
-    if(!options) options = { name: 'core' };
-    this.name = options.name;
+    if(!options) options = {};
+    this.name = options.name || 'core';
+    this.definitions = {};
     this.plugins = {};
     this.constructor = Core;
     this.core = this;
@@ -32,9 +33,10 @@ Core.prototype = {
     emptyObject: {},
     emptyArray: [],
     emptyFunction(){},
-    call(func, ...args){
+    call(func){
         if(!this.isFunction(func)){ return func; }
-        return func.call(this, ...args);
+        var args = [].slice.call(arguments, 1);
+        return func.call(this, args);
     },
     extend(extend){
         for(var m in extend){
@@ -49,18 +51,25 @@ Core.prototype = {
     builders: {
         plugin: []
     },
-    make(name, data, done){
+    make(name, data, callback){
         
         var core = this;
         var index = 0;
+        var returned = false;
         var builder = this.builders[name];
         if(!builder) { throw new Error(`cannot find builder '${name}'`); }
         
+        function done(data){
+            if(returned){ throw new Error(`'${ name }' builder has returned twice`); }
+            returned = true;
+            if(callback) { callback(data); }
+        }
+
         function next(data){
+            if(index >= builder.length) return done(data);
             var tool = builder[index];
-            if(!tool) return (done && done(data));
             index++;
-            core.call(tool, data, next);
+            core.call(tool, data, next, done);
         }
 
         next(data);
@@ -70,15 +79,20 @@ Core.prototype = {
 
         if (!definition || !this.isObject(definition)) { throw new Error(`cannot create plugin from "${definition}"`); }
         if (!definition.name) { throw new Error(`a plugin's name is missing in Object ${ Object.keys(definition) }`); }
-
+        
+        this.definitions[definition.name] = definition;
+        
         this.make('plugin', definition, (plugin) => {
-            if(this.isFunction(plugin.init)){
-                plugin.init(this);
+            if(this.isFunction(definition.init)){
+                definition.init.call(this, plugin, (plugin) => {
+                    this.plugins[definition.name] = plugin;
+                    callback && callback(plugin);
+                });
             }
-            if(this.isFunction(callback)){
-                callback(plugin);
+            else{
+                this.plugins[definition.name] = plugin;
+                callback && callback(plugin);
             }
-            this.plugins[definition.name] = plugin;
         });
         
     }

@@ -21,8 +21,8 @@ module.exports = {
     var app = this;
     var { name, dependencies, get, schema } = definition;
     if(!dependencies) dependencies = [];
-    return app.injector.load(name, dependencies, (...modules) => {
-
+    return app.injector.load(name, dependencies, (modules) => {
+      modules = [].slice.call(arguments);
       var body = get.apply(this, modules);
 
       var component = this.createComponent(name, {

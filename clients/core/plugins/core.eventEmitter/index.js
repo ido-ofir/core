@@ -1,7 +1,8 @@
 module.exports = {
     name: 'core.eventEmitter',
-    init(core) {
-        core.extend({
+    init(plugin, done) {
+
+        this.extend({
             events: {},
             on(eventName, listener) { // return false in listener to stop the event
                 var event = this.events[eventName];
@@ -40,5 +41,8 @@ module.exports = {
                 return this;
             }
         });
+        
+        done();
+
     }
 };

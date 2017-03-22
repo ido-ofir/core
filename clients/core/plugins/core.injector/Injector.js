@@ -254,7 +254,7 @@ module.exports = function Injector(constructed){
       pathToSet = path;
     },
     getPaths(){
-      return { ...paths };
+      return paths;
     },
     loadContext: loadContext,
     notUnique: notUnique

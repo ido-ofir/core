@@ -1,4 +1,5 @@
 
+var assign = require('./assign.js');
 var Emitter = require('./Emitter.js');
 var Promise = require('./Promise.js');
 var Transform = require('./Transform.js');

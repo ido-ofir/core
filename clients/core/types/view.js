@@ -8,16 +8,15 @@ module.exports = {
     var view = app.Component({
       name: name,
       dependencies: dependencies,
-      get(...modules){
-
-        var Component = app.createComponent(name, get.call(this, ...modules));
-        // var render = get.call(this, ...modules)
+      get(modules){
+        modules = [].slice.call(arguments);
+        var Component = app.createComponent(name, get.apply(this, modules));
         return {
           render(){
 
             return this.app.bind(bindings, (state)=>{
 
-              var props = { ...this.props, ...state }
+              var props = Object.assign({}, this.props, state);
               return app.createElement({
                 type: Component,
                 props: props,

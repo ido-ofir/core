@@ -95,43 +95,55 @@ var core = window.core = new Core({
           return built;
         },
       
-      Type(definition){
-        if(!definition || !definition.name) throw new Error('type must have a name');
-        if(!definition['$_type']) { definition = Object.assign({ $_type: 'type' }, definition); }
+      getDefinitionObject(name, dependencies, get, type){
+        if(!name) throw new Error(`${type} must have a name`);
+        var definition;
+        if(this.isObject(name)){ definition = name; }
+        else{
+          if(get){
+            definition = {            
+              name: name,
+              dependencies: dependencies,
+              get: get
+            };
+          }
+          else{
+            definition = {            
+              name: name,
+              dependencies: [],
+              value: dependencies,
+            };
+          }
+        }
+        definition.$_type = type;     
+        return definition;
+      },
+      Type(name, dependencies, get){
+        var definition = this.getDefinitionObject(name, dependencies, get, 'type');    
         return this.build(definition);
       },
-      Module(definition){
-        if(!definition || !definition.name) throw new Error('module must have a name');
-        if(!definition['$_type']) { definition = Object.assign({ $_type: 'module' }, definition); }
+      Module(name, dependencies, get){
+        var definition = this.getDefinitionObject(name, dependencies, get, 'module');    
         return this.build(definition);
       },
       Component(name, dependencies, get){
-        if(!name) throw new Error('component must have a name');
-        return this.build({
-          $_type: 'component',
-          name: name,
-          dependencies: dependencies,
-          get: get
-        });
+        var definition = this.getDefinitionObject(name, dependencies, get, 'component');    
+        return this.build(definition);
       },
       View(definition, callback){
-        if(!definition || !definition.name) throw new Error('view must have a name');
-        if(!definition['$_type']) { definition = Object.assign({ $_type: 'view' }, definition); }
+        var definition = this.getDefinitionObject(name, dependencies, get, 'view');    
         return this.build(definition);
       },
       Template(definition, callback){
-        if(!definition || !definition.name) throw new Error('template must have a name');
-        if(!definition['$_type']) { definition = Object.assign({ $_type: 'template' }, definition); }
+        var definition = this.getDefinitionObject(name, dependencies, get, 'template');    
         return this.build(definition);
       },
       Action(definition){
-        if(!definition || !definition.name) throw new Error('action must have a name');
-        if(!definition['$_type']) { definition = Object.assign({ $_type: 'action' }, definition); }
+        var definition = this.getDefinitionObject(name, dependencies, get, 'action');    
         return this.build(definition);
       },
       App(definition){
-        if(!definition || !definition.name) throw new Error('app must have a name');
-        if(!definition['$_type']) { definition = Object.assign({ $_type: 'app' }, definition); }
+        var definition = this.getDefinitionObject(name, dependencies, get, 'app');    
         return this.build(definition);
       },
       run(name, data, promise){
@@ -197,7 +209,6 @@ function Core() {
   this.plugins = {};
   
   this.utils = utils;
-  this.PropTypes = { ...React.PropTypes };
   this.constructor = Core;
 
 }

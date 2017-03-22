@@ -9,7 +9,7 @@ function Set(name){
     if(!this.isArray(path)){
       path = [path];
     }
-    return this.tree.set(['plugins', name, ...path ], value);
+    return this.tree.set(['plugins', name].concat(path) , value);
   }
 }
 function Get(name){
@@ -17,7 +17,7 @@ function Get(name){
     if(!this.isArray(path)){
       path = [path];
     }
-    return this.tree.get(['plugins', name, ...path ]);
+    return this.tree.get(['plugins', name].concat(path));
   }
 }
 function Select(name){
@@ -25,7 +25,7 @@ function Select(name){
     if(!this.isArray(path)){
       path = [path];
     }
-    return this.tree.select(['plugins', name, ...path ]);
+    return this.tree.select(['plugins', name].concat(path));
   }
 }
 
@@ -56,7 +56,7 @@ module.exports = {
       this.plugins[name].select = Select(name);
     }
     else {
-      this.injector.load(name, dependencies, (...modules) => {
+      this.injector.load(name, dependencies, (modules) => {
         this.plugins[name] = definition;
         this.plugins[name].set = Set(name);
         this.plugins[name].get = Get(name);
