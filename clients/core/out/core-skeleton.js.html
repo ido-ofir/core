@@ -1,4 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core-skeleton.js</title>
 
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core-skeleton.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
 
 function typeOf(thing){
     var type = Object.prototype.toString.call(thing);
@@ -23,7 +51,7 @@ function Core(options) {
     core.constructor = Core;
     core.core = core;
     if(options.plugins){
-        options.plugins.map(plugin => core.plugin(plugin));
+        options.plugins.map(plugin => core.Plugin(plugin));
     }
     if(options.extend){
         core.extend(options.extend);
@@ -176,7 +204,7 @@ Core.prototype = {
             if(!core.isObject(source)) return;
             for(var key in source){
                 desc = Object.getOwnPropertyDescriptor(source, key);
-                if (desc && desc.enumerable) {
+                if (desc &amp;&amp; desc.enumerable) {
                     property = source[key]
                     target[key] = func ? func(property, key, source) : property;
                 }
@@ -190,7 +218,7 @@ Core.prototype = {
      * @param {object} properties - An 
      * @return {object} - Returns the target object ( the first parameter ).
      * @example
-     * core.extend({ getData(){ return this.myData; }, myData: 45 });
+     * core.extend({ getData(){ return this.myData; } }, myData: 45);
      * core.getData();  // 45.
      * */
     extend(properties){
@@ -210,34 +238,14 @@ Core.prototype = {
     },
     /** 
      * @function
-     * @description Adds a new builder to the builders namespace object.
-     * @param {string} name - The name of the builder.
-     * @param {array} array - Optional array of functions.
-     * @return {undefined}
-     * @example
-     * core.builder('collection');
-     * core.builders.collection; // [].
-     * */
-    builder(name, array){
-        if(!name) throw new Error('core.Builder was called without a name');
-        if(!this.isString(name)) throw new Error('core.Builder - expected first argument to be a string. got ${ this.typeOf(name) }');
-        if(!this.isArray(array)){
-            array = [];
-        }
-        this.builders[name] = array;
-    },
-    /** 
-     * @function
      * @description Runs data through a named builder.
      * @param {string} name - The name of the builder.
      * @param {any} data - Data to be passed through the builder.
-     * @param {function} callback - A function that will be called when the job completes.
-     * @return {undefined}
+     * @param {function} callback - A function that will be called for each property assingment.
+     * if provided, the assigned value will be the return value of this function.
+     * @return {object} - Returns the target object ( the first parameter ).
      * @example
-     * core.builder('dataType');
-     * core.make('dataType', {}, (dataType) => {
-     *     // dataType may have been altered by builder functions
-     * });
+     * core.extend();
      * */
     make(name, data, callback){
         
@@ -282,34 +290,18 @@ Core.prototype = {
         next.apply(null, args);
 
     },
-    /** 
-     * @function
-     * @description Adds a plugin to core instance.
-     * @param {object} definition - The plugin definition.
-     * @param {string} definition.name - The name of the plugin.
-     * @param {function} callback - A function that will be called when the job completes.
-     * @return {undefined}
-     * @example
-     * core.plugin('myPlugin', {
-     *     getData(){ return 47; }
-     * });
-     * core.plugins.myPlugin.getData();  // 47.
-     * */ 
-    plugin(definition, callback) {
-
-        var i, core = this;
-        if (!definition) { throw new Error(`cannot create plugin from "${definition}"`); }
-        if(core.isArray(definition)){
-            i = 0;
-            function done(){
-                i += 1;
-                if(1 >= definition.length){ callback && callback() }
-            }
-            return definition.map(function(def){
-                core.plugin(def, done);
-            });
+    Builder(name, array){
+        if(!name) throw new Error('core.Builder was called without a name');
+        if(!this.isString(name)) throw new Error('core.Builder - expected first argument to be a string. got ${ this.typeOf(name) }');
+        if(!this.isArray(array)){
+            array = [];
         }
-        if(!core.isObject(definition)){ throw new Error(`cannot create plugin from "${definition}"`); }
+        this.builders[name] = array;
+    },
+    Plugin(definition, callback) {
+
+        var core = this;
+        if (!definition || !core.isObject(definition)) { throw new Error(`cannot create plugin from "${definition}"`); }
         if (!definition.name) { throw new Error(`a plugin's name is missing in Object ${ Object.keys(definition) }`); }
         
         core.definitions[definition.name] = definition;
@@ -320,7 +312,7 @@ Core.prototype = {
                 isDone = true;
                 core.make('core.plugin', plugin, definition, (plugin)=>{
                     core.plugins[definition.name] = plugin || '√';
-                    callback && callback(plugin);
+                    callback &amp;&amp; callback(plugin);
                 });
             }
             setTimeout(function(){
@@ -337,4 +329,26 @@ Core.prototype = {
     }
 }
 
-module.exports = Core;
+module.exports = Core;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Core.html">Core</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Mar 26 2017 01:06:03 GMT+0300 (IDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

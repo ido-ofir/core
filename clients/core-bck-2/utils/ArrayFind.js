@@ -17,7 +17,7 @@ function find(q) {
 module.exports = function ArrayFind(array){
   if(!Array.isArray(array)){
     array = [].slice.call(arguments);;
-  }
+  }v
   array.find = find;
   return array;
 };

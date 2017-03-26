@@ -14,10 +14,17 @@ function find(q) {
   }
 }
 
-module.exports = function ArrayFind(array){
+function ArrayFind(array){
   if(!Array.isArray(array)){
     array = [].slice.call(arguments);;
   }
   array.find = find;
   return array;
+};
+
+module.exports = {
+    name: 'core.Array',
+    extend: {
+        Array: ArrayFind
+    }
 };
