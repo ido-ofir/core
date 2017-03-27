@@ -5,7 +5,7 @@ module.exports = {
         
         var core = this;
 
-        core.builders['core.pluginDefinition'].push(function(pluginDefinition, next, done){
+        core.channels['core.pluginDefinition'].push(function(pluginDefinition, next, done){
             var type;
             if(core.isObject(pluginDefinition.types)){
                 

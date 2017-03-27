@@ -140,7 +140,7 @@
 
             
 
-            <td class="description last">instance options sadasdf.
+            <td class="description last">instance options.
                 <h6 class="method-params-label method-subparams-label">Properties</h6>
                 
 
@@ -300,6 +300,18 @@
     
 
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var core = new Core({
+    name: &#x27;client-core&#x27;,
+    plugins: [
+        require(&#x27;./pluginA&#x27;),
+        require(&#x27;./pluginB&#x27;)
+    ]
+});</pre>
+
+
+    
 </dd>
 
     
@@ -321,15 +333,15 @@
         <dl>
             
 <hr>
-<dt class="name" id="builders">
-    <h4 id="builders"><span class="type-signature"></span>builders<span class="type-signature"></span></h4>
+<dt class="name" id="channels">
+    <h4 id="channels"><span class="type-signature"></span>channels<span class="type-signature"></span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        A namespace object to hold named builders.
+        A namespace object to hold named channels.
     </div>
     
 
@@ -616,7 +628,7 @@
 
             
 
-            <td class="description last">A function that will be called for each property assingment.
+            <td class="description last">A function that will be called for each property assignment.
 if provided, the assigned value will be the return value of this function.</td>
         </tr>
 
@@ -706,185 +718,6 @@ if provided, the assigned value will be the return value of this function.</td>
         <h5>Example</h5>
         
     <pre class="sunlight-highlight-javascript">core.assign({}, {a: 1, b: 2}, t =&gt; t + 1);   // { a: 2, b: 3 }</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="builder"><span class="type-signature"></span>builder(name, array)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        Adds a new builder to the builders namespace object.
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The name of the builder.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>array</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">array</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Optional array of functions.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">undefined</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">core.builder(&#x27;collection&#x27;);
-core.builders.collection; // [].</pre>
 
 
     
@@ -1069,6 +902,185 @@ core.builders.collection; // [].</pre>
     <pre class="sunlight-highlight-javascript">core.call(function(){
     console.log(this === core);  // true.
 });</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="channel"><span class="type-signature"></span>channel(name, array)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Adds a new channel to the channels namespace object.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the channel.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>array</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Optional array of functions.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">core.channel(&#x27;collection&#x27;);
+core.channels.collection; // [].</pre>
 
 
     
@@ -1304,8 +1316,200 @@ core.builders.collection; // [].</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">core.extend({ getData(){ return this.myData; }, myData: 45 });
-core.getData();  // 45.</pre>
+    <pre class="sunlight-highlight-javascript">core.extend({
+    getData(){ return this.myData; },
+    myData: 45
+});
+
+core.getData();  // 45.
+core.myData;  // 45.</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="hook"><span class="type-signature"></span>hook(name, func)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Adds a hook to a channel.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The name of the channel.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A function to attach to the channel.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">core.channel(&#x27;dataType&#x27;);
+
+core.hook(&#x27;dataType&#x27;, (dataType, done) =&gt; {
+    dataType.test = &#x27;ok&#x27;;
+    done(dataType);
+});
+
+core.make(&#x27;dataType&#x27;, {}, (dataType) =&gt; {
+    dataType.test; // &#x27;ok&#x27;
+});</pre>
 
 
     
@@ -1624,6 +1828,165 @@ core.isArray([]); // true</pre>
         
     <pre class="sunlight-highlight-javascript">core.isBoolean(false); // true
 core.isBoolean(&#x27;&#x27;); // false</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="isDate"><span class="type-signature"></span>isDate(thing)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Checks if a value is an array.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>thing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">anything you want.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    - true if 'thing' is an array. false otherwise.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">core.isArray({}); // false
+core.isArray([]); // true</pre>
 
 
     
@@ -2593,7 +2956,7 @@ core.isString(35); // false</pre>
 
     
     <div class="description">
-        Runs data through a named builder.
+        Runs data through a named channel.
     </div>
     
 
@@ -2645,7 +3008,7 @@ core.isString(35); // false</pre>
 
             
 
-            <td class="description last">The name of the builder.</td>
+            <td class="description last">The name of the channel.</td>
         </tr>
 
     
@@ -2669,7 +3032,7 @@ core.isString(35); // false</pre>
 
             
 
-            <td class="description last">Data to be passed through the builder.</td>
+            <td class="description last">Data to be passed through the channel.</td>
         </tr>
 
     
@@ -2777,9 +3140,12 @@ core.isString(35); // false</pre>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">core.builder(&#x27;dataType&#x27;);
+    <pre class="sunlight-highlight-javascript">core.channel(&#x27;dataType&#x27;, (dataType, done) =&gt; {
+    dataType.test = &#x27;ok&#x27;;
+    done(dataType);
+});
 core.make(&#x27;dataType&#x27;, {}, (dataType) =&gt; {
-    // dataType may have been altered by builder functions
+    dataType.test; // &#x27;ok&#x27;
 });</pre>
 
 
@@ -3021,6 +3387,223 @@ core.plugins.myPlugin.getData();  // 47.</pre>
             
 <hr>
 <dt>
+    <h4 class="name" id="proxy"><span class="type-signature"></span>proxy(target, path, proxyFunc)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Proxy function for another function or value.
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>target</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The target object. properties will be copied to this object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A path for the value on target.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>proxyFunc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">If provided, this function will be called with the returned value,
+and the result of this function will be returned instead.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    - The target object ( the first parameter ).
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var target = { 
+    value: 5,
+    func(a, b){ return a + b; },
+    nested: { value: 8 }
+};
+var proxyA = core.proxy(target, &#x27;value&#x27;);
+proxyA(); // 5
+var proxyB = core.proxy(target, &#x27;func&#x27;);
+proxyB(); // &#x27;ok&#x27;
+var proxyC = core.proxy(target, [&#x27;nested&#x27;, &#x27;value&#x27;]);
+proxyC(); // 8</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id="typeOf"><span class="type-signature"></span>typeOf(thing)</h4>
     
     
@@ -3229,7 +3812,7 @@ core.typeOf([]); // &#x27;array&#x27;</pre>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2017-03-26T01:46:05+03:00
+		on 2017-03-27T01:34:09+03:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

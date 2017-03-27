@@ -4,11 +4,13 @@ var Core = require('./core-skeleton.js');
 var core = window.core = new Core({
     name: 'client-core',
     plugins: [
-      require('./plugins/core.plugin.extend'),
+      require('./plugins/core.plugin.extend'),      
       require('./plugins/core.eventEmitter'),
       require('./plugins/core.injector'),
       require('./plugins/core.plugin.injector'),
       require('./plugins/core.getDefinitionObject'),
+      require('./plugins/core.plugin.channels'),
+      require('./plugins/core.plugin.hooks'),
       require('./plugins/core.imports'),
       require('./plugins/core.Array'),
       require('./plugins/core.types'),
@@ -24,9 +26,7 @@ var core = window.core = new Core({
       require('./plugins/core.plugins'),
       require('./plugins/core.plugin.actions'),
       require('./plugins/core.plugin.tree'),
-      require('./plugins/core.plugin.bind'),
-      require('./plugins/core.plugin.builders'),
-      require('./plugins/core.plugin.hooks'),
+      require('./plugins/core.plugin.bind'),      
       require('./plugins/core.plugin.components'),
     ]
 });

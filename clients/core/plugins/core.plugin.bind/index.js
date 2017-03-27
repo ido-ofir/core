@@ -1,4 +1,27 @@
 
+module.exports = {
+    name: 'core.plugin.bind',
+    dependencies: [
+        'core.tree',
+        'core.bindings'
+    ],
+    hooks: {
+        'core.plugin'(plugin, definition, next){
+
+            var core = this;
+
+            if (plugin && definition.tree) {
+                var name = definition.name;
+                if(!plugin.bind) plugin.bind = bind.bind(core, name);
+            }
+
+            next(plugin, definition);
+
+        }
+    }
+};
+
+
 function bind(name, bindings, render){
     if(!this.isFunction(render)){
         if(this.isFunction(bindings)){
@@ -33,30 +56,3 @@ function bind(name, bindings, render){
         throw new Error(`core.plugin.bind - plugin ${ name }'s bind function was called with invalid binding ${ key }.`);
     }
 }
-
-module.exports = {
-    name: 'core.plugin.bind',
-    dependencies: [
-        'core.tree',
-        'core.bindings'
-    ],
-    init(definition, done){
-        
-        var core = this;
-
-
-        core.builders['core.plugin'].push(function (plugin, definition, next) {
-            
-            if (plugin && definition.tree) {
-                var name = definition.name;
-                if(!plugin.bind) plugin.bind = bind.bind(core, name);
-            }
-
-            next(plugin, definition);
-
-        });
-        
-        done('√');
-
-    }
-};

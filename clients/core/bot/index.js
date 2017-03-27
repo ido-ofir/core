@@ -21,7 +21,13 @@ function search(dir, args) {
     } catch (err) {
         var fileName = path.join(dir, `${name}.js`);
         try {
-            require(fileName)(args);
+            var f = require(fileName);
+            if(!(typeof f === 'function')){
+                console.log(colors.yellow(`command '${ name }' is not a function.`));
+            }
+            else{
+                f(args);
+            }
         } catch (err) {
             console.error(err);
             

@@ -1,12 +1,11 @@
 
 module.exports = {
     name: 'core.plugin.actions',
-    init(definition, done){
-        
-        var core = this;
+    hooks: {
+        'core.pluginDefinition'(pluginDefinition, next){
 
-        core.builders['core.pluginDefinition'].push(function(pluginDefinition, next){
-            var action;
+            var core = this;
+
             if(core.isObject(pluginDefinition.actions)){
                 
                 for(var name in pluginDefinition.actions){
@@ -24,9 +23,6 @@ module.exports = {
                 }
             }
             next(pluginDefinition);
-        });
-
-        done();
-
+        }
     }
 };

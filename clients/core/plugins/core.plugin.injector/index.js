@@ -7,7 +7,7 @@ module.exports = {
 
         var core = this;
 
-        core.builders['core.pluginDefinition'].push((definition, next, done) => {
+        core.channels['core.pluginDefinition'].push((definition, next, done) => {
 
             if (!definition.dependencies || !definition.dependencies.length) {
                 return next(definition);
@@ -17,7 +17,7 @@ module.exports = {
             });
         });
 
-        core.builders['core.plugin'].push((plugin, def, next, done) => {
+        core.channels['core.plugin'].push((plugin, def, next, done) => {
             if (def.name) {
                 core.injector.add(def.name, plugin || def);
             }

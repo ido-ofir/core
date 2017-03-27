@@ -5,23 +5,24 @@ module.exports = {
         var core = this;
 
         function pushHook(name, hook, pluginName) {
-            if (!core.builders[name]) {
-                console.warn(`builder ${ name } is defined by hooks. it is better to explicitly define a builder.`);
-                core.builders[name] = [];
+            if (!core.channels[name]) {
+                console.warn(`channel ${ name } is defined by hooks. it is better to explicitly define a channel.`);
+                core.channels[name] = [];
             }
             if (core.isFunction(hook)) {
-                hook._ns = `hook ${ name } at plugin '${ pluginName }'`
-                core.builders[name].push(hook);
+                hook._ns = `hook ${ name } at plugin '${ pluginName }'`;
+                core.hook(name, hook);
             } else if (core.isArray(hook)) {
-                hook.map(function (h) {
-                    core.builders[name].push(h);
+                hook.map(function (h, i) {
+                    h._ns = `hook ${ name }(${i}) at plugin '${ pluginName }'`;
+                    core.hook(name, h);
                 });
             } else {
                 console.warn(`core.plugin.hooks - hook '${ name }' in plugin '${ definition.name }' should be a function or an array of functions. got ${ core.typeOf(hook) }`)
             }
         }
 
-        core.builders['core.pluginDefinition'].push(function (pluginDefinition, next) {
+        core.hook('core.pluginDefinition', function (pluginDefinition, next) {
             var hooks, hook, name;
             if (pluginDefinition.hooks) {
                 hooks = pluginDefinition.hooks;
@@ -37,7 +38,7 @@ module.exports = {
             next(pluginDefinition);
         });
 
-        done();
+        done(definition);
 
     }
 };

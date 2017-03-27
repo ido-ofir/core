@@ -24,6 +24,11 @@ module.exports = {
                         }
                     }
                 }
+                else if(core.isArray(components)){
+                    components.map(function(component){
+                        core.Component(component);
+                    });
+                }
             }
             next(pluginDefinition);
         }

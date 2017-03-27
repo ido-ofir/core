@@ -8,7 +8,9 @@
     "q": "^1.4.1",
     "react": "^15.0.2"
   },
-  "scripts": {},
+  "scripts": {
+    "make-docs": "jsdoc . -t ./node_modules/ink-docstrap/template -R ./README.md"
+  },
   "author": "ido-ofir",
   "license": "ISC"
 }

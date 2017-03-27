@@ -1,8 +1,9 @@
 function set(name, path, value) {
-    if (arguments.length === 1) {
+    if (arguments.length < 3) {
         value = path;
         path = [];
     }
+    if(!path) { path = []; }
     if (!this.isArray(path)) {
         path = [path];
     }
@@ -10,13 +11,16 @@ function set(name, path, value) {
 }
 
 function get(name, path) {
+    if(!path){ path = []; }
     if (!this.isArray(path)) {
         path = [path];
     }
-    return this.tree.get(['plugins', name].concat(path));
+    var p = ['plugins', name].concat(path);
+    return this.tree.get(p);
 }
 
 function select(name, path) {
+    if(!path) { path = []; }
     if (!this.isArray(path)) {
         path = [path];
     }
@@ -32,7 +36,7 @@ module.exports = {
 
         var core = this;
 
-        core.builders['core.plugin'].push(function (plugin, definition, next) {
+        core.channels['core.plugin'].push(function (plugin, definition, next) {
 
             if (plugin && definition.tree) {
                 var name = definition.name;

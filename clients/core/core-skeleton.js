@@ -8,10 +8,18 @@ function typeOf(thing){
 /**
  * @namespace
  * @constructor
- * @param {object} options - instance options sadasdf.
+ * @param {object} options - instance options.
  * @param {string} options.name - a unique name for the instance.
  * @param {array} options.plugins - an array on plugins to initialize on the instance.
  * @param {object} options.extend - if provided, this object will be merged in to the new instance.
+ * @example
+ * var core = new Core({
+ *     name: 'client-core',
+ *     plugins: [
+ *         require('./pluginA'),
+ *         require('./pluginB')
+ *     ]
+ * });
  */
 function Core(options) {
 
@@ -104,6 +112,16 @@ Core.prototype = {
      * core.isArray({}); // false
      * core.isArray([]); // true
      * */
+    isDate(v){ return typeOf(v) === 'date'; },
+    /** 
+     * @function
+     * @description Checks if a value is an array.
+     * @param {any} thing - anything you want. 
+     * @return {boolean} - true if 'thing' is an array. false otherwise.
+     * @example
+     * core.isArray({}); // false
+     * core.isArray([]); // true
+     * */
     isArray(v){ return typeOf(v) === 'array'; },
     /** 
      * @function
@@ -157,10 +175,53 @@ Core.prototype = {
     },
     /** 
      * @function
+     * @description Proxy function for another function or value.
+     * @param {object} target - The target object. properties will be copied to this object.
+     * @param {string} path - A path for the value on target.
+     * @param {function} proxyFunc - If provided, this function will be called with the returned value,
+     * and the result of this function will be returned instead.
+     * @return {any} - The target object ( the first parameter ).
+     * @example
+     * var target = { 
+     *     value: 5,
+     *     func(a, b){ return a + b; },
+     *     nested: { value: 8 }
+     * };
+     * var proxyA = core.proxy(target, 'value');
+     * proxyA(); // 5
+     * var proxyB = core.proxy(target, 'func');
+     * proxyB(); // 'ok'
+     * var proxyC = core.proxy(target, ['nested', 'value']);
+     * proxyC(); // 8
+     * */
+    proxy(target, path, proxyFunc){
+        var core = this;
+        if(!target) return this.emptyFunction;
+        if(!path) return function(){ return target; };
+        if(core.isString(path)){ path = path.split(/[\.\/]/); }
+        
+        return function proxy(){
+            var i, t, v = target;
+            for(i = 0; i < path.length; i++){
+                t = t[path[i]];
+                if(!t) return t;
+            }
+            v = t;
+            if(core.isFunction(t)){
+                v = t.apply(t[path[i - 1]] || core, arguments);
+            }
+            if(core.isFunction(proxyFunc)){
+                v = proxyFunc(v);
+            }
+            return v;   
+        };
+    },
+    /** 
+     * @function
      * @description Copies all properties from 'source' to 'target', similar to Object.assign.
      * @param {object} target - The target object. properties will be copied to this object.
      * @param {object} source - A source, or a number of source objects.
-     * @param {function} assignFunc - A function that will be called for each property assingment.
+     * @param {function} assignFunc - A function that will be called for each property assignment.
      * if provided, the assigned value will be the return value of this function.
      * @return {object} - The target object ( the first parameter ).
      * @example
@@ -186,12 +247,17 @@ Core.prototype = {
     },
     /** 
      * @function
-     * @description Copies all properties from 'source' to 'target', similar to Object.assign.
+     * @description Copies all members in 'properties' to the core instance.
      * @param {object} properties - An 
      * @return {object} - Returns the target object ( the first parameter ).
      * @example
-     * core.extend({ getData(){ return this.myData; }, myData: 45 });
+     * core.extend({
+     *     getData(){ return this.myData; },
+     *     myData: 45
+     * });
+     * 
      * core.getData();  // 45.
+     * core.myData;  // 45.
      * */
     extend(properties){
 
@@ -202,41 +268,70 @@ Core.prototype = {
         });
     },
     /**
-     * A namespace object to hold named builders.
+     * A namespace object to hold named channels.
      */
-    builders: {
+    channels: {
         'core.pluginDefinition': [],
         'core.plugin': []
     },
     /** 
      * @function
-     * @description Adds a new builder to the builders namespace object.
-     * @param {string} name - The name of the builder.
+     * @description Adds a new channel to the channels namespace object.
+     * @param {string} name - The name of the channel.
      * @param {array} array - Optional array of functions.
      * @return {undefined}
      * @example
-     * core.builder('collection');
-     * core.builders.collection; // [].
+     * core.channel('collection');
+     * core.channels.collection; // [].
      * */
-    builder(name, array){
-        if(!name) throw new Error('core.Builder was called without a name');
-        if(!this.isString(name)) throw new Error('core.Builder - expected first argument to be a string. got ${ this.typeOf(name) }');
-        if(!this.isArray(array)){
+    channel(name, array){
+        if(!name) throw new Error('core.channel() was called without a name');
+        if(!this.isString(name)) throw new Error('core.channel() - expected first argument to be a string. got ${ this.typeOf(name) }');
+        if(this.isFunction(array)){ array = [array]; }
+        else if(!this.isArray(array)){
             array = [];
         }
-        this.builders[name] = array;
+        this.channels[name] = array;
     },
     /** 
      * @function
-     * @description Runs data through a named builder.
-     * @param {string} name - The name of the builder.
-     * @param {any} data - Data to be passed through the builder.
+     * @description Adds a hook to a channel.
+     * @param {string} name - The name of the channel.
+     * @param {function} func - A function to attach to the channel.
+     * @return {undefined}
+     * @example
+     * core.channel('dataType');
+     * 
+     * core.hook('dataType', (dataType, done) => {
+     *     dataType.test = 'ok';
+     *     done(dataType);
+     * });
+     * 
+     * core.make('dataType', {}, (dataType) => {
+     *     dataType.test; // 'ok'
+     * });
+     * */
+    hook(name, func){
+        if(!name) throw new Error('core.hook() was called without a name');
+        if(!this.isString(name)){ throw new Error('core.hook() - expected first argument to be a string. got ${ this.typeOf(name) }'); }
+        if(!this.isFunction(func)){ throw new Error('core.hook() - expected second argument to be a function. got ${ this.typeOf(func) }'); }
+        if(!this.isArray(this.channels[name])){ throw new Error(`core.hook() - cannot find channel ${ name }`); }
+        this.channels[name].push(func);
+    },
+    /** 
+     * @function
+     * @description Runs data through a named channel.
+     * @param {string} name - The name of the channel.
+     * @param {any} data - Data to be passed through the channel.
      * @param {function} callback - A function that will be called when the job completes.
      * @return {undefined}
      * @example
-     * core.builder('dataType');
+     * core.channel('dataType', (dataType, done) => {
+     *     dataType.test = 'ok';
+     *     done(dataType);
+     * });
      * core.make('dataType', {}, (dataType) => {
-     *     // dataType may have been altered by builder functions
+     *     dataType.test; // 'ok'
      * });
      * */
     make(name, data, callback){
@@ -244,10 +339,10 @@ Core.prototype = {
         var core = this;
         var index = 0;
         var returned = false;
-        var builder = core.builders[name];
+        var channel = core.channels[name];
         var args = [].slice.call(arguments, 1);
         callback = args.pop();
-        if(!builder) { throw new Error(`cannot find builder '${name}'`); }
+        if(!channel) { throw new Error(`cannot find channel '${name}'`); }
         if(!core.isFunction(callback)){
             args.push(callback);
             callback = null;
@@ -255,21 +350,21 @@ Core.prototype = {
         
         function done(data){
             index++;
-            if(returned){ throw new Error(`'${ name }' builder has returned twice`); }
+            if(returned){ throw new Error(`'${ name }' channel has returned twice`); }
             returned = true;
             if(callback) { callback(data); }
         }
 
         function next(data){
-            if(index >= builder.length) {
+            if(index >= channel.length) {
                 return done(data);
             }
-            var tool = builder[index];
+            var tool = channel[index];
             index++;
             var t = index;
             setTimeout(function(){ 
                 if(t === index){
-                    var ns = tool._ns ? tool._ns : (tool.name ? `function ${ tool.name } in builder ${ name }` : `function at index ${ t - 1 } in builder ${ name }`);
+                    var ns = tool._ns ? tool._ns : (tool.name ? `function ${ tool.name } in channel ${ name }` : `function at index ${ t - 1 } in channel ${ name }`);
                     console.warn(`${ ns } did not call next().`);
                 }
             }, 3000);
