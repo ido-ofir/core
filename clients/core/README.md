@@ -1,130 +1,122 @@
 # client-core
 
-### Inheritance
+A modular client side toolchain.
 
-* #### Instance inheritance
-  An app inherites from core. a plugin defined in an app will inherit from the app.
-a type instance can inherit from the app or from a plugin that it is defined in.
+**Documentation and terminology is not complete here, use at your own risk.**
 
-```javascript
-core.build({
-    $_type: 'app',
-    name: 'myApp',
-    doStuff(){
-      alert('stuff is getting done')
-    },
-    plugins: [{
-      $_type: 'plugin',
-      name: 'myPlugin',
-      test(){
-        alert('plugin test')
-      }
-    }]
-  }, (myApp)=>{
-    var { myPlugin } = myApp.plugins;
-    myApp.doStuff();
-    myPlugin.test();
-  });
+## Installation
 
-  
+```sh
+npm install client-core
 ```
 
-* #### Type inheritance
-  A type can inherit from another type:
-  ```javascript
-  core.build({
-    $_type: 'type',
-    name: 'component',
-    extends: 'module'
-  })
-  ```
-  
-### Types
+## Usage
+```javascript
+var core = require('client-core');
+```
+### Plugins
 
-The base collection of all types.
+You can load a plugin by calling the `core.plugin()` method. it expects an object with at least a `name` property:
+```javascript
+// a very simple plugin is just an object with a name.
 
-Implementation should take into consideration the build digest cycle
-and source updates as well as the precedence and inharitance features.
+core.plugin({
+  name: 'dataParser',
+  parse(data){ ... }
+});
 
-* ### Build cycle and source updates
+core.plugins.dataParser.parse({});
+```
 
-  Build of source takes place when an app bootstraps, but also when 
-  a change to the source has been made and only a part of the app
-  needs to be rebuilt.  
-  this allows the app to be edited externally ( or internally ) at run time.
-  
-  The build cycle is divided into phases that allow a certain type to
-  have more flexability over the way it is being built or updated / deleted
-  from source.
+The object that you provide to `core.plugin()` is called a `pluginDefinition` and it must contain a `name` ( which should be unique ).
 
-  The build is getting one value at a time and it checks if the value 
-  is a typed object. a typed object has a `$_type` property on it, which is just 
-  a string name of a type:
-  
-  ```json
-  {
-    "$_type": "boolean",
-    "value": true
+#### pluginDefinition.init
+
+If you provide a function named `init` on your `pluginDefinition`, it will be called when the plugin is loading, and will be passed the `pluginDefinition` object and a `done` function.
+
+The `done` function should be called when you have finished preparing your plugin. whatever you pass to it will become the plugin's body.
+
+```javascript
+core.plugin({
+  name: 'test',
+  init(pluginDefinition, done){
+
+    done(42);
+
   }
-  ```
+});
 
-  When the build reaches a typed object it grabs the type definition from 
-  the app's internal types registery. it then inspects the type definition 
-  looking for certain properties on it.  
-  these properties include:
+core.plugins.test;  // 42
+``` 
 
-  * __recursive__ : `boolean` - should the object's children be recursively built automatically? 
-  * __init__ : `function` - runs before the build starts for the first time.
-  use this function if you need to initialize something for your type,
-  like a namespace to store instances.
-  * __preBuild__ : `function` - recieves the source before any of the children have been built.
-  this is useful when the `recursive` flag is `true`, and you want to change the source that will
-  be passed down to the object's children.  
-  expected to return a new source that will be used in the rest of the build.
-  * __build__ : `function` - recieves the source after all children have been built.
-  if `recursive` is not set to `true` this function will get the original source (or 
-  the source that `preBuild` has returned).
-  * __validate__ : `function` - explicitly validate an instance of this type.  
-  * __set__ : `function` - this function will be called after a typed object has
-  been built and it's purpose is to store the result somewhere.
-  * __schema__ : `object` - an object describing the structure that the type expects
-  it's source to have. the schema can be used to validate a typed object,
-  but it's also very useful as the blueprint for a GUI.
-    
-  ```javascript
-  {
-    "$_type": "type",
-    "name": "user",
-    "recursive": true,
-    "async": true,
-    "schema": {
-      "firstName": { 
-        "type": "string",
-        "description": "The first name of the user.",
-        "isRequired": true,
-        "value": ""
-      },
-      "lastName": { 
-        "type": "string",
-        "description": "The last name of the user.",
-        "isRequired": false,
-        "value": ""
-      }
+#### pluginDefinition.extend
+
+If your `pluginDefinition` contains an object called `extend`, the `extend` object will be merged directly to the core object itself. if `extend` contains functions they will be bound to `core`.
+
+```javascript
+core.plugin({
+  name: 'extendTest',
+  extend: {  // this object will be merged into core.
+    value: 42,
+    getThis(){ return this; }
+  }
+});
+
+core.value;  // 42
+
+var { getThis } = core;
+
+getThis() === core;  // true because getThis() has been bound to core.
+``` 
+
+#### pluginDefinition.channels
+
+If your `pluginDefinition` contains an array called `channels`, a named channel will be created for each name in the array. ( see more about channels and hooks below. )
+
+```javascript
+core.plugin({
+  name: 'channelsTest',
+  channels: ['channelA', 'channelB']  // just an array of names.
+});
+
+core.channels.channelA;  // [] 
+core.channels.channelB;  // [] 
+```
+
+Channels are just arrays of functions. When you fire up a channel, your data is being passed through the array of functions in async series.
+
+#### pluginDefinition.hooks
+
+If your `pluginDefinition` contains an array called `hooks`, a hook will be tapped into every corresponding channel.
+the `hooks` array is expected to contain objects with a `channel` and a `hook` property:
+
+```javascript
+core.plugin({
+  name: 'hooksTest',
+  hooks: [{
+    channel: 'channelA',     // the name of the channel to hook to.
+    hook(data, next, done){  // a hook function to run when the channel fires.
+      data.hook = 'a';
+      next();
     },
-    init(){
-      this.app.users = {};
-    },
-    preBuild(source){
-      var newSource = { ...source };
-      newSource.id = core.utils.uuid();
-      return newSource;
-    },
-    build(source){
-      var name = `${source.firstName} ${source.lastName}`;
-      return { ...source, name: name }
-    },
-    set(user){
-      this.users[user.name] = user;
+  }, {
+    channel: 'channelB',
+    hook(data, next, done){
+      data.hook = 'b';
+      next();
     }
-  }
-  ``` 
+  }]
+});
+
+core.fire('channelA', {}, function(data){
+  data.hook;  // 'a'
+});
+
+core.fire('channelB', { value: 5 }, function(data){
+  data.value;  // 5
+  data.hook;  // 'b'
+});
+```
+
+#### pluginDefinition.
+

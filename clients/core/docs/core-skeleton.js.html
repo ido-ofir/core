@@ -1,3 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Core Source: core-skeleton.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cyborg.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Core</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Core.html">Core</a></li><li><a href="KKKKK.html">KKKKK</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: core-skeleton.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">
+/**
+ * @namespace KKKKK
+ * @constructor
+ * @param {object} options - instance options.
+ * @param {string} options.name - a unique name for the instance.
+ * @param {array} options.plugins - an array on plugins to initialize on the instance.
+ * @param {object} options.extend - if provided, this object will be merged in to the new instance.
+ * @example
+ * var core = new Core({
+ *     name: 'client-core',
+ *     plugins: [
+ *         require('./pluginA'),
+ *         require('./pluginB')
+ *     ]
+ * });
+ */
+
+
+
 
 
 function typeOf(thing){
@@ -41,7 +133,6 @@ function Core(options) {
 
 Core.prototype = {
     /** 
-     * @name core.typeOf
      * @function
      * @description Returns the correct native type in javascript ( unlike the 'typeof' operator ).
      * @param {any} thing - anything you want. 
@@ -160,13 +251,13 @@ Core.prototype = {
 
         var core = this;
         var desc, property, func, args = [].slice.call(arguments, 1);
-        if (!core.isObject(target)) { throw new Error(`core.assign() - first argument should be an object. got ${ this.typeOf(target) }`); }
+        if (!core.isObject(target)) { throw new TypeError('core.assign - first argument is not an object'); }
         if (core.isFunction(args[args.length - 1])) { func = args.pop(); }
         args.map(function(source){
             if(!core.isObject(source)) return;
             for(var key in source){
                 desc = Object.getOwnPropertyDescriptor(source, key);
-                if (desc && desc.enumerable) {
+                if (desc &amp;&amp; desc.enumerable) {
                     property = source[key]
                     target[key] = func ? func(property, key, source) : property;
                 }
@@ -215,7 +306,7 @@ Core.prototype = {
      * */
     channel(name, array){
         if(!name) throw new Error('core.channel() was called without a name');
-        if(!this.isString(name)) throw new Error(`core.channel() - expected first argument to be a string. got ${ this.typeOf(name) }`);
+        if(!this.isString(name)) throw new Error('core.channel() - expected first argument to be a string. got ${ this.typeOf(name) }');
         if(this.isFunction(array)){ array = [array]; }
         else if(!this.isArray(array)){
             array = [];
@@ -243,8 +334,8 @@ Core.prototype = {
      * */
     tap(name, func){
         if(!name) throw new Error('core.tap() was called without a name');
-        if(!this.isString(name)){ throw new Error(`core.tap() - expected first argument to be a string. got ${ this.typeOf(name) }`); }
-        if(!this.isFunction(func)){ throw new Error(`core.tap() - expected second argument to be a function. got ${ this.typeOf(func) }`); }
+        if(!this.isString(name)){ throw new Error('core.tap() - expected first argument to be a string. got ${ this.typeOf(name) }'); }
+        if(!this.isFunction(func)){ throw new Error('core.tap() - expected second argument to be a function. got ${ this.typeOf(func) }'); }
         if(!this.isArray(this.channels[name])){ throw new Error(`core.tap() - cannot find channel ${ name }`); }
         this.channels[name].push(func);
     },
@@ -296,7 +387,7 @@ Core.prototype = {
             setTimeout(function(){ 
                 if(t !== index){ return }
                 var ns = tool._ns ? tool._ns : (tool.name ? `function ${ tool.name } in channel ${ name }` : `function at index ${ t - 1 } in channel ${ name }`);
-                console.warn(`${ ns } did not call next().`, args);
+                console.warn(`${ ns } did not call next().`);
             }, 3000);
             tool.apply(core, args.concat([next, done]))
         }
@@ -324,7 +415,7 @@ Core.prototype = {
             i = 0;
             function done(){
                 i += 1;
-                if(1 >= definition.length){ callback && callback() }
+                if(1 >= definition.length){ callback &amp;&amp; callback() }
             }
             return definition.map(function(def){
                 core.plugin(def, done);
@@ -341,7 +432,7 @@ Core.prototype = {
                 isDone = true;
                 core.fire('core.plugin', plugin, definition, (plugin)=>{
                     core.plugins[definition.name] = plugin || '√';
-                    callback && callback(plugin);
+                    callback &amp;&amp; callback(plugin);
                 });
             }
             setTimeout(function(){
@@ -358,4 +449,171 @@ Core.prototype = {
     }
 }
 
-module.exports = Core;
+module.exports = Core;</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on Fri Mar 31st 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

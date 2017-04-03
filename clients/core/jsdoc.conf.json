@@ -1,0 +1,32 @@
+{
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "plugins": ["plugins/markdown"],
+    "source": {
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "templates": {
+        "logoFile": "",
+        "cleverLinks": false,
+        "monospaceLinks": false,
+        "dateFormat": "ddd MMM Do YYYY",
+        "outputSourceFiles": true,
+        "outputSourcePath": true,
+        "systemName": "Core",
+        "footer": "",
+        "copyright": "",
+        "navType": "vertical",
+        "theme": "cyborg",
+        "linenums": true,
+        "collapseSymbols": true,
+        "inverseNav": true,
+        "protocol": "html://",
+        "methodHeadingReturns": false
+    },
+    "markdown": {
+        "parser": "gfm",
+        "hardwrap": true
+    }
+}

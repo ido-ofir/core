@@ -1,35 +1,50 @@
 
 var Core = require('./core-skeleton.js');
-
+require('./test.js')
+/**
+ * @name clientCore
+ */
 var core = window.core = new Core({
     name: 'client-core',
     plugins: [
-      require('./plugins/core.plugin.extend'),      
-      require('./plugins/core.eventEmitter'),
-      require('./plugins/core.injector'),
-      require('./plugins/core.plugin.injector'),
-      require('./plugins/core.getDefinitionObject'),
-      require('./plugins/core.plugin.channels'),
-      require('./plugins/core.plugin.hooks'),
-      require('./plugins/core.imports'),
-      require('./plugins/core.Array'),
-      require('./plugins/core.types'),
-      require('./plugins/core.build'),
-      require('./plugins/core.plugin.types'),
-      require('./plugins/core.components'),
-      require('./plugins/core.actions'),
-      require('./plugins/core.tree'),
-      require('./plugins/core.bindings'),
-      require('./plugins/core.views'),
-      require('./plugins/core.templates'),
-      require('./plugins/core.apps'),
-      require('./plugins/core.plugins'),
-      require('./plugins/core.plugin.actions'),
-      require('./plugins/core.plugin.tree'),
-      require('./plugins/core.plugin.bind'),      
-      require('./plugins/core.plugin.components'),
+      require('./core_plugins/core.plugin.extend'),      
+      require('./core_plugins/core.eventEmitter'),
+      require('./core_plugins/core.injector'),
+      require('./core_plugins/core.plugin.injector'),
+      require('./core_plugins/core.getDefinitionObject'),
+      require('./core_plugins/core.plugin.channels'),
+      require('./core_plugins/core.plugin.hooks'),
+      require('./core_plugins/core.plugin.imports'),
+      require('./core_plugins/core.imports'),
+      require('./core_plugins/core.Array'),
+      require('./core_plugins/core.types'),
+      require('./core_plugins/core.build'),
+      require('./core_plugins/core.plugin.types'),
+      require('./core_plugins/core.prepend'),
+      require('./core_plugins/core.modules'),
+      require('./core_plugins/core.components'),
+      require('./core_plugins/core.actions'),
+      require('./core_plugins/core.tree'),
+      require('./core_plugins/core.bindings'),
+      require('./core_plugins/core.views'),
+      require('./core_plugins/core.templates'),
+      require('./core_plugins/core.apps'),
+      require('./core_plugins/core.plugins'),
+      require('./core_plugins/core.plugin.modules'),
+      require('./core_plugins/core.plugin.actions'),
+      require('./core_plugins/core.plugin.tree'),
+      require('./core_plugins/core.plugin.bind'),      
+      require('./core_plugins/core.plugin.components'),
     ]
 });
+
+// core.Component('o', [], function(){
+//   return {
+//     render(){
+
+//     }
+//   };
+// });
 
 module.exports = core;
 
