@@ -6,7 +6,7 @@ function typeOf(thing){
 }
 
 /**
- * @namespace
+ * @name core
  * @constructor
  * @param {object} options - instance options.
  * @param {string} options.name - a unique name for the instance.

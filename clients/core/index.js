@@ -1,6 +1,5 @@
 
 var Core = require('./core-skeleton.js');
-require('./test.js')
 /**
  * @name clientCore
  */

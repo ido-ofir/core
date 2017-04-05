@@ -39,8 +39,10 @@ module.exports = {
                 done && done(value);
             } else {
                 this.injector.load(name, dependencies, function(){
+                    
                     var value = get.apply(this, arguments);
                     done && done(value);
+                    return value;
                 });
             }
         }

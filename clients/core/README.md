@@ -118,5 +118,111 @@ core.fire('channelB', { value: 5 }, function(data){
 });
 ```
 
-#### pluginDefinition.
+__Channels and hooks__ can be used by plugins and / or your application logic, to offer extensibility for key features.
 
+The basic operation of `core.plugin()` is using channels to offer extensibility for the way plugins are being loaded. this means that a plugin can add new capabilities to all the plugins that are loaded after it:
+
+```js
+core.plugin({
+  name: 'pluginDefinitionTest',
+  hooks: [{
+    // channel 'core.pluginDefinition' fires when a plugin begins to load,
+    // before the 'init' function was called.
+    channel: 'core.pluginDefinition', 
+    hook(pluginDefinition, next){
+      
+      if(pluginDefinition.test){
+        console.log(pluginDefinition.name, '√');
+      }
+      next();
+    }
+  }]
+});
+
+core.plugin({
+  name: 'testing',
+  test: true
+});
+// will log 'testing √'.
+```
+A plugin can also extend the body of produced plugins:
+```js
+core.plugin({
+  name: 'pluginTest',
+  hooks: [{
+    // channel 'core.plugin' fires when a plugin has finished loading,
+    // after the 'init' function was called.
+    channel: 'core.plugin', 
+    hook(plugin, pluginDefinition, next){
+      
+      if(!plugin) return next();
+      plugin.test = 5;
+      next();
+    }
+  }]
+});
+
+core.plugin({
+  name: 'testing'
+});
+
+core.plugins.testing.test; // 5
+```
+Apart from the `pluginDefinition.init` function, all plugin capabilities listed in this page are controlled by plugins loaded to core.
+
+#### pluginDefinition.dependencies
+
+A plugin can depend on another asset (module, component or plugin) in which case it's dependencies should be specified by name in a `dependencies` array:
+
+```js
+core.plugin({
+  name: 'complexOperations',
+  dependencies: ['simpleStuff'],
+  init(pluginDefinition, done){
+
+      // this will run second.
+      core.plugins.simpleStuff.test; // 5
+      done( ... );
+  }
+});
+
+core.plugin({
+  name: 'simpleStuff',
+  init(pluginDefinition, done){
+
+      // this will run first.
+      done({ test: 5 });
+  }
+});
+```
+Note that the call to `init()` on `complexOperations` is delayed until `simpleStuff` has loaded.
+
+
+#### pluginDefinition.modules
+
+```js
+core.plugin({
+  name: 'test',
+  modules: [{            // an array of module definitions.
+    name: 'data',          // the name of the module.
+    value: {               // 'value' will become the module's body.
+      a: 1,
+      b: 2 
+    }  
+  }, {
+    name: 'add',
+    get(){  // whatever 'get' returns will become the module's body.
+      return function add(a, b){ 
+        return a + b; 
+      }
+    }
+  }]
+});
+
+var { test } = core.plugins;
+var { data, add } = test.modules;
+
+add(data.a, data.b); // 3
+
+core.modules['test.data'] === test.modules.data; // true
+```
