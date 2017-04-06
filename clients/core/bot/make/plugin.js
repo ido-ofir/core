@@ -5,8 +5,8 @@ var here = process.cwd();
 module.exports = function (args) {
     var name = args.shift();
     try {
-        fs.mkdirSync(path.join(here, 'plugins', name));
-        fs.writeFileSync(path.join(here, 'plugins', name, `index.js`),
+        fs.mkdirSync(path.join(here, 'core_plugins', name));
+        fs.writeFileSync(path.join(here, 'core_plugins', name, `index.js`),
             `
 module.exports = {
     name: '${ name }',

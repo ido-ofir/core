@@ -34,6 +34,7 @@ var core = window.core = new Core({
       require('./core_plugins/core.plugin.tree'),
       require('./core_plugins/core.plugin.bind'),      
       require('./core_plugins/core.plugin.components'),
+      require('./core_plugins/core.plugin.views'),
     ]
 });
 
