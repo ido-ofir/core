@@ -33,8 +33,12 @@ module.exports = {
     }
   },
   build(definition){
-
-    var type = this.types[definition.name] = definition;
+    var core = this;
+    var type = definition;
+    type.constructor = new Function(`
+      return function ${ definition.name }(d){ for(var m in d){ this[m] = d[m]; } };
+    `)();
+    core.types[definition.name] = type;
     return type;
   }
 };

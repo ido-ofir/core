@@ -18,7 +18,7 @@ module.exports = {
   extend: {
     /**
      * @name core.actions
-     * @description An object to old all actions.  
+     * @description An object to hold all actions.  
      */
     actions: {},
     /**
@@ -31,6 +31,7 @@ module.exports = {
      * @param definition.get - called when all dependencies are available, should return the action function. 
      */
     Action(name, dependencies, get) {
+
       var definition = this.getDefinitionObject(name, dependencies, get, 'action');
       return this.build(definition);
     },
@@ -43,7 +44,7 @@ module.exports = {
      * @param context {String} - optional context to use when calling the action function ( determines the value of 'this' ). if not supplied 'core' is used as the context.
      */
     run(name, data, promise, context) {
-      // console.log(new Error(name));
+
       var action = this.actions[name];
       if (!action) throw new Error(`cannot find action '${name}'`);
       if (!data) data = {};

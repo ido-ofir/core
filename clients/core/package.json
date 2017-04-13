@@ -1,6 +1,6 @@
 {
   "name": "client-core",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "frontend toolchain",
   "main": "index.js",
   "dependencies": {
