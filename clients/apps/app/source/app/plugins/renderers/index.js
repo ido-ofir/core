@@ -4,7 +4,6 @@ var React = require('react');
 module.exports = {
     $_type: 'plugin',
     name: 'renderers',
-    recursive: false,
     components: [
         require('./array.jsx'),
         require('./object.jsx'),
@@ -19,27 +18,29 @@ module.exports = {
         require('./typedObject.jsx'),
         require('./addItemPopup.jsx'),
     ],
-    bind(){
-        
-    },
+    init(def, done){
+        var core = this;
 
-    alert(){
-        console.debug('this.components.length', this.components.length);
-    },
-    render({source, path, onChange, map}){      
-        var typeName = this.$_typeOf(source);
-        var Renderer;
-        if(!typeName){
-            console.warn(`renderers plugin cannot find type ${typeName}`)
-            Renderer = this.app.components[`renderers.json`];
-        }
-        else{
-          Renderer = this.app.components[`renderers.${typeName}`];
-          if(!Renderer) {
-            Renderer = this.app.components[`renderers.typedObject`];
-          }
-        }
-        
-        return <Renderer source={ source } path={ path } onChange={ onChange } map={ map }/>;
+        done({
+            render({source, path, onChange, map}){
+                console.debug('source', source);
+                if(!source || !core.isObject(source)) return null;
+                var typeName = source['$_type'];
+                var Renderer;
+                if(!typeName){
+                    console.warn(`renderers plugin cannot find type ${typeName}`)
+                    Renderer = core.components[`renderers.json`];
+                }
+                else{
+                Renderer = core.components[`renderers.${typeName}`];
+                if(!Renderer) {
+                    Renderer = core.components[`renderers.typedObject`];
+                }
+                }
+                
+                return <Renderer source={ source } path={ path } onChange={ onChange } map={ map }/>;
+            }
+        });
     }
+    
 }

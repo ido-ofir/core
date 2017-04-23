@@ -1,0 +1,31 @@
+.core-animation-slide{
+  display: none;
+  transition: 0.5s ease;
+  -webkit-transition: 0.5s ease;
+  transform: translate3d(0.1px, 0 ,0);
+  -webkit-transform: translate3d(0.1px, 0 ,0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.core-animation-slide-active{
+  display: block;
+}
+.core-animation-slide-leave-back{
+  transform: translate3d(100%, 0 ,0);
+  -webkit-transform: translate3d(100%, 0 ,0);
+}
+.core-animation-slide-leave-forward{
+  transform: translate3d(-100%, 0 ,0);
+  -webkit-transform: translate3d(-100%, 0 ,0);
+}
+.core-animation-slide-enter-back{
+  transform: translate3d(-100%, 0 ,0);
+  -webkit-transform: translate3d(-100%, 0 ,0);
+}
+.core-animation-slide-enter-forward{
+  transform: translate3d(100%, 0 ,0);
+  -webkit-transform: translate3d(100%, 0 ,0);
+}

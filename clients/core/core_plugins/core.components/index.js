@@ -27,7 +27,8 @@ module.exports = {
     dependencies: [
         'core.getDefinitionObject',
         'core.build',
-        'core.imports',
+        'imports.React',
+        'imports.createReactClass',
     ],
     types: [{
         name: 'component',
@@ -94,6 +95,7 @@ module.exports = {
             return React.createElement(component, props);
         },
         createComponent(name, componentDefinition) {
+            var { createReactClass } = core.imports;
             var component;
             var {
                 React
@@ -106,7 +108,7 @@ module.exports = {
                 }, componentDefinition);
                 componentDefinition.propTypes = getPropTypes(componentDefinition.propTypes, this.PropTypes);
                 componentDefinition.childContextTypes = getPropTypes(componentDefinition.childContextTypes, this.PropTypes);
-                component = React.createClass(componentDefinition);
+                component = createReactClass(componentDefinition);
                 component.displayName = name;
                 if (componentDefinition.enhancers) { // enhancers is an array of higher order constructors.
                     componentDefinition.enhancers.map((higherOrder) => {

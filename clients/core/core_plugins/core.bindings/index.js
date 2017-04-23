@@ -1,15 +1,16 @@
 module.exports = {
     name: 'core.bindings',
     dependencies: [
-        'core.imports'
+        'imports.react',
+        'imports.prop-types',
+        'imports.create-react-class'
     ],
     init(definition, done) {
 
         var core = this;
-        var { React } = core.imports;
-        var { PropTypes } = React;
+        var { createReactClass, PropTypes, React } = core.imports;
 
-        var Bindings = React.createClass({
+        var Bindings = createReactClass({
             propTypes: {
                 bindings: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.string]),
                 render: PropTypes.func,

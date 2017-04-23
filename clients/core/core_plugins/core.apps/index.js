@@ -5,7 +5,8 @@ module.exports = {
         'core.build'
     ],
     extend: {
-        App(definition) {
+        apps: {},
+        App(name, dependencies, get) {
             var definition = this.getDefinitionObject(name, dependencies, get, 'app');
             return this.build(definition);
         }
@@ -56,6 +57,8 @@ module.exports = {
 function update(path, source) {
 
     var app = this;
+    var Baobab = app.imports.baobab;
+    var React = app.imports.react;
 
     if (arguments.length === 1) {
         source = path;
@@ -68,6 +71,7 @@ function update(path, source) {
     if (!path.length) {
         var lastSource = app.source || {};
         var plugin, tree, build = {};
+        
         for (var m in source) {
             build[m] = app.build(source[m]);
         }
@@ -103,11 +107,13 @@ function update(path, source) {
                 app.View(source.root)
             );
 
+            var { createReactClass, React, PropTypes } = app.imports;
 
 
-            app.Root = React.createClass({
+
+            app.Root = createReactClass({
                 childContextTypes: {
-                    app: React.PropTypes.object
+                    app: PropTypes.object
                 },
                 getChildContext() {
                     return {

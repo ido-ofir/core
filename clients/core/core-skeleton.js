@@ -154,7 +154,7 @@ Core.prototype = {
      * if provided, the assigned value will be the return value of this function.
      * @return {object} - The target object ( the first parameter ).
      * @example
-     * core.assign({}, {a: 1, b: 2}, t => t + 1);   // { a: 2, b: 3 }
+     * core.assign({}, {a: 1, b: 2}, (property, key, source) => property + 1);   // { a: 2, b: 3 }
      * */
     assign(target, source, assignFunc) {
 

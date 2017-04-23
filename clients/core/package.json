@@ -1,12 +1,14 @@
 {
   "name": "client-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "frontend toolchain",
   "main": "index.js",
   "dependencies": {
-    "baobab": "^2.2.0",
-    "q": "^1.4.1",
-    "react": "^15.0.2"
+    "baobab": "^2.4.3",
+    "create-react-class": "^15.5.2",
+    "prop-types": "^15.5.8",
+    "q": "^1.5.0",
+    "react": "^15.5.4"
   },
   "scripts": {
     "make-docs": "jsdoc . -t ./node_modules/ink-docstrap/template -R ./README.md -d docs -c ./node_modules/ink-docstrap/template/jsdoc.conf.json"
