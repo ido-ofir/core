@@ -1,0 +1,12 @@
+{
+  "name": "core.imports.prop-types",
+  "version": "0.1.4",
+  "description": "frontend toolchain",
+  "main": "index.js",
+  "dependencies": {
+    "prop-types": "^15.5.8"
+  },
+  "scripts": {},
+  "author": "ido-ofir",
+  "license": "ISC"
+}

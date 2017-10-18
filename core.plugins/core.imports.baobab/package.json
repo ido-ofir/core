@@ -1,0 +1,12 @@
+{
+  "name": "core.imports.baobab",
+  "version": "0.1.4",
+  "description": "frontend toolchain",
+  "main": "index.js",
+  "dependencies": {
+    "baobab": "^2.4.3"
+  },
+  "scripts": {},
+  "author": "ido-ofir",
+  "license": "ISC"
+}

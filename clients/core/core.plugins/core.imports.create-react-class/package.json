@@ -1,0 +1,12 @@
+{
+  "name": "core.imports.create-react-class",
+  "version": "0.1.4",
+  "description": "frontend toolchain",
+  "main": "index.js",
+  "dependencies": {
+    "create-react-class": "^15.5.2"
+  },
+  "scripts": {},
+  "author": "ido-ofir",
+  "license": "ISC"
+}

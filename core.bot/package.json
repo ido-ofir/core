@@ -1,0 +1,16 @@
+{
+  "name": "core.bot",
+  "version": "0.0.4",
+  "description": "A dynamic node task runner",
+  "main": "index.js",
+  "bin": {
+    "core.bot": "bin/index.js"
+  },
+  "dependencies": {
+    "core.skeleton": "0.0.1"
+  },
+  "scripts": {},
+  "author": "ido-ofir",
+  "license": "ISC",
+  "devDependencies": {}
+}

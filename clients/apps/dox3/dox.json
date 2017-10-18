@@ -1,0 +1,1485 @@
+{
+    "core-skeleton.js": [
+        {
+            "tags": [
+                {
+                    "type": "filedesc",
+                    "string": "core.skeleton",
+                    "html": "<p>core.skeleton</p>"
+                },
+                {
+                    "type": "description",
+                    "string": "The bare host of the core platform. provides the basic ability to load plugins.",
+                    "full": "The bare host of the core platform. provides the basic ability to load plugins.",
+                    "summary": "The bare host of the core platform. provides the basic ability to load plugins.",
+                    "body": "",
+                    "html": "<p>The bare host of the core platform. provides the basic ability to load plugins.</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>The bare host of the core platform. provides the basic ability to load plugins.</p>",
+                "summary": "<p>The bare host of the core platform. provides the basic ability to load plugins.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 2,
+            "codeStart": 10,
+            "code": "function typeOf(thing){\n    var type = Object.prototype.toString.call(thing);\n    return type.substring(8, type.length -1).toLowerCase();\n}",
+            "ctx": {
+                "type": "function",
+                "name": "typeOf",
+                "string": "typeOf()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "namespace",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "constructor",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "param",
+                    "string": "{object} options - instance options.",
+                    "name": "options",
+                    "description": "<ul>\n<li>instance options.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{string} options.name - a unique name for the instance.",
+                    "name": "options.name",
+                    "description": "<ul>\n<li>a unique name for the instance.</li>\n</ul>",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{array} options.plugins - an array on plugins to initialize on the instance.",
+                    "name": "options.plugins",
+                    "description": "<ul>\n<li>an array on plugins to initialize on the instance.</li>\n</ul>",
+                    "types": [
+                        "array"
+                    ],
+                    "typesDescription": "<code>array</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{object} options.extend - if provided, this object will be merged in to the new instance.",
+                    "name": "options.extend",
+                    "description": "<ul>\n<li>if provided, this object will be merged in to the new instance.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "example",
+                    "string": "var core = new Core({\n    name: 'client-core',\n    plugins: [\n        require('./pluginA'),\n        require('./pluginB')\n    ]\n});",
+                    "html": "<p>var core = new Core({<br />\nname: 'client-core',<br />\nplugins: [<br />\nrequire('./pluginA'),<br />\nrequire('./pluginB')<br />\n]<br />\n});</p>"
+                }
+            ],
+            "description": {
+                "full": "",
+                "summary": "",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": true,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 15,
+            "codeStart": 31,
+            "code": "function Core(options) {\n\n    var core = this;\n    if(!options) options = {};\n    core.name = options.name || 'core';\n    core.definitions = {};\n    core.plugins = {};\n    core.constructor = Core;\n    core.core = core;\n    if(options.plugins){\n        options.plugins.map(plugin => core.plugin(plugin));\n    }\n    if(options.extend){\n        core.extend(options.extend);\n    }\n}\n\n\nCore.prototype = {",
+            "ctx": {
+                "type": "constructor",
+                "name": "Core",
+                "string": "Core()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "name",
+                    "string": "core.typeOf",
+                    "html": "<p>core.typeOf</p>"
+                },
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Returns the correct native type in javascript ( unlike the 'typeof' operator ).",
+                    "full": "Returns the correct native type in javascript ( unlike the 'typeof' operator ).",
+                    "summary": "Returns the correct native type in javascript ( unlike the 'typeof' operator ).",
+                    "body": "",
+                    "html": "<p>Returns the correct native type in javascript ( unlike the 'typeof' operator ).</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{string} The native javascript type - 'undefined', 'null', 'boolean', 'number', 'string', 'array', 'object' or 'function'. ",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<p>The native javascript type - 'undefined', 'null', 'boolean', 'number', 'string', 'array', 'object' or 'function'.</p>"
+                },
+                {
+                    "type": "example",
+                    "string": "  \ntypeof null; // 'object'\ntypeof []; // 'object'\n\ncore.typeOf(null); // 'null'\ncore.typeOf([]); // 'array'",
+                    "html": "<p>typeof null; // 'object'<br />\ntypeof []; // 'object'</p>\n<p>core.typeOf(null); // 'null'<br />\ncore.typeOf([]); // 'array'</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Returns the correct native type in javascript ( unlike the 'typeof' operator ).</p>",
+                "summary": "<p>Returns the correct native type in javascript ( unlike the 'typeof' operator ).</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 50,
+            "codeStart": 65,
+            "code": "typeOf: typeOf,",
+            "ctx": {
+                "type": "property",
+                "name": "typeOf",
+                "value": "typeOf,",
+                "string": "typeOf"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is undefined.",
+                    "full": "Checks if a value is undefined.",
+                    "summary": "Checks if a value is undefined.",
+                    "body": "",
+                    "html": "<p>Checks if a value is undefined.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is undefined. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is undefined. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isUndefined(null); // false",
+                    "html": "<p>core.isUndefined(null); // false</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is undefined.</p>",
+                "summary": "<p>Checks if a value is undefined.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 66,
+            "codeStart": 74,
+            "code": "isUndefined(v){ return typeOf(v) === 'undefined'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isUndefined",
+                "string": "isUndefined()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is null.",
+                    "full": "Checks if a value is null.",
+                    "summary": "Checks if a value is null.",
+                    "body": "",
+                    "html": "<p>Checks if a value is null.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is null. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is null. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isNull(null); // true",
+                    "html": "<p>core.isNull(null); // true</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is null.</p>",
+                "summary": "<p>Checks if a value is null.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 75,
+            "codeStart": 83,
+            "code": "isNull(v){ return typeOf(v) === 'null'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isNull",
+                "string": "isNull()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is a boolean.",
+                    "full": "Checks if a value is a boolean.",
+                    "summary": "Checks if a value is a boolean.",
+                    "body": "",
+                    "html": "<p>Checks if a value is a boolean.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is boolean. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is boolean. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isBoolean(false); // true\ncore.isBoolean(''); // false",
+                    "html": "<p>core.isBoolean(false); // true<br />\ncore.isBoolean(''); // false</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is a boolean.</p>",
+                "summary": "<p>Checks if a value is a boolean.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 84,
+            "codeStart": 93,
+            "code": "isBoolean(v){ return typeOf(v) === 'boolean'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isBoolean",
+                "string": "isBoolean()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is a number.",
+                    "full": "Checks if a value is a number.",
+                    "summary": "Checks if a value is a number.",
+                    "body": "",
+                    "html": "<p>Checks if a value is a number.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is a number. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is a number. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isNumber('35'); // false\ncore.isNumber(35); // true",
+                    "html": "<p>core.isNumber('35'); // false<br />\ncore.isNumber(35); // true</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is a number.</p>",
+                "summary": "<p>Checks if a value is a number.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 94,
+            "codeStart": 103,
+            "code": "isNumber(v){ return typeOf(v) === 'number'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isNumber",
+                "string": "isNumber()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is a string.",
+                    "full": "Checks if a value is a string.",
+                    "summary": "Checks if a value is a string.",
+                    "body": "",
+                    "html": "<p>Checks if a value is a string.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is a string. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is a string. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isString('35'); // true\ncore.isString(35); // false",
+                    "html": "<p>core.isString('35'); // true<br />\ncore.isString(35); // false</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is a string.</p>",
+                "summary": "<p>Checks if a value is a string.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 104,
+            "codeStart": 113,
+            "code": "isString(v){ return typeOf(v) === 'string'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isString",
+                "string": "isString()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is a date object.",
+                    "full": "Checks if a value is a date object.",
+                    "summary": "Checks if a value is a date object.",
+                    "body": "",
+                    "html": "<p>Checks if a value is a date object.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is an array. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is an array. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isDate('6/3/81'); // false\ncore.isDate(new Date('6/3/81')); // true",
+                    "html": "<p>core.isDate('6/3/81'); // false<br />\ncore.isDate(new Date('6/3/81')); // true</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is a date object.</p>",
+                "summary": "<p>Checks if a value is a date object.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 114,
+            "codeStart": 124,
+            "code": "isDate(v){ return typeOf(v) === 'date'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isDate",
+                "string": "isDate()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is an array.",
+                    "full": "Checks if a value is an array.",
+                    "summary": "Checks if a value is an array.",
+                    "body": "",
+                    "html": "<p>Checks if a value is an array.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is an array. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is an array. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isArray({}); // false\ncore.isArray([]); // true",
+                    "html": "<p>core.isArray({}); // false<br />\ncore.isArray([]); // true</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is an array.</p>",
+                "summary": "<p>Checks if a value is an array.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 125,
+            "codeStart": 134,
+            "code": "isArray(v){ return typeOf(v) === 'array'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isArray",
+                "string": "isArray()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is an object.",
+                    "full": "Checks if a value is an object.",
+                    "summary": "Checks if a value is an object.",
+                    "body": "",
+                    "html": "<p>Checks if a value is an object.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is an object. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is an object. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isObject({}); // true\ncore.isObject([]); // false",
+                    "html": "<p>core.isObject({}); // true<br />\ncore.isObject([]); // false</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is an object.</p>",
+                "summary": "<p>Checks if a value is an object.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 135,
+            "codeStart": 144,
+            "code": "isObject(v){ return typeOf(v) === 'object'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isObject",
+                "string": "isObject()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Checks if a value is a function.",
+                    "full": "Checks if a value is a function.",
+                    "summary": "Checks if a value is a function.",
+                    "body": "",
+                    "html": "<p>Checks if a value is a function.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{any} thing - anything you want. ",
+                    "name": "thing",
+                    "description": "<ul>\n<li>anything you want.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{boolean} - true if 'thing' is a function. false otherwise.",
+                    "types": [
+                        "boolean"
+                    ],
+                    "typesDescription": "<code>boolean</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>true if 'thing' is a function. false otherwise.</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.isFunction({}); // false\ncore.isFunction(e => {}); // true",
+                    "html": "<p>core.isFunction({}); // false<br />\ncore.isFunction(e =&gt; {}); // true</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Checks if a value is a function.</p>",
+                "summary": "<p>Checks if a value is a function.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 145,
+            "codeStart": 154,
+            "code": "isFunction(v){ return typeOf(v) === 'function'; },",
+            "ctx": {
+                "type": "method",
+                "name": "isFunction",
+                "string": "isFunction()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Copies all properties from 'source' to 'target', similar to Object.assign.",
+                    "full": "Copies all properties from 'source' to 'target', similar to Object.assign.",
+                    "summary": "Copies all properties from 'source' to 'target', similar to Object.assign.",
+                    "body": "",
+                    "html": "<p>Copies all properties from 'source' to 'target', similar to Object.assign.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{object} target - The target object. properties will be copied to this object.",
+                    "name": "target",
+                    "description": "<ul>\n<li>The target object. properties will be copied to this object.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{object} source - A source, or a number of source objects.",
+                    "name": "source",
+                    "description": "<ul>\n<li>A source, or a number of source objects.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{function} assignFunc - A function that will be called for each property assignment.\nif provided, the assigned value will be the return value of this function.",
+                    "name": "assignFunc",
+                    "description": "<ul>\n<li>A function that will be called for each property assignment. if provided, the assigned value will be the return value of this function.</li>\n</ul>",
+                    "types": [
+                        "function"
+                    ],
+                    "typesDescription": "<code>function</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{object} - The target object ( the first parameter ).",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>The target object ( the first parameter ).</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.assign({}, {a: 1, b: 2}, t => t + 1);   // { a: 2, b: 3 }",
+                    "html": "<p>core.assign({}, {a: 1, b: 2}, t =&gt; t + 1);   // { a: 2, b: 3 }</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Copies all properties from 'source' to 'target', similar to Object.assign.</p>",
+                "summary": "<p>Copies all properties from 'source' to 'target', similar to Object.assign.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 155,
+            "codeStart": 166,
+            "code": "assign(target, source, assignFunc) {\n\n    var core = this;\n    var desc, property, func, args = [].slice.call(arguments, 1);\n    if (!core.isObject(target)) { throw new Error(`core.assign() - first argument should be an object. got ${ this.typeOf(target) }`); }\n    if (core.isFunction(args[args.length - 1])) { func = args.pop(); }\n    args.map(function(source){\n        if(!core.isObject(source)) return;\n        for(var key in source){\n            desc = Object.getOwnPropertyDescriptor(source, key);\n            if (desc && desc.enumerable) {\n                property = source[key]\n                target[key] = func ? func(property, key, source) : property;\n            }\n        }\n    });\n    return target;\n},",
+            "ctx": {
+                "type": "method",
+                "name": "assign",
+                "string": "assign()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Copies all members in 'properties' to the core instance.",
+                    "full": "Copies all members in 'properties' to the core instance.",
+                    "summary": "Copies all members in 'properties' to the core instance.",
+                    "body": "",
+                    "html": "<p>Copies all members in 'properties' to the core instance.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{object} properties - An ",
+                    "name": "properties",
+                    "description": "<ul>\n<li>An</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{object} - Returns the target object ( the first parameter ).",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "<ul>\n<li>Returns the target object ( the first parameter ).</li>\n</ul>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.extend({\n    getData(){ return this.myData; },\n    myData: 45\n});\n\ncore.getData();  // 45.\ncore.myData;  // 45.",
+                    "html": "<p>core.extend({<br />\ngetData(){ return this.myData; },<br />\nmyData: 45<br />\n});</p>\n<p>core.getData();  // 45.<br />\ncore.myData;  // 45.</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Copies all members in 'properties' to the core instance.</p>",
+                "summary": "<p>Copies all members in 'properties' to the core instance.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 184,
+            "codeStart": 198,
+            "code": "extend(properties){\n\n    var core = this;\n    core.assign(core, properties, function(property){\n        if(core.isFunction(property)){ return property.bind(core); }\n        return property;\n    });\n},",
+            "ctx": {
+                "type": "method",
+                "name": "extend",
+                "string": "extend()"
+            }
+        },
+        {
+            "tags": [],
+            "description": {
+                "full": "<p>A namespace object to hold named channels.</p>",
+                "summary": "<p>A namespace object to hold named channels.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 206,
+            "codeStart": 209,
+            "code": "channels: {\n    'core.pluginDefinition': [],\n    'core.plugin': []\n},",
+            "ctx": {
+                "type": "property",
+                "name": "channels",
+                "value": "{",
+                "string": "channels"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Adds a new channel to the channels namespace object.",
+                    "full": "Adds a new channel to the channels namespace object.",
+                    "summary": "Adds a new channel to the channels namespace object.",
+                    "body": "",
+                    "html": "<p>Adds a new channel to the channels namespace object.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{string} name - The name of the channel.",
+                    "name": "name",
+                    "description": "<ul>\n<li>The name of the channel.</li>\n</ul>",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{array} array - Optional array of functions.",
+                    "name": "array",
+                    "description": "<ul>\n<li>Optional array of functions.</li>\n</ul>",
+                    "types": [
+                        "array"
+                    ],
+                    "typesDescription": "<code>array</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{undefined}",
+                    "types": [],
+                    "typesDescription": "<code>undefined</code>",
+                    "optional": true,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "",
+                    "html": "<p>{undefined}</p>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.channel('collection');\ncore.channels.collection; // [].",
+                    "html": "<p>core.channel('collection');<br />\ncore.channels.collection; // [].</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Adds a new channel to the channels namespace object.</p>",
+                "summary": "<p>Adds a new channel to the channels namespace object.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 213,
+            "codeStart": 223,
+            "code": "channel(name, array){\n    if(!name) throw new Error('core.channel() was called without a name');\n    if(!this.isString(name)) throw new Error(`core.channel() - expected first argument to be a string. got ${ this.typeOf(name) }`);\n    if(this.isFunction(array)){ array = [array]; }\n    else if(!this.isArray(array)){\n        array = [];\n    }\n    this.channels[name] = array;\n},",
+            "ctx": {
+                "type": "method",
+                "name": "channel",
+                "string": "channel()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Adds a tap to a channel.",
+                    "full": "Adds a tap to a channel.",
+                    "summary": "Adds a tap to a channel.",
+                    "body": "",
+                    "html": "<p>Adds a tap to a channel.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{string} name - The name of the channel.",
+                    "name": "name",
+                    "description": "<ul>\n<li>The name of the channel.</li>\n</ul>",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{function} func - A function to attach to the channel.",
+                    "name": "func",
+                    "description": "<ul>\n<li>A function to attach to the channel.</li>\n</ul>",
+                    "types": [
+                        "function"
+                    ],
+                    "typesDescription": "<code>function</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{undefined}",
+                    "types": [],
+                    "typesDescription": "<code>undefined</code>",
+                    "optional": true,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "",
+                    "html": "<p>{undefined}</p>"
+                },
+                {
+                    "type": "prop",
+                    "string": "asd.asd.asd",
+                    "html": "<p>asd.asd.asd</p>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.channel('dataType');\n\ncore.tap('dataType', (dataType, done) => {\n    dataType.test = 'ok';\n    done(dataType);\n});\n\ncore.fire('dataType', {}, (dataType) => {\n    dataType.test; // 'ok'\n});",
+                    "html": "<p>core.channel('dataType');</p>\n<p>core.tap('dataType', (dataType, done) =&gt; {<br />\ndataType.test = 'ok';<br />\ndone(dataType);<br />\n});</p>\n<p>core.fire('dataType', {}, (dataType) =&gt; {<br />\ndataType.test; // 'ok'<br />\n});</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Adds a tap to a channel.</p>",
+                "summary": "<p>Adds a tap to a channel.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 232,
+            "codeStart": 251,
+            "code": "tap(name, func){\n    if(!name) throw new Error('core.tap() was called without a name');\n    if(!this.isString(name)){ throw new Error(`core.tap() - expected first argument to be a string. got ${ this.typeOf(name) }`); }\n    if(!this.isFunction(func)){ throw new Error(`core.tap() - expected second argument to be a function. got ${ this.typeOf(func) }`); }\n    if(!this.isArray(this.channels[name])){ throw new Error(`core.tap() - cannot find channel ${ name }`); }\n    this.channels[name].push(func);\n},",
+            "ctx": {
+                "type": "method",
+                "name": "tap",
+                "string": "tap()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Runs data through a named channel.",
+                    "full": "Runs data through a named channel.",
+                    "summary": "Runs data through a named channel.",
+                    "body": "",
+                    "html": "<p>Runs data through a named channel.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{string} name - The name of the channel.",
+                    "name": "name",
+                    "description": "<ul>\n<li>The name of the channel.</li>\n</ul>",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{any} data - Data to be passed through the channel.",
+                    "name": "data",
+                    "description": "<ul>\n<li>Data to be passed through the channel.</li>\n</ul>",
+                    "types": [
+                        "any"
+                    ],
+                    "typesDescription": "<a href=\"any.html\">any</a>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{function} callback - A function that will be called when the job completes.",
+                    "name": "callback",
+                    "description": "<ul>\n<li>A function that will be called when the job completes.</li>\n</ul>",
+                    "types": [
+                        "function"
+                    ],
+                    "typesDescription": "<code>function</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{undefined}",
+                    "types": [],
+                    "typesDescription": "<code>undefined</code>",
+                    "optional": true,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "",
+                    "html": "<p>{undefined}</p>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.channel('dataType', (dataType, done) => {\n    dataType.test = 'ok';\n    done(dataType);\n});\n\ncore.fire('dataType', {}, (dataType) => {\n    dataType.test; // 'ok'\n});",
+                    "html": "<p>core.channel('dataType', (dataType, done) =&gt; {<br />\ndataType.test = 'ok';<br />\ndone(dataType);<br />\n});</p>\n<p>core.fire('dataType', {}, (dataType) =&gt; {<br />\ndataType.test; // 'ok'<br />\n});</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Runs data through a named channel.</p>",
+                "summary": "<p>Runs data through a named channel.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 258,
+            "codeStart": 275,
+            "code": "fire(name, data, callback){\n    \n    var core = this;\n    var index = 0;\n    var returned = false;\n    var channel = core.channels[name];\n    var args = [].slice.call(arguments, 1);\n    callback = args.pop();\n    if(!channel) { throw new Error(`cannot find channel '${name}'`); }\n    if(!core.isFunction(callback)){\n        args.push(callback);\n        callback = null;\n    }\n    \n    function done(){\n        index++;\n        if(returned){ throw new Error(`'${ name }' channel has returned twice`); }\n        returned = true;\n        if(callback) { callback.apply(null, args); }\n    }\n\n    function next(){\n        if(index >= channel.length) {\n            return done();\n        }\n        var tool = channel[index];\n        index++;\n        var t = index;\n        setTimeout(function(){ \n            if(t !== index){ return }\n            var ns = tool._ns ? tool._ns : (tool.name ? `function ${ tool.name } in channel ${ name }` : `function at index ${ t - 1 } in channel ${ name }`);\n            console.warn(`${ ns } did not call next().`, args);\n        }, 3000);\n        tool.apply(core, args.concat([next, done]))\n    }\n\n    next.apply(null, args);\n\n},",
+            "ctx": {
+                "type": "method",
+                "name": "fire",
+                "string": "fire()"
+            }
+        },
+        {
+            "tags": [
+                {
+                    "type": "function",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "description",
+                    "string": "Adds a plugin to core instance.",
+                    "full": "Adds a plugin to core instance.",
+                    "summary": "Adds a plugin to core instance.",
+                    "body": "",
+                    "html": "<p>Adds a plugin to core instance.</p>"
+                },
+                {
+                    "type": "param",
+                    "string": "{object} definition - The plugin definition.",
+                    "name": "definition",
+                    "description": "<ul>\n<li>The plugin definition.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{string} definition.name - The name of the plugin.",
+                    "name": "definition.name",
+                    "description": "<ul>\n<li>The name of the plugin.</li>\n</ul>",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{function} callback - A function that will be called when the job completes.",
+                    "name": "callback",
+                    "description": "<ul>\n<li>A function that will be called when the job completes.</li>\n</ul>",
+                    "types": [
+                        "function"
+                    ],
+                    "typesDescription": "<code>function</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "return",
+                    "string": "{undefined}",
+                    "types": [],
+                    "typesDescription": "<code>undefined</code>",
+                    "optional": true,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false,
+                    "description": "",
+                    "html": "<p>{undefined}</p>"
+                },
+                {
+                    "type": "example",
+                    "string": "core.plugin('myPlugin', {\n    getData(){ return 47; }\n});\ncore.plugins.myPlugin.getData();  // 47.",
+                    "html": "<p>core.plugin('myPlugin', {<br />\ngetData(){ return 47; }<br />\n});<br />\ncore.plugins.myPlugin.getData();  // 47.</p>"
+                }
+            ],
+            "description": {
+                "full": "<p>Adds a plugin to core instance.</p>",
+                "summary": "<p>Adds a plugin to core instance.</p>",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 314,
+            "codeStart": 328,
+            "code": "plugin(definition, callback) {\n    var i, core = this;\n    if (!definition) { throw new Error(`cannot create plugin from \"${definition}\"`); }\n    if(core.isArray(definition)){\n        i = 0;\n        function done(){\n            i += 1;\n            if(1 >= definition.length){ callback && callback() }\n        }\n        return definition.map(function(def){\n            core.plugin(def, done);\n        });\n    }\n    if(!core.isObject(definition)){ throw new Error(`cannot create plugin from \"${definition}\"`); }\n    if (!definition.name) { throw new Error(`a plugin's name is missing in Object ${ Object.keys(definition) }`); }\n    \n    core.definitions[definition.name] = definition;\n    \n    core.fire('core.pluginDefinition', definition, () => {\n        var isDone = false;\n        function done(plugin){\n            isDone = true;\n            core.fire('core.plugin', plugin, definition, (plugin)=>{\n                core.plugins[definition.name] = plugin || '√';\n                callback && callback(plugin);\n            });\n        }\n        setTimeout(function(){\n            if(!isDone){\n                console.warn(`plugin ${ definition.name } has defined an init function but did not call done().`);\n            }\n        }, 3000);\n        if(core.isFunction(definition.init)){\n            definition.init.call(core, definition, done);\n        }\n        else{ done(definition); }\n    });\n    \n}\n}\n\nmodule.exports = Core;",
+            "ctx": {
+                "type": "method",
+                "name": "plugin",
+                "string": "plugin()"
+            }
+        }
+    ],
+    "index.js": [
+        {
+            "tags": [
+                {
+                    "type": "name",
+                    "string": "clientCore",
+                    "html": "<p>clientCore</p>"
+                }
+            ],
+            "description": {
+                "full": "",
+                "summary": "",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 4,
+            "codeStart": 7,
+            "code": "var core = window.core = new Core({\n    name: 'client-core',\n    plugins: [\n      require('./core_plugins/core.plugin.extend'),      \n      require('./core_plugins/core.eventEmitter'),\n      require('./core_plugins/core.injector'),\n      require('./core_plugins/core.plugin.injector'),\n      require('./core_plugins/core.getDefinitionObject'),\n      require('./core_plugins/core.plugin.channels'),\n      require('./core_plugins/core.plugin.hooks'),\n      require('./core_plugins/core.plugin.imports'),\n      require('./core_plugins/core.imports'),\n      require('./core_plugins/core.Array'),\n      require('./core_plugins/core.types'),\n      require('./core_plugins/core.build'),\n      require('./core_plugins/core.plugin.types'),\n      require('./core_plugins/core.prepend'),\n      require('./core_plugins/core.modules'),\n      require('./core_plugins/core.components'),\n      require('./core_plugins/core.actions'),\n      require('./core_plugins/core.tree'),\n      require('./core_plugins/core.bindings'),\n      require('./core_plugins/core.views'),\n      require('./core_plugins/core.templates'),\n      require('./core_plugins/core.apps'),\n      require('./core_plugins/core.plugins'),\n      require('./core_plugins/core.plugin.modules'),\n      require('./core_plugins/core.plugin.actions'),\n      require('./core_plugins/core.plugin.tree'),\n      require('./core_plugins/core.plugin.bind'),      \n      require('./core_plugins/core.plugin.components'),\n    ]\n});\n\n// core.Component('o', [], function(){\n//   return {\n//     render(){\n\n//     }\n//   };\n// });\n\nmodule.exports = core;",
+            "ctx": {
+                "type": "declaration",
+                "name": "core",
+                "value": "window.core = new Core({",
+                "string": "core"
+            }
+        },
+        {
+            "tags": [],
+            "description": {
+                "full": "<p>function Core() {</p>\n<p>this.components = {};<br />\nthis.views = {};<br />\nthis.templates = {};<br />\nthis.actions = {};<br />\nthis.apps = {};<br />\nthis.events = {};<br />\nthis.plugins = {};</p>\n<p>this.utils = utils;<br />\nthis.constructor = Core;</p>\n<p>}</p>\n<p>Core.prototype = utils.Emitter({<br />\nArray: utils.ArrayFind,<br />\ntypes: types,</p>\n<p>isUndefined(v){ return core.typeOf(v) === 'undefined'; },<br />\nisNull(v){ return core.typeOf(v) === 'null'; },<br />\nisBoolean(v){ return core.typeOf(v) === 'boolean'; },<br />\nisNumber(v){ return core.typeOf(v) === 'number'; },<br />\nisString(v){ return core.typeOf(v) === 'string'; },<br />\nisArray(v){ return core.typeOf(v) === 'array'; },<br />\nisObject(v){ return core.typeOf(v) === 'object'; },<br />\nisFunction(v){ return core.typeOf(v) === 'function'; },<br />\ntypeOf(thing){<br />\nvar type = Object.prototype.toString.call(thing);<br />\nreturn type.substring(8, type.length -1).toLowerCase();<br />\n},<br />\n$_typeOf(thing){<br />\nvar type = this.typeOf(thing);<br />\nreturn ((type === 'object') ? (thing['$_type'] || type) : type);<br />\n},<br />\nkeys(object){<br />\nvar result = [];<br />\nif(!object) return result;<br />\nfor(var m in object){<br />\nresult.push(m);<br />\n}<br />\nreturn result;<br />\n},<br />\nflatten(source, result){<br />\nvar isObject = core.isObject(source);<br />\nvar isArray = core.isArray(source);<br />\nif(!isObject &amp;&amp; !isArray){<br />\nreturn source;<br />\n}<br />\nif(!result) result = {};<br />\nvar type = source['$_type'];<br />\nif(type){<br />\nif(!result[type]){<br />\nresult[type] = [];<br />\n}<br />\nresult[type].push(source);<br />\n}<br />\nfor(var m in source){<br />\ncore.flatten(source[m], result);<br />\n}<br />\nreturn result;<br />\n},<br />\nmapTypes(source){<br />\nif(!source) source = this.source || {};<br />\nvar types, coreTypes = core.Array();<br />\nfor(var m in core.types){<br />\ncoreTypes.push(core.types[m]);<br />\n}<br />\nvar flat = core.flatten(source);<br />\nflat.type = (flat.type ? core.Array(coreTypes.concat(flat.type)) : coreTypes);<br />\nreturn flat;<br />\n},<br />\nisPrimitive(v){<br />\nif(!v) return true;<br />\nvar type = core.typeOf(v)<br />\nif(type === 'array'){ return false; }<br />\nif(type !== 'object'){ return true; }<br />\nvar $_type = v['$_type'];<br />\nif(!$_type){ return false; }<br />\nif(['undefined', 'null', 'boolean', 'string', 'number'].indexOf($_type) &gt; -1){<br />\nreturn true;<br />\n}<br />\nreturn false;<br />\n},<br />\nemptyObject: {},<br />\nemptyArray: [],<br />\nemptyFunction(){},<br />\ndefinitions: {},<br />\nset(path, value){<br />\nreturn this.tree.set(path, value);<br />\n},<br />\nget(path){<br />\nreturn this.tree.get(path);<br />\n},<br />\nselect(path){<br />\nreturn this.tree.select(path);<br />\n},</p>\n<p>options: {<br />\nmoduleNames(){<br />\nreturn this.modules.map((m)=&gt;{ return { key: m, value: m } });<br />\n}<br />\n},<br />\nlog(){</p>\n<p>},<br />\ncollect({ source, path, map, done }){</p>\n<p>},<br />\nbuild (source, path, done) {</p>\n<pre><code>var type, typeName, map, child, recursive, built, newTarget, ns, target;\n\nif(!done &amp;&amp; this.isFunction(path)){\n  done = path;\n  path = [];\n}\nif(!done){ done = this.emptyFunction; }\nif(!source) {\n  done(source);\n  return source;\n}\nif(!path){ path = []; }\n\nif(path.length){ \n  ns = path.join('/');\n  if(this.definitions[ns] === source) {  // if the source has not changed, stop here.\n    done(source);\n    return source;\n  }\n  this.definitions[ns] = source;  // if it did change, remember it and proceed.\n}\n\nmap = {};\ntypeName = source['$_type'];\ntype = typeName ? this.types[typeName] : null;\nvar recursive = type &amp;&amp; type.recursive;\nif(recursive &amp;&amp; core.isFunction(recursive)){ recursive = recursive(source); }\nif(type &amp;&amp; type.preBuild){\n  source = type.preBuild(source);\n}\nif(!type || type.recursive){  // build children.\n  if(this.isObject(source)){\n    target = {};      \n    for(var m in source){\n      target[m] = this.build(source[m], (path &amp;&amp; path.concat([m])));\n    }\n  }\n  else if(this.isArray(source)){\n    target = [];\n    for (var i = 0; i &lt; source.length; i++) {\n      child = this.build(source[i], (path &amp;&amp; path.concat([i])));\n      target.push(child);\n    }\n  }\n}\nelse{\n  target = source;\n}\n\nif(!typeName){  // not a typed entity.\n  return target;\n}\nif(!type) throw new Error(`cannot find type '${typeName}'`);\nif(!type.build) throw new Error(`type '${typeName}' does not have a build method`);\nvar built = type.build.call(this, target, path);\ndone(built);\nreturn built;\n</code></pre>\n<p>},<br />\nextract(source, path){</p>\n<pre><code>if(!this.isObject(source)){\n  // return source;\n  // console.debug('source', source);\n  \n}\nif(!path) path = [];\nif(!this.isArray(path)){\n  path = [path];\n}\nvar key = path.length ? path.unshift() : null;\nvar type = source['$_type'];\nif(type){\n  if(type === 'object'){\n    if(!key) return this.extract(source.members);\n    for(var i = 0; i &lt; source.members.length; i++){\n      if(source.members[i].key === key){\n        return this.extract(source.members[i].value, path);\n      }\n    }\n  }\n  else if(type === 'array'){\n    if(!key &amp;&amp; (key !== 0)) return this.extract(source.items);\n    return source.items[key];\n  }\n  else if('value' in source){\n    return source.value;\n  }\n}\nreturn key ? source[key] : source;\n</code></pre>\n<p>},<br />\nrequire(dependencies, callback){<br />\nreturn this.injector.require(dependencies, callback);<br />\n},</p>\n<p>});</p>\n<p>var core = new Core();<br />\ncore.core = core;</p>\n<p>module.exports = core;</p>",
+                "summary": "<p>function Core() {</p>",
+                "body": "<p>this.components = {};<br />\nthis.views = {};<br />\nthis.templates = {};<br />\nthis.actions = {};<br />\nthis.apps = {};<br />\nthis.events = {};<br />\nthis.plugins = {};</p>\n<p>this.utils = utils;<br />\nthis.constructor = Core;</p>\n<p>}</p>\n<p>Core.prototype = utils.Emitter({<br />\nArray: utils.ArrayFind,<br />\ntypes: types,</p>\n<p>isUndefined(v){ return core.typeOf(v) === 'undefined'; },<br />\nisNull(v){ return core.typeOf(v) === 'null'; },<br />\nisBoolean(v){ return core.typeOf(v) === 'boolean'; },<br />\nisNumber(v){ return core.typeOf(v) === 'number'; },<br />\nisString(v){ return core.typeOf(v) === 'string'; },<br />\nisArray(v){ return core.typeOf(v) === 'array'; },<br />\nisObject(v){ return core.typeOf(v) === 'object'; },<br />\nisFunction(v){ return core.typeOf(v) === 'function'; },<br />\ntypeOf(thing){<br />\nvar type = Object.prototype.toString.call(thing);<br />\nreturn type.substring(8, type.length -1).toLowerCase();<br />\n},<br />\n$_typeOf(thing){<br />\nvar type = this.typeOf(thing);<br />\nreturn ((type === 'object') ? (thing['$_type'] || type) : type);<br />\n},<br />\nkeys(object){<br />\nvar result = [];<br />\nif(!object) return result;<br />\nfor(var m in object){<br />\nresult.push(m);<br />\n}<br />\nreturn result;<br />\n},<br />\nflatten(source, result){<br />\nvar isObject = core.isObject(source);<br />\nvar isArray = core.isArray(source);<br />\nif(!isObject &amp;&amp; !isArray){<br />\nreturn source;<br />\n}<br />\nif(!result) result = {};<br />\nvar type = source['$_type'];<br />\nif(type){<br />\nif(!result[type]){<br />\nresult[type] = [];<br />\n}<br />\nresult[type].push(source);<br />\n}<br />\nfor(var m in source){<br />\ncore.flatten(source[m], result);<br />\n}<br />\nreturn result;<br />\n},<br />\nmapTypes(source){<br />\nif(!source) source = this.source || {};<br />\nvar types, coreTypes = core.Array();<br />\nfor(var m in core.types){<br />\ncoreTypes.push(core.types[m]);<br />\n}<br />\nvar flat = core.flatten(source);<br />\nflat.type = (flat.type ? core.Array(coreTypes.concat(flat.type)) : coreTypes);<br />\nreturn flat;<br />\n},<br />\nisPrimitive(v){<br />\nif(!v) return true;<br />\nvar type = core.typeOf(v)<br />\nif(type === 'array'){ return false; }<br />\nif(type !== 'object'){ return true; }<br />\nvar $_type = v['$_type'];<br />\nif(!$_type){ return false; }<br />\nif(['undefined', 'null', 'boolean', 'string', 'number'].indexOf($_type) &gt; -1){<br />\nreturn true;<br />\n}<br />\nreturn false;<br />\n},<br />\nemptyObject: {},<br />\nemptyArray: [],<br />\nemptyFunction(){},<br />\ndefinitions: {},<br />\nset(path, value){<br />\nreturn this.tree.set(path, value);<br />\n},<br />\nget(path){<br />\nreturn this.tree.get(path);<br />\n},<br />\nselect(path){<br />\nreturn this.tree.select(path);<br />\n},</p>\n<p>options: {<br />\nmoduleNames(){<br />\nreturn this.modules.map((m)=&gt;{ return { key: m, value: m } });<br />\n}<br />\n},<br />\nlog(){</p>\n<p>},<br />\ncollect({ source, path, map, done }){</p>\n<p>},<br />\nbuild (source, path, done) {</p>\n<pre><code>var type, typeName, map, child, recursive, built, newTarget, ns, target;\n\nif(!done &amp;&amp; this.isFunction(path)){\n  done = path;\n  path = [];\n}\nif(!done){ done = this.emptyFunction; }\nif(!source) {\n  done(source);\n  return source;\n}\nif(!path){ path = []; }\n\nif(path.length){ \n  ns = path.join('/');\n  if(this.definitions[ns] === source) {  // if the source has not changed, stop here.\n    done(source);\n    return source;\n  }\n  this.definitions[ns] = source;  // if it did change, remember it and proceed.\n}\n\nmap = {};\ntypeName = source['$_type'];\ntype = typeName ? this.types[typeName] : null;\nvar recursive = type &amp;&amp; type.recursive;\nif(recursive &amp;&amp; core.isFunction(recursive)){ recursive = recursive(source); }\nif(type &amp;&amp; type.preBuild){\n  source = type.preBuild(source);\n}\nif(!type || type.recursive){  // build children.\n  if(this.isObject(source)){\n    target = {};      \n    for(var m in source){\n      target[m] = this.build(source[m], (path &amp;&amp; path.concat([m])));\n    }\n  }\n  else if(this.isArray(source)){\n    target = [];\n    for (var i = 0; i &lt; source.length; i++) {\n      child = this.build(source[i], (path &amp;&amp; path.concat([i])));\n      target.push(child);\n    }\n  }\n}\nelse{\n  target = source;\n}\n\nif(!typeName){  // not a typed entity.\n  return target;\n}\nif(!type) throw new Error(`cannot find type '${typeName}'`);\nif(!type.build) throw new Error(`type '${typeName}' does not have a build method`);\nvar built = type.build.call(this, target, path);\ndone(built);\nreturn built;\n</code></pre>\n<p>},<br />\nextract(source, path){</p>\n<pre><code>if(!this.isObject(source)){\n  // return source;\n  // console.debug('source', source);\n  \n}\nif(!path) path = [];\nif(!this.isArray(path)){\n  path = [path];\n}\nvar key = path.length ? path.unshift() : null;\nvar type = source['$_type'];\nif(type){\n  if(type === 'object'){\n    if(!key) return this.extract(source.members);\n    for(var i = 0; i &lt; source.members.length; i++){\n      if(source.members[i].key === key){\n        return this.extract(source.members[i].value, path);\n      }\n    }\n  }\n  else if(type === 'array'){\n    if(!key &amp;&amp; (key !== 0)) return this.extract(source.items);\n    return source.items[key];\n  }\n  else if('value' in source){\n    return source.value;\n  }\n}\nreturn key ? source[key] : source;\n</code></pre>\n<p>},<br />\nrequire(dependencies, callback){<br />\nreturn this.injector.require(dependencies, callback);<br />\n},</p>\n<p>});</p>\n<p>var core = new Core();<br />\ncore.core = core;</p>\n<p>module.exports = core;</p>"
+            },
+            "isPrivate": false,
+            "isConstructor": false,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 51,
+            "codeStart": 268
+        }
+    ],
+    "test.js": [
+        {
+            "tags": [
+                {
+                    "type": "namespace",
+                    "string": "Loko",
+                    "html": "<p>Loko</p>"
+                },
+                {
+                    "type": "constructor",
+                    "string": "",
+                    "html": ""
+                },
+                {
+                    "type": "param",
+                    "string": "{object} options - instance options.",
+                    "name": "options",
+                    "description": "<ul>\n<li>instance options.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{string} options.name - a unique name for the instance.",
+                    "name": "options.name",
+                    "description": "<ul>\n<li>a unique name for the instance.</li>\n</ul>",
+                    "types": [
+                        "string"
+                    ],
+                    "typesDescription": "<code>string</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{array} options.plugins - an array on plugins to initialize on the instance.",
+                    "name": "options.plugins",
+                    "description": "<ul>\n<li>an array on plugins to initialize on the instance.</li>\n</ul>",
+                    "types": [
+                        "array"
+                    ],
+                    "typesDescription": "<code>array</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "param",
+                    "string": "{object} options.extend - if provided, this object will be merged in to the new instance.",
+                    "name": "options.extend",
+                    "description": "<ul>\n<li>if provided, this object will be merged in to the new instance.</li>\n</ul>",
+                    "types": [
+                        "object"
+                    ],
+                    "typesDescription": "<code>object</code>",
+                    "optional": false,
+                    "nullable": false,
+                    "nonNullable": false,
+                    "variable": false
+                },
+                {
+                    "type": "example",
+                    "string": "var core = new Core({\n    name: 'client-core',\n    plugins: [\n        require('./pluginA'),\n        require('./pluginB')\n    ]\n});",
+                    "html": "<p>var core = new Core({<br />\nname: 'client-core',<br />\nplugins: [<br />\nrequire('./pluginA'),<br />\nrequire('./pluginB')<br />\n]<br />\n});</p>"
+                }
+            ],
+            "description": {
+                "full": "",
+                "summary": "",
+                "body": ""
+            },
+            "isPrivate": false,
+            "isConstructor": true,
+            "isClass": false,
+            "isEvent": false,
+            "ignore": false,
+            "line": 1,
+            "codeStart": 18,
+            "code": "function Loko(){}",
+            "ctx": {
+                "type": "function",
+                "name": "Loko",
+                "string": "Loko()"
+            }
+        }
+    ]
+}

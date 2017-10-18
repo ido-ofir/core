@@ -1,0 +1,12 @@
+{
+  "name": "core.imports.react-dom",
+  "version": "0.1.4",
+  "description": "react-dom for core",
+  "main": "index.js",
+  "dependencies": {
+    "react-dom": "^15.4.2"
+  },
+  "scripts": {},
+  "author": "ido-ofir",
+  "license": "ISC"
+}

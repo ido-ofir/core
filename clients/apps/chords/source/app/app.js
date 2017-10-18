@@ -1,99 +1,161 @@
 var React = require('react');
 var core = require('core');
-var components = require('./components/components.js');
-var modules = require('./modules/modules.js');
-var tree = require('./tree/tree.js');
-var actions = require('./actions/actions.js');
-var views = require('./views/views.js');
 
-var editedApp = require('./editedApp');
+var Baobab = core.imports.baobab;
 
-var app = window.app = core.App({
-  name: 'coreEditor',
-  tree: tree,
-  components: components,
-  modules: modules,
-  actions: actions,
-  views: views,
-  templates: [],
-  types: [{
-    'name': 'myNumber',
-    'schema': {}
-  }],
-  init(app){
+var songs = localStorage.getItem('songs');
+if(songs){
+  songs = JSON.parse(songs);
+}
+else{
+  songs = [{
+    name: 'Valerie',
+    artist: 'Amy Winehouse',
+    url: 'https://tabs.ultimate-guitar.com/a/amy_winehouse/valerie_ver2_ukulele_crd.htm'
+  }];
+}
 
-    app.editedApp = window.editedApp = editedApp;
-
-    app.run('setSource', { source: this.editedApp.source, path: [] });
-
+core.set({
+  newSong: {
+    name: '',
+    url: '',
+    artist: ''
   },
-  root: {
-    name: 'CoreEditor',
-    dependencies: [
-      'EditItems'
-    ],
-    bindings: {
-      'source': 'source'
+  songs: songs,
+  songsFilter: '',
+  filterdSongs: Baobab.monkey({
+    cursors: {
+      songs: ['songs'],
+      songsFilter: ['songsFilter']
     },
-    get(EditItems){
+    get: function(data) {
+      if(!data.songsFilter){ return data.songs; }
+      return data.songs.filter(function(song){
+        var v = data.songsFilter.toLowerCase();
+        return (song.name.toLowerCase().indexOf(v) > -1) || (song.artist.toLowerCase().indexOf(v) > -1);
+      });
+    }
+  })
+});
+
+core.Action({
+  name: 'filterSongs',
+  run({ value }){
+    core.set('songsFilter', value);
+  }
+});
+
+core.Action({
+  name: 'setNewSong',
+  run(newSong){
+    if('name' in newSong) core.set(['newSong', 'name'], newSong.name);
+    if('artist' in newSong) core.set(['newSong', 'artist'], newSong.artist);
+    if('url' in newSong) core.set(['newSong', 'url'], newSong.url);
+    core.tree.commit();
+  }
+});
+
+core.Action({
+  name: 'clearNewSong',
+  run() {
+    core.set(['newSong'], {
+      name: '',
+      url: '',
+      artist: ''
+    });
+  }
+});
+
+core.Action({
+  name: 'createNewSong',
+  run() {
+    var newSong = { ...core.get(['newSong']) };
+    if(!newSong.name){ return alert('song must have a name'); }
+    if(!newSong.url){ return alert('song must have a url'); }
+    newSong.id = core.uuid();
+    var songs = core.get('songs');
+    songs = [newSong].concat(songs);
+    core.set('songs', songs);
+    localStorage.setItem('songs', JSON.stringify(songs));
+    core.run('clearNewSong');
+  }
+});
+
+core.Action({
+  name: 'deleteSong',
+  run({ id }) {
+    var song = core.select(['songs', { id: id }]);
+    if(song.exists()){
+      song.unset();
+      localStorage.setItem('songs', JSON.stringify(core.get('songs')));
+    }
+  }
+});
+
+
+core.View({
+  name: 'Chords',
+  dependencies: [
+    'ui.Input',
+    'ui.Button'
+  ],
+  bindings: {
+      'songsFilter': 'songsFilter',
+      'filterdSongs': 'filterdSongs',
+      'newSong': 'newSong'
+    },
+    get(Input, Button){
 
       return {
 
-        getInitialState(){
-
-
-
-          return {
-            type: 'actions',
-            selectedIndex: 0
-          };
-        },
-
-        onSave({ code, item, type }){
-          this.app.run('save', { code, item, type });
+        filterSongs(value){
+          core.run('filterSongs', { value: value });
         },
 
         render() {
 
-          var { source } = this.props;
-          var { selectedIndex } = this.state;
-          if(!source) return null;
-          var structure = this.app.get('structure');
-          var type = structure[selectedIndex].name;
+
           return (
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1, maxHeight: 40, borderBottom: '1px solid #ddd', alignItems: 'center', padding: 10 }}>
-                  <div>{ app.editedApp && app.editedApp.name }</div>
+            <div style={{ height: '100%', display: 'flex' }}>
+              
+              <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+                <div style={{ borderBottom: '1px solid #ddd', display: 'flex', height: 50, alignItems: 'center' }}>
+                  <div style={{ marginRight: 10 }}>Filter</div> 
+                  <Input value={ this.props.songsFilter } onChange={ this.filterSongs }/>
                 </div>
-                <div style={{ flex: 1, display: 'flex' }}>
-                  <div style={{ borderRight: '1px solid #bbb', minWidth: 120 }}>
-                    {
-                      structure.map((item, i) =>
-                        <div key={ i }
-                             onClick={ e => this.setState({ selectedIndex: i }) }
-                             style={{ padding: 10, cursor: 'pointer', background: (selectedIndex === i) ? '#ddd' : '#fff' }}>
-                          { item.name }
-                        </div>
-                      )
-                    }
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <EditItems items={ source[type] } onSave={ this.onSave } type={ this.state.type }/>
-                  </div>
-                  <div style={{ flex: 1 }}>
+                {
+                  this.props.filterdSongs.map(song => (
+                    <div key={ song.url } style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #ddd', height: 30, alignItems: 'center' }}>
+                      <div>
+                        <a href={ song.url } target="_blank">{ song.name }</a>
+                        {
+                          song.artist ? <span style={{ fontSize: '12px' }}> - { song.artist }</span> : null
+                        }
+                      </div>
 
-                  </div>
+                      <div onClick={ e => core.run('deleteSong', { id: song.id }) } style={{ padding: 10, cursor: 'pointer'}}>X</div>
+                    </div>
+                  ))
+                }
+              </div>
+              <div style={{ maxWidth: 300, flex: 1, overflow: 'auto', padding: 20, borderLeft: '1px solid #ddd' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 40  }}>
+                  Name <Input style={{ maxWidth: 200 }} value={ this.props.newSong.name } onChange={ value => core.run('setNewSong', { name: value }) }/>
                 </div>
-
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 40  }}>
+                  Artist <Input style={{ maxWidth: 200 }} value={ this.props.newSong.artist } onChange={ value => core.run('setNewSong', { artist: value }) }/>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 40  }}>
+                  Url <Input style={{ maxWidth: 200 }} value={ this.props.newSong.url } onChange={ value => core.run('setNewSong', { url: value }) }/>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 60  }}>
+                  <Button onClick={ e => core.run('createNewSong') } style={{ width: '100%'}}>Create</Button>
+                </div>
+              </div>
             </div>
           );
 
         }
       }
     }
-  },
-});
-
-
-
-module.exports = app;
+})

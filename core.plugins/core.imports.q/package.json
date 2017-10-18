@@ -1,0 +1,12 @@
+{
+  "name": "core.imports.q",
+  "version": "0.1.4",
+  "description": "frontend toolchain",
+  "main": "index.js",
+  "dependencies": {
+    "q": "^1.5.0"
+  },
+  "scripts": {},
+  "author": "ido-ofir",
+  "license": "ISC"
+}

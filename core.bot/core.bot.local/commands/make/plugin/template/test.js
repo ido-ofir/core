@@ -1,0 +1,5 @@
+
+/**
+ * 
+ *  test plugin <% name %>
+ */

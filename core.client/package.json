@@ -1,0 +1,22 @@
+{
+  "name": "client-core",
+  "version": "0.1.4",
+  "description": "frontend toolchain",
+  "main": "index.js",
+  "dependencies": {
+    "baobab": "^2.4.3",
+    "create-react-class": "^15.5.2",
+    "prop-types": "^15.5.8",
+    "q": "^1.5.0",
+    "react": "^15.4.2",
+    "core.skeleton": "^0.0.1"
+  },
+  "scripts": {
+    "jsdoc": "jsdoc . -t ./node_modules/ink-docstrap/template -R ./README.md -d docs -c ./node_modules/ink-docstrap/template/jsdoc.conf.json"
+  },
+  "author": "ido-ofir",
+  "license": "ISC",
+  "devDependencies": {
+    "dox": "^0.9.0"
+  }
+}

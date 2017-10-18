@@ -3,6 +3,14 @@ var pt = React.PropTypes;
 var ReactDom = require('react-dom');
 var core = require('core');
 
-var app = require('./app/app.js');
+core.plugin([
+    require('./core_plugins/ui')
+]);
 
-ReactDom.render(<app.Root/>, document.getElementById('app'));
+require('./app/app.js');
+
+core.require('Chords', (Chords) => {
+    ReactDom.render(<Chords/>, document.getElementById('app'));
+});
+
+
