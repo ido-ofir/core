@@ -142,11 +142,6 @@ all the listed modules are registered with npm and have their own repository.
   </a>
 </div>
 <div>
-  <a href="https://github.com/ido-ofir/core.loader.extend">
-    core.loader.extend
-  </a>
-</div>
-<div>
   <a href="https://github.com/ido-ofir/core.loader.hooks">
     core.loader.hooks
   </a>
