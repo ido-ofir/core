@@ -1,14 +1,39 @@
 # core
 
-this repo is a reference to all basic plugins in the 'core' ecosystem.
+this repo is a reference to implementations of the 'core' constructor, and the plugins that compose them.
 all the listed modules are registered with npm and have their own repository.
 
 
-### the basic constructor
+### the constructor
 
 <a href="https://github.com/ido-ofir/core.constructor">
   core.constructor
 </a>
+
+### implementations
+
+<div>
+  <a href="https://github.com/ido-ofir/core.web">
+    core.web
+  </a>
+  - a React based client-side infrastructure
+</div>
+
+<div>
+  <a href="https://github.com/ido-ofir/core.node.server">
+    core.node.server
+  </a>
+  - a basic Node server
+</div>
+
+<div>
+  <a href="https://github.com/ido-ofir/core.bot">
+    core.bot
+  </a>
+  - a tiny and effective task runner
+</div>
+
+
 
 ### cross platform plugins
 
@@ -70,14 +95,6 @@ all the listed modules are registered with npm and have their own repository.
 <div>
   <a href="https://github.com/ido-ofir/core.plugin.type">
     core.plugin.type
-  </a>
-</div>
-
-### task runner
-
-<div>
-  <a href="https://github.com/ido-ofir/core.bot">
-    core.bot
   </a>
 </div>
 
@@ -195,11 +212,7 @@ all the listed modules are registered with npm and have their own repository.
     core.node.print
   </a>
 </div>
-<div>
-  <a href="https://github.com/ido-ofir/core.node.server">
-    core.node.server
-  </a>
-</div>
+
 
 ### types
 
@@ -255,11 +268,6 @@ all the listed modules are registered with npm and have their own repository.
 
 ### web
 
-<div>
-  <a href="https://github.com/ido-ofir/core.web">
-    core.web
-  </a>
-</div>
 <div>
   <a href="https://github.com/ido-ofir/core.web.divide">
     core.web.divide
